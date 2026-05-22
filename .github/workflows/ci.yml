@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: statify
+          POSTGRES_PASSWORD: statify
+          POSTGRES_DB: statify_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U statify -d statify_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://statify:statify@localhost:5432/statify_test?schema=public
+      DIRECT_URL: postgresql://statify:statify@localhost:5432/statify_test?schema=public
+      API_BASE_URL: http://localhost:4000
+      JWT_ACCESS_SECRET: test-jwt-access-secret-thirty-two-chars-min
+      JWT_REFRESH_SECRET: test-jwt-refresh-secret-thirty-two-chars-min
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter @statify/db prisma:generate
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Build
+        run: pnpm build
