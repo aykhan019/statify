@@ -1,0 +1,230 @@
+// Statify schema. See docs/adr/0001-tech-stack-and-foundation.md Section 3.2.
+//
+// Advanced indexes (GIN trigram on artists/albums/tracks names, partial index
+// on tracks WHERE preview_url IS NOT NULL) are added via a follow-up raw SQL
+// migration in Phase 4, because pg_trgm requires CREATE EXTENSION which Prisma
+// manages awkwardly.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// =============================================================
+// MPD-derived (read-mostly, populated by the ingest CLI)
+// =============================================================
+
+model Artist {
+  id             Int      @id @default(autoincrement())
+  spotifyUri     String   @unique @map("spotify_uri")
+  name           String
+  normalizedName String   @map("normalized_name")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  albums       Album[]
+  trackArtists TrackArtist[]
+
+  @@index([normalizedName])
+  @@map("artists")
+}
+
+model Album {
+  id              Int      @id @default(autoincrement())
+  spotifyUri      String   @unique @map("spotify_uri")
+  name            String
+  primaryArtistId Int      @map("primary_artist_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  primaryArtist Artist  @relation(fields: [primaryArtistId], references: [id])
+  tracks        Track[]
+
+  @@index([primaryArtistId])
+  @@map("albums")
+}
+
+model Track {
+  id               Int       @id @default(autoincrement())
+  spotifyUri       String    @unique @map("spotify_uri")
+  name             String
+  albumId          Int       @map("album_id")
+  durationMs       Int       @map("duration_ms")
+  itunesTrackId    BigInt?   @map("itunes_track_id")
+  previewUrl       String?   @map("preview_url")
+  previewFetchedAt DateTime? @map("preview_fetched_at")
+
+  album              Album               @relation(fields: [albumId], references: [id])
+  trackArtists       TrackArtist[]
+  mpdPlaylistTracks  MpdPlaylistTrack[]
+  listeningHistory   ListeningHistory[]
+  userPlaylistTracks UserPlaylistTrack[]
+
+  @@index([albumId])
+  @@index([previewUrl])
+  @@map("tracks")
+}
+
+enum TrackArtistRole {
+  primary
+  featured
+
+  @@map("track_artist_role")
+}
+
+model TrackArtist {
+  trackId  Int             @map("track_id")
+  artistId Int             @map("artist_id")
+  role     TrackArtistRole @default(primary)
+
+  track  Track  @relation(fields: [trackId], references: [id])
+  artist Artist @relation(fields: [artistId], references: [id])
+
+  @@id([trackId, artistId])
+  @@index([artistId])
+  @@map("track_artists")
+}
+
+model MpdPlaylist {
+  id            Int      @id @default(autoincrement())
+  mpdPid        Int      @unique @map("mpd_pid")
+  name          String
+  collaborative Boolean  @default(false)
+  modifiedAt    DateTime @map("modified_at")
+  numFollowers  Int      @map("num_followers")
+  numEdits      Int      @map("num_edits")
+  durationMs    BigInt   @map("duration_ms")
+
+  tracks MpdPlaylistTrack[]
+
+  @@map("mpd_playlists")
+}
+
+model MpdPlaylistTrack {
+  playlistId Int @map("playlist_id")
+  trackId    Int @map("track_id")
+  pos        Int
+
+  playlist MpdPlaylist @relation(fields: [playlistId], references: [id])
+  track    Track       @relation(fields: [trackId], references: [id])
+
+  @@id([playlistId, pos])
+  @@index([trackId])
+  @@map("mpd_playlist_tracks")
+}
+
+// =============================================================
+// App-layer (read-write)
+// =============================================================
+
+enum UserRole {
+  user
+  admin
+
+  @@map("user_role")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  passwordHash String    @map("password_hash")
+  displayName  String    @map("display_name")
+  role         UserRole  @default(user)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  lastLoginAt  DateTime? @map("last_login_at")
+
+  refreshTokens    RefreshToken[]
+  listeningHistory ListeningHistory[]
+  userPlaylists    UserPlaylist[]
+  auditLog         AuditLog[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @map("user_id")
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  userAgent String?   @map("user_agent")
+  ipAddr    String?   @map("ip_addr")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+enum ListeningSource {
+  preview
+  seed
+
+  @@map("listening_source")
+}
+
+model ListeningHistory {
+  id               Int             @id @default(autoincrement())
+  userId           Int             @map("user_id")
+  trackId          Int             @map("track_id")
+  playedAt         DateTime        @default(now()) @map("played_at")
+  source           ListeningSource @default(preview)
+  durationPlayedMs Int             @map("duration_played_ms")
+
+  user  User  @relation(fields: [userId], references: [id])
+  track Track @relation(fields: [trackId], references: [id])
+
+  @@index([userId, playedAt(sort: Desc)])
+  @@index([trackId])
+  @@map("listening_history")
+}
+
+model UserPlaylist {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  name        String
+  description String?
+  isPublic    Boolean  @default(false) @map("is_public")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user   User                @relation(fields: [userId], references: [id])
+  tracks UserPlaylistTrack[]
+
+  @@index([userId])
+  @@map("user_playlists")
+}
+
+model UserPlaylistTrack {
+  userPlaylistId Int      @map("user_playlist_id")
+  trackId        Int      @map("track_id")
+  pos            Int
+  addedAt        DateTime @default(now()) @map("added_at")
+
+  userPlaylist UserPlaylist @relation(fields: [userPlaylistId], references: [id])
+  track        Track        @relation(fields: [trackId], references: [id])
+
+  @@id([userPlaylistId, pos])
+  @@index([trackId])
+  @@map("user_playlist_tracks")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  actorUserId Int?     @map("actor_user_id")
+  action      String
+  targetTable String   @map("target_table")
+  targetId    String?  @map("target_id")
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  actor User? @relation(fields: [actorUserId], references: [id])
+
+  @@index([actorUserId, createdAt(sort: Desc)])
+  @@index([targetTable, targetId])
+  @@map("audit_log")
+}
