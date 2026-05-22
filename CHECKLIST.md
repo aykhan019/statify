@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F2 (Database layer foundation). PrismaService is backed by typed config, connection lifecycle calls are idempotent, services can use a typed transaction wrapper, and future repositories have shared database client/base repository primitives.
-- **Working on now:** none. F2 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Last finished:** Phase 4 F3 (Error handling and API envelope foundation). Error envelopes are typed, explicit shared error codes are preserved, validation details serialize consistently, unexpected server errors hide raw messages, and filter/pipe behavior is covered by focused tests.
+- **Working on now:** none. F3 PR review and merge into `dev` remain with Aykhan after CI is green.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F3. Wire the error handling and API envelope foundation end-to-end.
+- **Next concrete action:** Phase 4 F4. Build the auth foundation: registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, and refresh token persistence.
 
 ---
 
@@ -56,7 +56,7 @@
 
 - [x] **F1: Config and Logging foundation** (env Zod schema, Pino, request IDs, Sentry wiring) - M - eljan
 - [x] **F2: Database layer foundation** (PrismaService, base repository pattern, transaction helper) - M - eljan
-- [ ] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
+- [x] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
 - [ ] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
 - [ ] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
 - [ ] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
