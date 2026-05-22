@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 3 (Scaffolding). Monorepo, four workspace packages, NestJS API, Next.js web, Prisma schema with the 12 tables, CI workflow, Docker Compose, all docs. Lint, typecheck, format, and build are green. Pushed to https://github.com/aykhan019/statify.git.
-- **Working on now:** none. Awaiting greenlight for Phase 4 F1 (Config and Logging foundation).
+- **Last finished:** Phase 4 F1 (Config and Logging foundation). API config is typed through the validated env schema; structured request logging carries request IDs, redacts sensitive fields, and uses per-environment behavior; server exception capture is guarded by `SENTRY_DSN`; config tests cover the requested validation paths.
+- **Working on now:** none. F1 PR review and merge into `dev` remain with Aykhan after CI is green.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F1. Build out the ConfigModule (Zod-validated env loader, typed `config` consumer surface, no `process.env` access outside config), LoggerModule (Pino with request-scoped `requestId`, PII redaction), and Sentry wiring on top of the existing scaffolding in `apps/api/src/config/` and `apps/api/src/app.module.ts`.
+- **Next concrete action:** Phase 4 F2. Build the database layer foundation: PrismaService hardening, base repository pattern, and transaction helper.
 
 ---
 
@@ -54,7 +54,7 @@
 
 ## Phase 4, Foundation pieces (one at a time; each gated on Aykhan's approval)
 
-- [ ] **F1: Config and Logging foundation** (env Zod schema, Pino, request IDs, Sentry wiring) - M - eljan
+- [x] **F1: Config and Logging foundation** (env Zod schema, Pino, request IDs, Sentry wiring) - M - eljan
 - [ ] **F2: Database layer foundation** (PrismaService, base repository pattern, transaction helper) - M - eljan
 - [ ] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
 - [ ] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan

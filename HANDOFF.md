@@ -29,12 +29,12 @@
 
 **Updated:** 2026-05-22
 
-- **Last completed:** Phase 3 (Scaffolding). Repo initialized, all packages and apps scaffolded, lint/typecheck/format/build all green, pushed to https://github.com/aykhan019/statify.git with branch protection on `main` and `dev`.
-- **Currently in progress:** none. Awaiting Aykhan's greenlight to begin Phase 4 F1.
-- **Next concrete action:** Phase 4 F1 (Config and Logging foundation). Builds on the ConfigModule and LoggerModule stubs already in `apps/api/src/`. See `CHECKLIST.md` Phase 4 section.
+- **Last completed:** Phase 4 F1 (Config and Logging foundation) on `feat/config-logging-foundation`. The API now has typed env access, per-environment structured logging, request-scoped request IDs, PII redaction, guarded server exception capture, and focused config tests.
+- **Currently in progress:** none. F1 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Next concrete action:** Phase 4 F2 (Database layer foundation): PrismaService hardening, base repository pattern, and transaction helper.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
-- **Open threads:** none.
+- **Open threads:** Local `pnpm lint` is blocked by the unrelated untracked `apps/web/next-env.d.ts` file that was present before F1 and was left untouched. The tracked F1 files pass lint when that file is excluded; CI should not see the untracked file.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.
   2. Neon free tier is 0.5 GB; re-verify headroom after the first MPD ingest dry run.
