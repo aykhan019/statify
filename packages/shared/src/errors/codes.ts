@@ -23,3 +23,9 @@ export const ErrorCode = {
 } as const;
 
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
+
+const ERROR_CODE_VALUES = new Set<string>(Object.values(ErrorCode));
+
+export function isErrorCode(value: unknown): value is ErrorCode {
+  return typeof value === 'string' && ERROR_CODE_VALUES.has(value);
+}
