@@ -3,10 +3,11 @@ import { LoggerModule } from './common/logger/logger.module';
 import { RequestIdMiddleware } from './common/logger/request-id.middleware';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './database/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { HealthModule } from './modules/health/health.module';
 
 @Module({
-  imports: [ConfigModule, LoggerModule, PrismaModule, HealthModule],
+  imports: [ConfigModule, LoggerModule, PrismaModule, AuthModule, HealthModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
