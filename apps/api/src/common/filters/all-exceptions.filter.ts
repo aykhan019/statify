@@ -6,7 +6,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import { AppError, ErrorCode } from '@statify/shared';
+import { AppError, ErrorCode, isErrorCode, type ErrorEnvelope } from '@statify/shared';
 import * as Sentry from '@sentry/node';
 import type { Request, Response } from 'express';
 import { ZodError } from 'zod';
@@ -14,7 +14,7 @@ import { getRequestId } from '../logger/request-id.middleware';
 
 interface ResolvedException {
   status: number;
-  code: string;
+  code: ErrorCode;
   message: string;
   details?: unknown;
 }
@@ -48,7 +48,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         ...(resolved.details !== undefined ? { details: resolved.details } : {}),
       },
       requestId,
-    });
+    } satisfies ErrorEnvelope);
   }
 }
 
@@ -76,7 +76,7 @@ function resolveException(exception: unknown): ResolvedException {
     return {
       status: HttpStatus.INTERNAL_SERVER_ERROR,
       code: ErrorCode.INTERNAL_ERROR,
-      message: exception.message,
+      message: 'Internal server error',
     };
   }
   return {
@@ -89,18 +89,50 @@ function resolveException(exception: unknown): ResolvedException {
 function resolveHttpException(exception: HttpException): ResolvedException {
   const status = exception.getStatus();
   const res = exception.getResponse();
-  let message = 'Internal server error';
   if (typeof res === 'string') {
-    message = res;
-  } else if (typeof res === 'object' && res !== null) {
-    const obj = res as Record<string, unknown>;
-    message = (obj.message as string) ?? message;
+    return { status, code: mapStatusToCode(status), message: res };
   }
-  return { status, code: mapStatusToCode(status), message };
+  if (isRecord(res)) {
+    return resolveHttpExceptionObject(status, res);
+  }
+  return {
+    status,
+    code: mapStatusToCode(status),
+    message: status >= 500 ? 'Internal server error' : exception.message,
+  };
 }
 
-function mapStatusToCode(status: number): string {
+function resolveHttpExceptionObject(
+  status: number,
+  body: Record<string, unknown>,
+): ResolvedException {
+  const code = isErrorCode(body.code) ? body.code : mapStatusToCode(status);
+  const message = resolveMessage(body.message, status);
+
+  return {
+    status,
+    code,
+    message,
+    ...(body.details !== undefined ? { details: body.details } : {}),
+    ...(Array.isArray(body.message) ? { details: body.message } : {}),
+  };
+}
+
+function resolveMessage(message: unknown, status: number): string {
+  if (typeof message === 'string') {
+    return message;
+  }
+  if (Array.isArray(message)) {
+    return 'Validation failed';
+  }
+  return status >= 500 ? 'Internal server error' : 'Request failed';
+}
+
+function mapStatusToCode(status: number): ErrorCode {
   switch (status) {
+    case HttpStatus.BAD_REQUEST:
+    case HttpStatus.UNPROCESSABLE_ENTITY:
+      return ErrorCode.VALIDATION_ERROR;
     case HttpStatus.UNAUTHORIZED:
       return ErrorCode.UNAUTHENTICATED;
     case HttpStatus.FORBIDDEN:
@@ -114,4 +146,8 @@ function mapStatusToCode(status: number): string {
     default:
       return ErrorCode.INTERNAL_ERROR;
   }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null;
 }

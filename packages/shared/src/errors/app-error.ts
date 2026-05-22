@@ -8,6 +8,15 @@ export interface AppErrorOptions {
   cause?: unknown;
 }
 
+export interface ErrorEnvelope {
+  error: {
+    code: ErrorCode;
+    message: string;
+    details?: unknown;
+  };
+  requestId: string;
+}
+
 export class AppError extends Error {
   readonly code: ErrorCode;
   readonly httpStatus: number;
