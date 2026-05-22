@@ -29,12 +29,12 @@
 
 **Updated:** 2026-05-22
 
-- **Last completed:** Phase 4 F1 (Config and Logging foundation) on `feat/config-logging-foundation`. The API now has typed env access, per-environment structured logging, request-scoped request IDs, PII redaction, guarded server exception capture, and focused config tests.
-- **Currently in progress:** none. F1 PR review and merge into `dev` remain with Aykhan after CI is green.
-- **Next concrete action:** Phase 4 F2 (Database layer foundation): PrismaService hardening, base repository pattern, and transaction helper.
+- **Last completed:** Phase 4 F2 (Database layer foundation) on `feat/database-layer-foundation`. PrismaService now uses typed configuration, has idempotent lifecycle connection helpers, exposes a typed transaction wrapper, and the API has base repository/client primitives with focused tests.
+- **Currently in progress:** none. F2 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Next concrete action:** Phase 4 F3 (Error handling and API envelope foundation): wire the exception filter, error codes, and validation pipe end-to-end.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
-- **Open threads:** Local `pnpm lint` is blocked by the unrelated untracked `apps/web/next-env.d.ts` file that was present before F1 and was left untouched. The tracked F1 files pass lint when that file is excluded; CI should not see the untracked file.
+- **Open threads:** Local `pnpm lint` is blocked by the unrelated untracked `apps/web/next-env.d.ts` file that was present before F1 and was left untouched. The tracked files pass lint when that file is excluded; CI should not see the untracked file.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.
   2. Neon free tier is 0.5 GB; re-verify headroom after the first MPD ingest dry run.
