@@ -6,9 +6,11 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
-import type { Request, Response } from 'express';
 import { AppError, ErrorCode } from '@statify/shared';
+import * as Sentry from '@sentry/node';
+import type { Request, Response } from 'express';
 import { ZodError } from 'zod';
+import { getRequestId } from '../logger/request-id.middleware';
 
 interface ResolvedException {
   status: number;
@@ -25,11 +27,12 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-    const requestId = (request.headers['x-request-id'] as string) ?? '';
+    const requestId = getRequestId(request);
 
     const resolved = resolveException(exception);
 
     if (resolved.status >= 500) {
+      Sentry.captureException(exception);
       this.logger.error({ err: exception, requestId, code: resolved.code }, 'Unhandled exception');
     } else {
       this.logger.warn(

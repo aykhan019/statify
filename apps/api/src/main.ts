@@ -1,10 +1,23 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import * as Sentry from '@sentry/node';
 import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
+import { ConfigService } from './config/config.service';
+import { loadEnv } from './config/env.schema';
 
 async function bootstrap(): Promise<void> {
+  const env = loadEnv();
+
+  if (env.SENTRY_DSN !== '') {
+    Sentry.init({
+      dsn: env.SENTRY_DSN,
+      environment: env.NODE_ENV,
+      tracesSampleRate: 0.1,
+    });
+  }
+
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
   app.useLogger(app.get(Logger));
@@ -12,7 +25,8 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('api/v1', { exclude: ['healthz'] });
 
-  const port = Number(process.env.API_PORT ?? 4000);
+  const config = app.get(ConfigService);
+  const port = config.apiPort;
   await app.listen(port);
 
   const logger = app.get(Logger);
