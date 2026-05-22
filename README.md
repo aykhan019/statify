@@ -38,6 +38,7 @@ See `docs/adr/0001-tech-stack-and-foundation.md` for the architecture rationale.
 ## Quickstart
 
 Prerequisites:
+
 - Node.js 22 or higher
 - pnpm 9
 - PostgreSQL 16 (local via Docker Compose, or a Neon dev branch)

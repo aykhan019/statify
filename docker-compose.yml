@@ -8,11 +8,11 @@ services:
       POSTGRES_PASSWORD: statify
       POSTGRES_DB: statify
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - statify-postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U statify -d statify"]
+      test: ['CMD-SHELL', 'pg_isready -U statify -d statify']
       interval: 5s
       timeout: 5s
       retries: 10
@@ -22,7 +22,7 @@ services:
     container_name: statify-adminer
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - '8080:8080'
     depends_on:
       postgres:
         condition: service_healthy

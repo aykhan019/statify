@@ -42,20 +42,20 @@
 
 ## 3. Structural Changes Log
 
-| Date | Change | ADR | By |
-|---|---|---|---|
+| Date       | Change                      | ADR     | By     |
+| ---------- | --------------------------- | ------- | ------ |
 | 2026-05-22 | Initial repo layout defined | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
 ## 4. Team Identities
 
-| Key | Name | Commit email | GitHub |
-|---|---|---|---|
-| `aykhan` | Aykhan Ahmadzada | ayxanx17@gmail.com | aykhan019 |
-| `elshad` | Elshad Toklayev | etoklayev23@ku.edu.tr | endorphin13 |
-| `rahila` | Rahila Dashdiyeva | rdashdiyeva23@ku.edu.tr | Rahila2707 |
-| `eljan` | Eljan Mammadli | eljanmammadli@gmail.com | EljanM |
+| Key      | Name              | Commit email            | GitHub      |
+| -------- | ----------------- | ----------------------- | ----------- |
+| `aykhan` | Aykhan Ahmadzada  | ayxanx17@gmail.com      | aykhan019   |
+| `elshad` | Elshad Toklayev   | etoklayev23@ku.edu.tr   | endorphin13 |
+| `rahila` | Rahila Dashdiyeva | rdashdiyeva23@ku.edu.tr | Rahila2707  |
+| `eljan`  | Eljan Mammadli    | eljanmammadli@gmail.com | EljanM      |
 
 Each member must have the email above on their GitHub account at https://github.com/settings/emails for commits to attribute correctly. Elshad and Rahila are reported to have created their GitHub accounts using their `@ku.edu.tr` addresses; verify after first push.
 
@@ -64,10 +64,12 @@ Each member must have the email above on their GitHub account at https://github.
 The canonical inventory. If a doc is not here, it should not exist.
 
 **Living (updated frequently):**
+
 - `HANDOFF.md` (this file), ground rules and current state.
 - `CHECKLIST.md`, full task list with ownership and effort.
 
 **Operational:**
+
 - `README.md`, project overview and quickstart.
 - `docs/onboarding.md`, clone-to-running in under 15 minutes. (TBD in Phase 4.)
 - `docs/architecture.md`, narrative architecture summary with links to ADRs. (TBD in Phase 4.)
@@ -76,10 +78,12 @@ The canonical inventory. If a doc is not here, it should not exist.
 - `docs/erd.dbml` and `docs/erd.png`, schema diagram. (TBD in Phase 4.)
 
 **Decisions (append only):**
+
 - `docs/adr/0001-tech-stack-and-foundation.md`
 - `docs/adr/000N-...` future ADRs.
 
 **Submission artifacts (built over the project):**
+
 - `report/final-report.md`, academic write-up, exported to PDF for submission.
 - `report/sql-queries.md`, the six advanced SQL queries with sample I/O.
 - `report/demo-script.md`, exact click-by-click demo walkthrough.
@@ -87,6 +91,7 @@ The canonical inventory. If a doc is not here, it should not exist.
 - `report/slides.md` or Google Slides link, in-class presentation.
 
 **Repo hygiene:**
+
 - `.github/pull_request_template.md`, `CODEOWNERS`, `CONTRIBUTING.md`, `LICENSE`, `.env.example`.
 
 ## 6. Quick Reference

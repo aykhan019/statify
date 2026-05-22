@@ -11,27 +11,27 @@ Four developers, zero budget, university project that also serves as a portfolio
 
 ## 2. Decision Summary
 
-| Area | Decision | Free tier confirmed |
-|---|---|---|
-| Backend | Node.js 22+ with TypeScript, NestJS 10 | Render free web service or Fly.io free allowance |
-| ORM | Prisma 5 (Postgres provider) | OSS |
-| Frontend | Next.js 15 (App Router), React 19, TypeScript | Vercel Hobby tier |
-| Styling | Tailwind CSS 4, shadcn/ui, Radix primitives | OSS |
-| Database | PostgreSQL 16 on Neon | 0.5 GB storage, 190 compute-hours/mo, branching |
-| Auth | Email + password, Argon2id, JWT (access + refresh) in httpOnly cookies | Self-hosted |
-| State (FE) | React Server Components first; TanStack Query for client; Zustand for ephemeral UI | OSS |
-| Forms | React Hook Form, Zod | OSS |
-| Validation | Zod schemas shared between FE and BE via `@statify/shared` | OSS |
-| Email (future) | Resend free tier (100/day) | Yes |
-| Monorepo | pnpm workspaces, single repo | Yes |
-| Container (local) | Docker Compose for Postgres + adminer | Yes |
-| CI/CD | GitHub Actions | Unlimited minutes on public repos |
-| Hosting | Web on Vercel, API on Render free, DB on Neon | Yes; Render spins down after 15 min idle, warmed by cron-job.org |
-| Error tracking | Sentry developer plan | 5k events/mo |
-| Uptime | UptimeRobot | 50 monitors |
-| Warm-up pings | cron-job.org | Unlimited 1-min jobs |
-| Image/asset CDN | Use iTunes/Spotify image URLs directly | N/A |
-| Audio | iTunes Search API `previewUrl` (30 s m4a) | Free, rate-limited |
+| Area              | Decision                                                                           | Free tier confirmed                                              |
+| ----------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| Backend           | Node.js 22+ with TypeScript, NestJS 10                                             | Render free web service or Fly.io free allowance                 |
+| ORM               | Prisma 5 (Postgres provider)                                                       | OSS                                                              |
+| Frontend          | Next.js 15 (App Router), React 19, TypeScript                                      | Vercel Hobby tier                                                |
+| Styling           | Tailwind CSS 4, shadcn/ui, Radix primitives                                        | OSS                                                              |
+| Database          | PostgreSQL 16 on Neon                                                              | 0.5 GB storage, 190 compute-hours/mo, branching                  |
+| Auth              | Email + password, Argon2id, JWT (access + refresh) in httpOnly cookies             | Self-hosted                                                      |
+| State (FE)        | React Server Components first; TanStack Query for client; Zustand for ephemeral UI | OSS                                                              |
+| Forms             | React Hook Form, Zod                                                               | OSS                                                              |
+| Validation        | Zod schemas shared between FE and BE via `@statify/shared`                         | OSS                                                              |
+| Email (future)    | Resend free tier (100/day)                                                         | Yes                                                              |
+| Monorepo          | pnpm workspaces, single repo                                                       | Yes                                                              |
+| Container (local) | Docker Compose for Postgres + adminer                                              | Yes                                                              |
+| CI/CD             | GitHub Actions                                                                     | Unlimited minutes on public repos                                |
+| Hosting           | Web on Vercel, API on Render free, DB on Neon                                      | Yes; Render spins down after 15 min idle, warmed by cron-job.org |
+| Error tracking    | Sentry developer plan                                                              | 5k events/mo                                                     |
+| Uptime            | UptimeRobot                                                                        | 50 monitors                                                      |
+| Warm-up pings     | cron-job.org                                                                       | Unlimited 1-min jobs                                             |
+| Image/asset CDN   | Use iTunes/Spotify image URLs directly                                             | N/A                                                              |
+| Audio             | iTunes Search API `previewUrl` (30 s m4a)                                          | Free, rate-limited                                               |
 
 ## 3. Detailed Decisions
 
@@ -64,6 +64,7 @@ Rationale: monorepo eliminates type-drift between FE and BE; `packages/shared` o
 **Tables (draft v0):**
 
 MPD-derived (read-mostly, populated by ingestion):
+
 1. `artists` (id PK, spotify_uri UNIQUE, name, normalized_name for search, created_at)
 2. `albums` (id PK, spotify_uri UNIQUE, name, primary_artist_id FK, created_at)
 3. `tracks` (id PK, spotify_uri UNIQUE, name, album_id FK, duration_ms, itunes_track_id NULL, preview_url NULL, preview_fetched_at NULL)
@@ -85,6 +86,7 @@ Comfortably exceeds the 5-6 table minimum. Audit log is wired in from day one so
 **Genres:** MPD does not carry genre data. We derive a `genres` and `track_genres` table from the iTunes Search API's `primaryGenreName` field, populated lazily as previews are fetched. Documented as a future Phase 4 piece.
 
 **Indexing strategy (initial):**
+
 - B-tree on every FK
 - B-tree on `tracks.spotify_uri`, `artists.spotify_uri`, `albums.spotify_uri`
 - GIN trigram (`pg_trgm`) on `tracks.name`, `artists.name`, `albums.name` for fuzzy search
@@ -126,6 +128,7 @@ apps/api/src/integrations/itunes/
 ```
 
 Rules:
+
 - Caching is persistent, not in-memory. Once a track is resolved, `itunes_track_id`, `preview_url`, `preview_fetched_at` are written onto the `tracks` row. Future requests skip the API.
 - Rate limit: in-process token bucket at 20 req/s.
 - Graceful degradation: failed lookups set `preview_fetched_at` to the failure time and `preview_url` to NULL. UI hides the play button. Failed lookups are retried after 7 days.
@@ -161,6 +164,7 @@ apps/api/src/
 ```
 
 **Patterns applied where:**
+
 - **Repository:** every module that touches the DB has a `*.repository.ts`. Services never touch Prisma directly. Mockable at the repository boundary for unit tests; swappable to raw SQL where needed (the 6 analytics queries use `$queryRaw` directly inside their service for clarity).
 - **Service Layer:** all business logic. Pure-ish: input DTO in, domain object out, no HTTP knowledge.
 - **DTO:** every controller boundary has a request DTO and a response DTO defined in `packages/shared` as Zod schemas.
@@ -230,6 +234,7 @@ apps/web/src/
 ```
 
 **State:**
+
 - Server data: React Server Components for the initial render; TanStack Query for client-side mutations and revalidation. No Redux.
 - UI state (modals, sidebars, current playing track): Zustand. One store per concern.
 - Form state: React Hook Form, validation via shared Zod schemas.
@@ -299,6 +304,7 @@ apps/web/src/
 Single repo at https://github.com/aykhan019/statify.git, public.
 
 Branch model:
+
 - `main`, protected, only merged from `dev` via PR. CI must be green.
 - `dev`, integration branch, also protected.
 - Feature branches: `feat/<short-desc>`, `fix/<short-desc>`, `chore/<short-desc>`. Branched from `dev`.
@@ -321,17 +327,18 @@ Public repo gives unlimited GH Actions minutes on standard runners.
 
 ### 3.17 Deployment
 
-| Component | Where | Notes |
-|---|---|---|
-| `apps/web` | Vercel Hobby | Free, generous limits, edge network |
-| `apps/api` | Render free web service | Spins down after 15 min idle; warmed by cron-job.org pinging `/healthz` every 10 min |
-| Database | Neon free | 0.5 GB, auto-pause on idle, instant resume |
-| Static assets | Served by Next.js | No separate CDN |
-| Domain | Auto-assigned `*.vercel.app` initially | Custom domain optional later |
+| Component     | Where                                  | Notes                                                                                |
+| ------------- | -------------------------------------- | ------------------------------------------------------------------------------------ |
+| `apps/web`    | Vercel Hobby                           | Free, generous limits, edge network                                                  |
+| `apps/api`    | Render free web service                | Spins down after 15 min idle; warmed by cron-job.org pinging `/healthz` every 10 min |
+| Database      | Neon free                              | 0.5 GB, auto-pause on idle, instant resume                                           |
+| Static assets | Served by Next.js                      | No separate CDN                                                                      |
+| Domain        | Auto-assigned `*.vercel.app` initially | Custom domain optional later                                                         |
 
 ### 3.18 Documentation
 
 Lives in `docs/`:
+
 - `README.md` (root): project overview, quickstart.
 - `docs/architecture.md`: living narrative summary linking to ADRs.
 - `docs/erd.png` + `docs/erd.dbml`: ERD source (dbdiagram.io DBML format).
@@ -365,12 +372,14 @@ If we change our minds, a new ADR is written.
 ## 4. Consequences
 
 Positive:
+
 - Type safety from DB to UI; runtime validation matches compile-time types.
 - Every architectural choice has a free-tier exit.
 - The 12-table schema and 6 pre-planned advanced queries directly address the rubric.
 - The `scripts/commit-as.sh` workflow keeps attribution clean.
 
 Negative:
+
 - Render free spin-down adds 30-60 s warm-up on first request after idle. Mitigated by warm pings.
 - Neon 0.5 GB cap means we cannot ingest the full MPD; the 10k-25k playlist subset is documented and accepted.
 - Roll-our-own auth is more code than Clerk or Supabase Auth would be, but it is the rubric-aligned choice.
