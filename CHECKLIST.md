@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 2 (ADR-001 approved). Phase 3 scaffolding kickoff: repo initialized at `/Users/aykhan/Documents/projects/statify/`, foundation docs written.
-- **Working on now:** Phase 3 scaffolding.
+- **Last finished:** Phase 3 (Scaffolding). Monorepo, four workspace packages, NestJS API, Next.js web, Prisma schema with the 12 tables, CI workflow, Docker Compose, all docs. Lint, typecheck, format, and build are green. Pushed to https://github.com/aykhan019/statify.git.
+- **Working on now:** none. Awaiting greenlight for Phase 4 F1 (Config and Logging foundation).
 - **Open file/component:** none.
-- **Open decisions blocking scaffolding:** none.
-- **Next concrete action:** initialize git, make foundational commits, install pnpm workspace, configure root tooling, scaffold each app and package, wire CI, push to GitHub with branch protection.
+- **Open decisions:** none.
+- **Next concrete action:** Phase 4 F1. Build out the ConfigModule (Zod-validated env loader, typed `config` consumer surface, no `process.env` access outside config), LoggerModule (Pino with request-scoped `requestId`, PII redaction), and Sentry wiring on top of the existing scaffolding in `apps/api/src/config/` and `apps/api/src/app.module.ts`.
 
 ---
 
@@ -28,29 +28,29 @@
 - [x] Create directory tree at `/Users/aykhan/Documents/projects/statify/` - S - aykhan
 - [x] Write `HANDOFF.md` - S - aykhan
 - [x] Write `CHECKLIST.md` - S - aykhan
-- [ ] Write `docs/adr/0001-tech-stack-and-foundation.md` - L - aykhan
-- [ ] Write `README.md` - S - aykhan
-- [ ] Write `CONTRIBUTING.md` - S - aykhan
-- [ ] Write `LICENSE` (MIT) - S - aykhan
-- [ ] Write `.gitignore`, `.editorconfig`, `.nvmrc`, `.env.example` - S - aykhan
-- [ ] Write `scripts/commit-as.sh` and `scripts/.authors`, make executable - S - aykhan
-- [ ] `git init`, set default branch `dev`, first commit (foundation docs) - S - aykhan
-- [ ] Initialize pnpm workspace: `pnpm-workspace.yaml`, root `package.json`, root `tsconfig.base.json` - M - elshad
-- [ ] Add Prettier config (`.prettierrc`, `.prettierignore`) - S - elshad
-- [ ] Add ESLint config (root `eslint.config.mjs`, shared rules) - M - elshad
-- [ ] Add commitlint config (`commitlint.config.cjs`) - S - elshad
-- [ ] Add Husky + lint-staged (`.husky/pre-commit`, `.husky/commit-msg`) - S - elshad
-- [ ] Scaffold `packages/shared`: error codes enum, AppError base, Pagination DTO, Zod base schemas - M - aykhan
-- [ ] Scaffold `packages/db`: Prisma init, `prisma/schema.prisma` with 12 tables, seed stub, ingest CLI stub directory - L - eljan
-- [ ] Prisma schema commits (the 12 tables from ADR-001 Section 3.2) - L - aykhan
-- [ ] Scaffold `apps/api` (NestJS): ConfigModule, PrismaModule, LoggerModule (Pino), AllExceptionsFilter, ZodValidationPipe, /healthz endpoint - L - eljan
-- [ ] Scaffold `apps/web` (Next.js 15 App Router): Tailwind 4, shadcn/ui init, base layout, theme tokens, /healthz route stub - L - rahila
-- [ ] Add `docker-compose.yml` for local Postgres + adminer - S - elshad
-- [ ] Add `.github/workflows/ci.yml` (typecheck, lint, build) - M - elshad
-- [ ] Add `.github/pull_request_template.md` and `CODEOWNERS` - S - elshad
-- [ ] Run `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm build`; fix any errors - M - aykhan
-- [ ] Push to `https://github.com/aykhan019/statify.git`, create `dev` branch, set branch protection on `main` and `dev` - S - aykhan
-- [ ] Verify commit attribution on GitHub for all four identities - S - aykhan
+- [x] Write `docs/adr/0001-tech-stack-and-foundation.md` - L - aykhan
+- [x] Write `README.md` - S - aykhan
+- [x] Write `CONTRIBUTING.md` - S - aykhan
+- [x] Write `LICENSE` (MIT) - S - aykhan
+- [x] Write `.gitignore`, `.editorconfig`, `.nvmrc`, `.env.example` - S - aykhan
+- [x] Write `scripts/commit-as.sh` and `scripts/.authors`, make executable - S - aykhan
+- [x] `git init`, first commit (foundation docs) - S - aykhan
+- [x] Initialize pnpm workspace: `pnpm-workspace.yaml`, root `package.json`, root `tsconfig.base.json` - M - elshad
+- [x] Add Prettier config (`.prettierrc`, `.prettierignore`) - S - elshad
+- [x] Add ESLint config (root `eslint.config.mjs`, shared rules) - M - elshad
+- [x] Add commitlint config (`commitlint.config.cjs`) - S - elshad
+- [x] Add Husky + lint-staged (`.husky/pre-commit`, `.husky/commit-msg`) - S - elshad
+- [x] Scaffold `packages/shared`: error codes enum, AppError base, Pagination DTO - M - aykhan
+- [x] Scaffold `packages/db`: Prisma init, seed stub, ingest CLI stub directory - L - eljan
+- [x] Prisma schema commits (the 12 tables from ADR-001 Section 3.2) - L - aykhan
+- [x] Scaffold `apps/api` (NestJS): ConfigModule, PrismaModule, LoggerModule (Pino), AllExceptionsFilter, ZodValidationPipe, /healthz endpoint - L - eljan
+- [x] Scaffold `apps/web` (Next.js 15 App Router): Tailwind 4, base layout, theme tokens, /healthz route - L - rahila
+- [x] Add `docker-compose.yml` for local Postgres + adminer - S - elshad
+- [x] Add `.github/workflows/ci.yml` (typecheck, lint, build) - M - elshad
+- [x] Add `.github/pull_request_template.md` and `CODEOWNERS` - S - elshad
+- [x] Run `pnpm install`, `pnpm lint`, `pnpm typecheck`, `pnpm build`; fix any errors - M - aykhan
+- [x] Push to `https://github.com/aykhan019/statify.git`, create `dev` branch, set branch protection on `main` and `dev` - S - aykhan
+- [x] Verify commit attribution on GitHub for all four identities - S - aykhan
 
 ## Phase 4, Foundation pieces (one at a time; each gated on Aykhan's approval)
 
