@@ -29,9 +29,9 @@
 
 **Updated:** 2026-05-22
 
-- **Last completed:** Phase 4 F3 (Error handling and API envelope foundation) on `feat/error-envelope-foundation`. The API exception filter now emits typed error envelopes, preserves explicit shared error codes, serializes validation details consistently, hides unexpected 500 messages, and has focused filter/pipe tests.
-- **Currently in progress:** none. F3 PR review and merge into `dev` remain with Aykhan after CI is green.
-- **Next concrete action:** Phase 4 F4 (Auth foundation): registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, and refresh token persistence.
+- **Last completed:** Phase 4 F4 (Auth foundation) on `feat/auth-foundation`. The API now has register/login/refresh endpoints, Argon2id password hashing, access and refresh JWT cookies, refresh token persistence and rotation, CSRF double-submit guard support, JwtAuthGuard, RolesGuard, auth DTOs, and focused auth tests.
+- **Currently in progress:** none. F4 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Next concrete action:** Phase 4 F5 (User session on the frontend): server-side session lookup, middleware route guard, and `useCurrentUser` hook.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.

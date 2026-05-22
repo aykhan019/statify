@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F3 (Error handling and API envelope foundation). Error envelopes are typed, explicit shared error codes are preserved, validation details serialize consistently, unexpected server errors hide raw messages, and filter/pipe behavior is covered by focused tests.
-- **Working on now:** none. F3 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Last finished:** Phase 4 F4 (Auth foundation). API auth endpoints support registration, login, and refresh rotation; passwords are hashed with Argon2id; access/refresh JWTs are issued in cookies; refresh tokens are persisted and rotated; CSRF, JwtAuthGuard, and RolesGuard foundations are in place with focused tests.
+- **Working on now:** none. F4 PR review and merge into `dev` remain with Aykhan after CI is green.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F4. Build the auth foundation: registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, and refresh token persistence.
+- **Next concrete action:** Phase 4 F5. Build the frontend user session foundation: server-side session lookup, middleware route guard, and `useCurrentUser` hook.
 
 ---
 
@@ -57,7 +57,7 @@
 - [x] **F1: Config and Logging foundation** (env Zod schema, Pino, request IDs, Sentry wiring) - M - eljan
 - [x] **F2: Database layer foundation** (PrismaService, base repository pattern, transaction helper) - M - eljan
 - [x] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
-- [ ] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
+- [x] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
 - [ ] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
 - [ ] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
 - [ ] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
