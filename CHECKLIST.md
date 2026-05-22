@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F1 (Config and Logging foundation). API config is typed through the validated env schema; structured request logging carries request IDs, redacts sensitive fields, and uses per-environment behavior; server exception capture is guarded by `SENTRY_DSN`; config tests cover the requested validation paths.
-- **Working on now:** none. F1 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Last finished:** Phase 4 F2 (Database layer foundation). PrismaService is backed by typed config, connection lifecycle calls are idempotent, services can use a typed transaction wrapper, and future repositories have shared database client/base repository primitives.
+- **Working on now:** none. F2 PR review and merge into `dev` remain with Aykhan after CI is green.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F2. Build the database layer foundation: PrismaService hardening, base repository pattern, and transaction helper.
+- **Next concrete action:** Phase 4 F3. Wire the error handling and API envelope foundation end-to-end.
 
 ---
 
@@ -55,7 +55,7 @@
 ## Phase 4, Foundation pieces (one at a time; each gated on Aykhan's approval)
 
 - [x] **F1: Config and Logging foundation** (env Zod schema, Pino, request IDs, Sentry wiring) - M - eljan
-- [ ] **F2: Database layer foundation** (PrismaService, base repository pattern, transaction helper) - M - eljan
+- [x] **F2: Database layer foundation** (PrismaService, base repository pattern, transaction helper) - M - eljan
 - [ ] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
 - [ ] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
 - [ ] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
