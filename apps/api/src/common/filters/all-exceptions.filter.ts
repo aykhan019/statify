@@ -10,6 +10,13 @@ import type { Request, Response } from 'express';
 import { AppError, ErrorCode } from '@statify/shared';
 import { ZodError } from 'zod';
 
+interface ResolvedException {
+  status: number;
+  code: string;
+  message: string;
+  details?: unknown;
+}
+
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
@@ -20,46 +27,73 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const requestId = (request.headers['x-request-id'] as string) ?? '';
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let code: string = ErrorCode.INTERNAL_ERROR;
-    let message = 'Internal server error';
-    let details: unknown;
+    const resolved = resolveException(exception);
 
-    if (exception instanceof AppError) {
-      status = exception.httpStatus;
-      code = exception.code;
-      message = exception.message;
-      details = exception.details;
-    } else if (exception instanceof ZodError) {
-      status = HttpStatus.BAD_REQUEST;
-      code = ErrorCode.VALIDATION_ERROR;
-      message = 'Validation failed';
-      details = exception.issues;
-    } else if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const res = exception.getResponse();
-      if (typeof res === 'string') {
-        message = res;
-      } else if (typeof res === 'object' && res !== null) {
-        const obj = res as Record<string, unknown>;
-        message = (obj.message as string) ?? message;
-      }
-      code = mapStatusToCode(status);
-    } else if (exception instanceof Error) {
-      message = exception.message;
-    }
-
-    if (status >= 500) {
-      this.logger.error({ err: exception, requestId, code }, 'Unhandled exception');
+    if (resolved.status >= 500) {
+      this.logger.error({ err: exception, requestId, code: resolved.code }, 'Unhandled exception');
     } else {
-      this.logger.warn({ requestId, code, status }, message);
+      this.logger.warn(
+        { requestId, code: resolved.code, status: resolved.status },
+        resolved.message,
+      );
     }
 
-    response.status(status).json({
-      error: { code, message, ...(details !== undefined ? { details } : {}) },
+    response.status(resolved.status).json({
+      error: {
+        code: resolved.code,
+        message: resolved.message,
+        ...(resolved.details !== undefined ? { details: resolved.details } : {}),
+      },
       requestId,
     });
   }
+}
+
+function resolveException(exception: unknown): ResolvedException {
+  if (exception instanceof AppError) {
+    return {
+      status: exception.httpStatus,
+      code: exception.code,
+      message: exception.message,
+      details: exception.details,
+    };
+  }
+  if (exception instanceof ZodError) {
+    return {
+      status: HttpStatus.BAD_REQUEST,
+      code: ErrorCode.VALIDATION_ERROR,
+      message: 'Validation failed',
+      details: exception.issues,
+    };
+  }
+  if (exception instanceof HttpException) {
+    return resolveHttpException(exception);
+  }
+  if (exception instanceof Error) {
+    return {
+      status: HttpStatus.INTERNAL_SERVER_ERROR,
+      code: ErrorCode.INTERNAL_ERROR,
+      message: exception.message,
+    };
+  }
+  return {
+    status: HttpStatus.INTERNAL_SERVER_ERROR,
+    code: ErrorCode.INTERNAL_ERROR,
+    message: 'Internal server error',
+  };
+}
+
+function resolveHttpException(exception: HttpException): ResolvedException {
+  const status = exception.getStatus();
+  const res = exception.getResponse();
+  let message = 'Internal server error';
+  if (typeof res === 'string') {
+    message = res;
+  } else if (typeof res === 'object' && res !== null) {
+    const obj = res as Record<string, unknown>;
+    message = (obj.message as string) ?? message;
+  }
+  return { status, code: mapStatusToCode(status), message };
 }
 
 function mapStatusToCode(status: number): string {
