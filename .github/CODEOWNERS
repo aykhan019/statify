@@ -1,0 +1,10 @@
+# Catch-all owner. Aykhan reviews and merges all PRs by default.
+*       @aykhan019
+
+# Architectural docs, ADRs, schema, security-sensitive code: explicit owner.
+/docs/adr/                              @aykhan019
+/packages/db/prisma/schema.prisma       @aykhan019
+/apps/api/src/modules/auth/             @aykhan019
+/apps/api/src/modules/analytics/        @aykhan019
+/HANDOFF.md                             @aykhan019
+/CHECKLIST.md                           @aykhan019
