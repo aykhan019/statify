@@ -1,14 +1,17 @@
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule as NestConfigModule } from '@nestjs/config';
-import { EnvSchema } from './env.schema';
+import { ConfigService } from './config.service';
+import { parseEnv } from './env.schema';
 
 @Global()
 @Module({
   imports: [
     NestConfigModule.forRoot({
       isGlobal: true,
-      validate: (raw) => EnvSchema.parse(raw),
+      validate: parseEnv,
     }),
   ],
+  providers: [ConfigService],
+  exports: [ConfigService],
 })
 export class ConfigModule {}
