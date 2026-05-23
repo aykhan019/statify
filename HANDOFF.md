@@ -29,9 +29,9 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F8 (listening history foundation) on `feat/listening-history-foundation`. The API now has `POST /api/v1/me/history` guarded by JWT + CSRF, with `Idempotency-Key` header support backed by a `(user_id, idempotency_key)` unique constraint on `listening_history`. New shared DTOs (`RecordListenRequest`, `RecordListenResponse`, `IdempotencyKeySchema`) and the `HEADERS.IDEMPOTENCY` constant landed alongside `ListeningHistoryRepository`, `ListeningHistoryService`, `HistoryController`, mapper, and unit coverage (repository idempotency, race fallback, service mapping, controller header parsing).
+- **Last completed:** Phase 4 F9 (analytics foundation) on `feat/analytics-foundation`. The API now exposes the six advanced SQL queries through `AnalyticsService` (each method via `$queryRaw`): top artists (DENSE_RANK window), discover (NOT EXISTS over co-occurring playlist tracks), heatmap (EXTRACT DOW/HOUR), trending (recent vs prior CTEs with growth threshold), similar playlists (Jaccard CTE with set intersection), and hidden gems (LEFT JOIN with IS NULL). Routes land under `MeStatsController`, `DiscoverController`, `PlaylistsSimilarityController`, and `ExploreController` per ADR-001 Section 3.6. F8 (listening history foundation) merged in PR #9 just before this.
 - **Currently in progress:** none.
-- **Next concrete action:** Start `feat/analytics-foundation` from `dev` for Phase 4 F9, using commit author `aykhan`. Implement the six advanced SQL queries (`$queryRaw`) inside `analytics.service.ts` with typed return types and seed-data unit tests, wired to the routes defined in ADR-001 Section 3.6. Read ADR-001 Sections 3.5, 3.6, 3.10, and 3.14 before editing.
+- **Next concrete action:** Start `feat/frontend-design-system-foundation` from `dev` for Phase 4 F10, using commit author `rahila`. Implement theme tokens, base components, layout primitives, navigation shell, and the audio player component. Read ADR-001 Sections 3.8 and 3.10 before editing.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
@@ -49,6 +49,7 @@
 | 2026-05-23 | API iTunes integration module path added         | ADR-001 | Elshad |
 | 2026-05-23 | API listening history module path added          | ADR-001 | Aykhan |
 | 2026-05-23 | `listening_history.idempotency_key` column added | ADR-001 | Aykhan |
+| 2026-05-23 | API analytics module path added                  | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
