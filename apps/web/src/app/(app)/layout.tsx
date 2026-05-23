@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { LogoutButton } from '@/components/auth';
 import { Header } from '@/components/ui/Header';
 import { Sidebar, type SidebarItem } from '@/components/ui/Sidebar';
 import { getServerSession } from '@/lib/auth/session';
@@ -10,6 +11,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { href: '/me/history', label: 'History' },
   { href: '/me/stats', label: 'Stats' },
   { href: '/me/playlists', label: 'Playlists' },
+  { href: '/me/account', label: 'Account' },
   { href: '/catalog', label: 'Catalog' },
 ];
 
@@ -31,7 +33,17 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             Dashboard
           </Link>
         }
-        actions={<span className="text-muted-foreground text-sm">{currentUser.displayName}</span>}
+        actions={
+          <div className="flex items-center gap-3">
+            <Link
+              href="/me/account"
+              className="text-muted-foreground hover:text-foreground text-sm"
+            >
+              {currentUser.displayName}
+            </Link>
+            <LogoutButton />
+          </div>
+        }
       />
       <div className="flex flex-1">
         <Sidebar items={SIDEBAR_ITEMS} />
