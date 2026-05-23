@@ -30,24 +30,25 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last shipped:** M4 Indexes + search/filter 3/3. Catalog pg_trgm indexes and the partial preview index are added, grouped global search is exposed through `GET /api/v1/search`, the authenticated header has debounced catalog search, track lists support duration and preview filters, and sort controls are wired on tracks, artists, and albums. Genre/year filtering is deferred to later iTunes-derived data work and is not part of the completed M4 scope.
-- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → **M5 Personal stats and analytics views (next)** → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last shipped (on `feat/personal-stats-analytics`, pending PR):** M5 Personal stats and analytics views 8/8. The six advanced SQL queries are wired into UI: top artists and top tracks (Recharts vertical bars + detail lists), discover (track grid), listening heatmap (7x24 CSS grid with accent-token intensity), trending artists (Recharts + growth deltas), similar playlists (on the new `/catalog/playlists/[id]` detail page), and hidden gems (track grid). MPD playlist browsing endpoints and pages were added as a prereq for the similar-playlists wiring.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ (pending merge) → **M6 Playlists (next)** → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M5 Personal stats and analytics views. Wait for explicit green light before starting.
+- **Current milestone:** M5 Personal stats and analytics views, implementation complete, awaiting review/merge into `dev`.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none for the current milestone.
 - **Open threads:**
-  - M4 shipped with three implementation commits: `aykhan` for catalog search indexes, `eljan` for global search, and `rahila` for catalog filters/sort controls.
-  - Global search ships as `GET /api/v1/search` with grouped track, artist, and album results. The authenticated app header has a debounced catalog search box.
-  - Track list filters support duration range and preview availability. Genre and year controls are intentionally disabled because those fields do not exist in the approved schema; later iTunes-derived genre/year work must be added as a separate approved task.
-  - Sort controls are wired on tracks, artists, and albums.
-  - Local verification passed for format check, lint, typecheck, tests, production build, Prisma schema validation, and built web routes `/healthz`, `/login`, and `/catalog/tracks` unauthenticated redirect.
-  - Full authenticated search/filter UI smoke was not completed locally because the API cannot start under local Node v26 due workspace package source-import resolution. The repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local end-to-end smoke.
+  - M5 shipped with eight implementation commits authored across `aykhan` (Recharts scaffolding, top artists, top tracks, discover, heatmap) and `eljan` (trending artists, MPD playlist browsing, similar playlists, hidden gems).
+  - New shared DTO module `packages/shared/src/dto/playlists.ts` covers the MPD playlist surface. New API module `apps/api/src/modules/mpd-playlists/` owns `GET /playlists`, `GET /playlists/:id`, and `GET /playlists/:id/tracks`. The existing `PlaylistsSimilarityController` still owns `GET /playlists/:id/similar` under the analytics module.
+  - Web side adds `/me/stats/{top-artists,top-tracks,heatmap,trending}`, `/discover`, `/explore/hidden-gems`, and `/catalog/playlists` (list + detail). The detail page hangs the Jaccard similar-playlists section off the existing analytics endpoint. Sidebar got Discover and Hidden gems entries; catalog sub-nav got a Playlists tab.
+  - Recharts is the chart library; the heatmap is a plain CSS grid (Recharts has no first-class categorical heatmap). Chart primitives (`ChartContainer`, theme constants) live in `apps/web/src/components/stats/ChartContainer.tsx`.
+  - Top-tracks endpoint (`/me/stats/top-tracks`) was added in this milestone since F9 only shipped the five other queries. It is a `DENSE_RANK()` variant of the top-artists query.
+  - Local verification passed for format check, lint, typecheck across all workspaces, all 114 API tests, production build (25 web routes generated), and Prisma schema validation (with dummy `DATABASE_URL`/`DIRECT_URL` because the local shell has none).
+  - Full authenticated end-to-end UI smoke against a running API was not completed locally because Node v26 is installed and the API source-import resolution still fails there. The repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke.
 - **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-- **Next concrete action:** Start M5 only after explicit green light. Branch from `dev` with `feat/personal-stats-analytics`, then implement the M5 rows in checklist order with the listed commit authors.
+- **Next concrete action:** push `feat/personal-stats-analytics`, open the M5 PR into `dev`, rebase-merge once green. Then wait for explicit green light to start M6 Playlist creation and management.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change and account deletion already audit-log via `AuthService`.
   - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.
