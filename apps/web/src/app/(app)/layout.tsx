@@ -1,0 +1,42 @@
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import type { ReactNode } from 'react';
+import { Header } from '@/components/ui/Header';
+import { Sidebar, type SidebarItem } from '@/components/ui/Sidebar';
+import { getServerSession } from '@/lib/auth/session';
+
+const SIDEBAR_ITEMS: SidebarItem[] = [
+  { href: '/me', label: 'Overview' },
+  { href: '/me/history', label: 'History' },
+  { href: '/me/stats', label: 'Stats' },
+  { href: '/me/playlists', label: 'Playlists' },
+  { href: '/catalog', label: 'Catalog' },
+];
+
+export default async function AppLayout({ children }: { children: ReactNode }) {
+  const currentUser = await getServerSession();
+
+  if (currentUser === null) {
+    redirect('/login');
+  }
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <Header
+        nav={
+          <Link
+            href="/me"
+            className="text-foreground hover:text-accent rounded-(--radius-sm) px-3 py-2 text-sm"
+          >
+            Dashboard
+          </Link>
+        }
+        actions={<span className="text-muted-foreground text-sm">{currentUser.displayName}</span>}
+      />
+      <div className="flex flex-1">
+        <Sidebar items={SIDEBAR_ITEMS} />
+        <main className="flex-1 p-6 sm:p-10">{children}</main>
+      </div>
+    </div>
+  );
+}
