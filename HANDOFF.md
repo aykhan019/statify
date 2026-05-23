@@ -60,7 +60,8 @@
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.
   2. Neon free tier is 0.5 GB; re-verify headroom after the first MPD ingest dry run.
   3. Render free service spins down after 15 min idle; set up cron-job.org warm ping after the first deploy.
-  4. F8 (PR #9) was squash-merged by mistake instead of rebase-merged; all subsequent PRs (#10, #11, #12, #13, #14) used `--rebase --delete-branch` to preserve per-type commit history. Continue using `--rebase` for future merges to `dev`.
+  4. F8 (PR #9) was squash-merged by mistake instead of rebase-merged; every subsequent milestone PR (most recently #22 for M5 and #23 for M6) has used `gh pr merge <n> --rebase --delete-branch` to preserve per-task commit history. Continue using `--rebase` for future merges to `dev`.
+  5. The `dev` branch has a "Required status check: ci" rule. Direct pushes of docs-only commits to `dev` (e.g. `docs: close M<n> session`) trigger a `Bypassed rule violations for refs/heads/dev` warning in the push output. This is expected for the session-close cadence and matches what M5 (`bb68e04`) and M6 (`04b3883`) did; feature work always goes through a PR where CI runs and must pass.
 
 ## 3. Structural Changes Log
 
