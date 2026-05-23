@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F4 (Auth foundation). API auth endpoints support registration, login, and refresh rotation; passwords are hashed with Argon2id; access/refresh JWTs are issued in cookies; refresh tokens are persisted and rotated; CSRF, JwtAuthGuard, and RolesGuard foundations are in place with focused tests.
-- **Working on now:** none. F4 PR review and merge into `dev` remain with Aykhan after CI is green.
+- **Last finished:** Phase 4 F5 (User session on the frontend). The web app now has server-side session lookup, a typed API client, middleware route guarding for auth-required routes, and a `useCurrentUser` provider/hook wired through the root layout.
+- **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F5. Build the frontend user session foundation: server-side session lookup, middleware route guard, and `useCurrentUser` hook.
+- **Next concrete action:** Phase 4 F6. Build the catalog read foundation: tracks, artists, and albums repositories plus list/detail endpoints with shared DTOs.
 
 ---
 
@@ -58,7 +58,7 @@
 - [x] **F2: Database layer foundation** (PrismaService, base repository pattern, transaction helper) - M - eljan
 - [x] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
 - [x] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
-- [ ] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
+- [x] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
 - [ ] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
 - [ ] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
 - [ ] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
