@@ -29,9 +29,9 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F7 (iTunes adapter foundation) on `feat/itunes-adapter-foundation`. The API now has the iTunes preview provider interface, client, adapter, persistent tracks-table cache, in-process rate limiter, graceful unavailable fallback, and mock-server client coverage.
+- **Last completed:** Phase 4 F8 (listening history foundation) on `feat/listening-history-foundation`. The API now has `POST /api/v1/me/history` guarded by JWT + CSRF, with `Idempotency-Key` header support backed by a `(user_id, idempotency_key)` unique constraint on `listening_history`. New shared DTOs (`RecordListenRequest`, `RecordListenResponse`, `IdempotencyKeySchema`) and the `HEADERS.IDEMPOTENCY` constant landed alongside `ListeningHistoryRepository`, `ListeningHistoryService`, `HistoryController`, mapper, and unit coverage (repository idempotency, race fallback, service mapping, controller header parsing).
 - **Currently in progress:** none.
-- **Next concrete action:** Start `feat/listening-history-foundation` from `dev` for Phase 4 F8, using commit author `aykhan`. Implement the listening history write endpoint, idempotency behavior, repository, required DTOs/tests, and any required database index/schema work. Read ADR-001 Sections 3.2, 3.5, 3.7, 3.10, and 3.13 before editing.
+- **Next concrete action:** Start `feat/analytics-foundation` from `dev` for Phase 4 F9, using commit author `aykhan`. Implement the six advanced SQL queries (`$queryRaw`) inside `analytics.service.ts` with typed return types and seed-data unit tests, wired to the routes defined in ADR-001 Section 3.6. Read ADR-001 Sections 3.5, 3.6, 3.10, and 3.14 before editing.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
@@ -47,6 +47,8 @@
 | 2026-05-22 | Initial repo layout defined                      | ADR-001 | Aykhan |
 | 2026-05-22 | Generated web type shim ignored for git and lint | ADR-001 | Eljan  |
 | 2026-05-23 | API iTunes integration module path added         | ADR-001 | Elshad |
+| 2026-05-23 | API listening history module path added          | ADR-001 | Aykhan |
+| 2026-05-23 | `listening_history.idempotency_key` column added | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
