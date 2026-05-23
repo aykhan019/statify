@@ -22,6 +22,17 @@ describe('MeStatsController', () => {
     expect(service.topArtists).toHaveBeenCalledWith(7, { limit: 10 });
   });
 
+  it('forwards top-tracks requests with the authenticated user id', async () => {
+    const response = { entries: [] };
+    const service = {
+      topTracks: vi.fn().mockResolvedValue(response),
+    } as unknown as AnalyticsService;
+    const controller = new MeStatsController(service);
+
+    await expect(controller.topTracks(USER, { limit: 10 })).resolves.toBe(response);
+    expect(service.topTracks).toHaveBeenCalledWith(7, { limit: 10 });
+  });
+
   it('forwards heatmap requests with the authenticated user id', async () => {
     const response = { cells: [] };
     const service = {

@@ -10,6 +10,8 @@ import type {
   SimilarPlaylistsResponse,
   TopArtistsQuery,
   TopArtistsResponse,
+  TopTracksQuery,
+  TopTracksResponse,
   TrendingQuery,
   TrendingResponse,
 } from '@statify/shared';
@@ -20,6 +22,7 @@ import {
   toHiddenGemEntry,
   toSimilarPlaylistEntry,
   toTopArtistEntry,
+  toTopTrackEntry,
   toTrendingArtistEntry,
 } from './analytics.mapper';
 import type {
@@ -28,6 +31,7 @@ import type {
   HiddenGemRow,
   SimilarPlaylistRow,
   TopArtistRow,
+  TopTrackRow,
   TrendingArtistRow,
 } from './analytics.types';
 
@@ -57,6 +61,29 @@ export class AnalyticsService {
     `);
 
     return { entries: rows.map(toTopArtistEntry) };
+  }
+
+  async topTracks(userId: number, query: TopTracksQuery): Promise<TopTracksResponse> {
+    const rows = await this.prisma.$queryRaw<TopTrackRow[]>(Prisma.sql`
+      SELECT
+        DENSE_RANK() OVER (ORDER BY COUNT(*) DESC, SUM(lh.duration_played_ms) DESC) AS rank,
+        t.id AS track_id,
+        t.name AS track_name,
+        pa.name AS primary_artist_name,
+        al.name AS album_name,
+        COUNT(*)::int AS listen_count,
+        ROUND(SUM(lh.duration_played_ms)::numeric / 60000.0, 2) AS total_minutes
+      FROM listening_history lh
+      JOIN tracks t ON t.id = lh.track_id
+      JOIN albums al ON al.id = t.album_id
+      JOIN artists pa ON pa.id = al.primary_artist_id
+      WHERE lh.user_id = ${userId}
+      GROUP BY t.id, t.name, pa.name, al.name
+      ORDER BY rank ASC, track_name ASC
+      LIMIT ${query.limit}
+    `);
+
+    return { entries: rows.map(toTopTrackEntry) };
   }
 
   async discover(userId: number, query: DiscoverQuery): Promise<DiscoverResponse> {

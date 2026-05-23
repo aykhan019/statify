@@ -7,6 +7,7 @@ import type {
   HiddenGemRow,
   SimilarPlaylistRow,
   TopArtistRow,
+  TopTrackRow,
   TrendingArtistRow,
 } from './analytics.types';
 
@@ -57,6 +58,41 @@ describe('AnalyticsService', () => {
       ]);
       expect(calls[0]?.sql).toContain('DENSE_RANK()');
       expect(calls[0]?.sql).toContain('HAVING COUNT(*) > 1');
+      expect(calls[0]?.values).toEqual([7, 10]);
+    });
+  });
+
+  describe('topTracks', () => {
+    it('parameterizes user id and limit, projects rank, listens, minutes, artist, album', async () => {
+      const rows: TopTrackRow[] = [
+        {
+          rank: 1n,
+          track_id: 100,
+          track_name: 'Track A',
+          primary_artist_name: 'Artist A',
+          album_name: 'Album A',
+          listen_count: 9n,
+          total_minutes: '22.50',
+        },
+      ];
+      const { prisma, calls } = createPrisma(rows);
+      const service = new AnalyticsService(prisma);
+
+      const result = await service.topTracks(7, { limit: 10 });
+
+      expect(result.entries).toEqual([
+        {
+          rank: 1,
+          trackId: 100,
+          trackName: 'Track A',
+          primaryArtistName: 'Artist A',
+          albumName: 'Album A',
+          listenCount: 9,
+          totalMinutes: 22.5,
+        },
+      ]);
+      expect(calls[0]?.sql).toContain('DENSE_RANK()');
+      expect(calls[0]?.sql).toContain('FROM listening_history lh');
       expect(calls[0]?.values).toEqual([7, 10]);
     });
   });

@@ -6,6 +6,16 @@ export interface TopArtistRow {
   total_minutes: number | string;
 }
 
+export interface TopTrackRow {
+  rank: number | bigint;
+  track_id: number;
+  track_name: string;
+  primary_artist_name: string;
+  album_name: string;
+  listen_count: number | bigint;
+  total_minutes: number | string;
+}
+
 export interface DiscoverRow {
   track_id: number;
   track_name: string;
