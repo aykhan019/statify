@@ -30,19 +30,20 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last completed:** M1 Auth UI on `feat/auth-ui` (awaiting PR). Backend adds `POST /auth/logout`, `POST /auth/password`, `DELETE /auth/account` (all CSRF-guarded, audit-logged), plus a `users.deleted_at` soft-delete column and a follow-up migration `20260523150122_add_user_soft_delete`. Frontend adds the `(auth)` route group (`/signup`, `/login`), a minimal `/me` overview page, `/me/account` (password change + delete), and a logout button in the app header. All forms use React Hook Form + Zod against shared schemas.
-- **Phase 5 roadmap:** M1 Auth UI (in flight) → M2 Catalog browsing → M3 Audio player + listening history → M4 pg_trgm indexes + search/filter → M5 Analytics views → M6 Playlists → M7 Admin UI → M8 Rubric docs.
+- **Last completed:** M1 Authentication UI (PR #17 merged 2026-05-23). Backend added `POST /auth/logout`, `POST /auth/password`, `DELETE /auth/account` (CSRF-guarded, audit-logged), plus a `users.deleted_at` soft-delete column and migration `20260523150122_add_user_soft_delete`. Frontend added the `(auth)` route group (`/signup`, `/login`), a minimal `/me` overview, `/me/account` (password change + delete), and a logout button in the app header. Forms use React Hook Form + Zod against shared schemas.
+- **Phase 5 roadmap:** M1 ✓ → **M2 Catalog browsing (current)** → M3 Audio player + listening history → M4 Indexes + search/filter → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Current milestone:** M2 Catalog browsing (commit author `rahila`, branch `feat/catalog-browsing`).
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
 - **Blockers (gate further work):**
-  1. **`dev` is N commits ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-- **Next concrete action:** Open PR for `feat/auth-ui` into `dev`, merge with `gh pr merge <n> --rebase --delete-branch`. Then begin M2 Catalog browsing on branch `feat/catalog-browsing` (commit author `rahila`).
+  1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
+- **Next concrete action:** Begin M2 Catalog browsing on branch `feat/catalog-browsing` (commit author `rahila`). Per `CHECKLIST.md`, M2 covers tracks list, track detail, artists list+detail, albums list+detail, and the genres surface (blocked on genre derivation).
 - **Follow-ups:**
-  - Wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) as those Phase 5 endpoints land.
-  - Phase 5 analytics views (top artists, discover, heatmap, etc.) and catalog browsing are the natural next targets after the auth forms.
-  - Advanced indexes (GIN trigram on `tracks.name`, `artists.name`, `albums.name`; partial index on `tracks` `WHERE preview_url IS NOT NULL`) are still pending. The `schema.prisma` header note flags these for a follow-up raw SQL migration. They are not blocking Phase 5 UI work but should land before the search/filter feature row (`Global search bar with debounce`) since that depends on `pg_trgm`.
+  - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change and account deletion already audit-log via `AuthService`.
+  - Advanced indexes (GIN trigram on `tracks.name`, `artists.name`, `albums.name`; partial index on `tracks` `WHERE preview_url IS NOT NULL`) are still pending. The `schema.prisma` header note flags these for a follow-up raw SQL migration. They are not blocking M2 UI work but must land inside M4 before the Global search bar row can complete.
+  - Genres list/detail (M2 row) is blocked on genre derivation from iTunes `primaryGenreName`. That derivation has no current task row; if M2 needs to fully tick, add a Phase 5 row for it first.
 - **Dry-run procedure (F11), once migrations exist:** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.
