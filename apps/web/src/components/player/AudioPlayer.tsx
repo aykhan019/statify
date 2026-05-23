@@ -9,8 +9,6 @@ interface AudioPlayerProps {
   className?: string;
 }
 
-const TICK_INTERVAL_MS = 250;
-
 export function AudioPlayer({ className }: AudioPlayerProps) {
   const track = usePlayerStore((state) => state.track);
   const status = usePlayerStore((state) => state.status);
@@ -20,31 +18,42 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
   const toggle = usePlayerStore((state) => state.toggle);
   const seek = usePlayerStore((state) => state.seek);
   const tick = usePlayerStore((state) => state.tick);
+  const pause = usePlayerStore((state) => state.pause);
+  const play = usePlayerStore((state) => state.play);
   const setVolume = usePlayerStore((state) => state.setVolume);
   const setMuted = usePlayerStore((state) => state.setMuted);
 
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (status !== 'playing') {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
+    if (audioRef.current === null) {
       return;
     }
+    audioRef.current.volume = isMuted ? 0 : volume;
+  }, [volume, isMuted]);
 
-    intervalRef.current = setInterval(() => {
-      tick(usePlayerStore.getState().positionMs + TICK_INTERVAL_MS);
-    }, TICK_INTERVAL_MS);
+  useEffect(() => {
+    const node = audioRef.current;
+    if (node === null || track === null || track.previewUrl === null) {
+      return;
+    }
+    if (status === 'playing') {
+      void node.play().catch(() => pause());
+    } else {
+      node.pause();
+    }
+  }, [status, track, pause]);
 
-    return () => {
-      if (intervalRef.current !== null) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    };
-  }, [status, tick]);
+  useEffect(() => {
+    const node = audioRef.current;
+    if (node === null) {
+      return;
+    }
+    const target = positionMs / 1000;
+    if (Math.abs(node.currentTime - target) > 0.5) {
+      node.currentTime = target;
+    }
+  }, [positionMs]);
 
   if (track === null) {
     return null;
@@ -61,6 +70,29 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
       role="region"
       aria-label="Audio preview player"
     >
+      {track.previewUrl !== null && (
+        <audio
+          ref={audioRef}
+          src={track.previewUrl}
+          preload="metadata"
+          onLoadedMetadata={() => {
+            if (status === 'loading') {
+              play();
+            }
+          }}
+          onEnded={() => {
+            pause();
+            seek(track.durationMs);
+          }}
+          onTimeUpdate={() => {
+            if (audioRef.current === null) {
+              return;
+            }
+            tick(Math.round(audioRef.current.currentTime * 1000));
+          }}
+        />
+      )}
+
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{track.trackName}</p>
         <p className="text-muted-foreground truncate text-xs">{track.artistName}</p>
@@ -82,7 +114,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
           type="range"
           min={0}
           max={track.durationMs}
-          step={TICK_INTERVAL_MS}
+          step={100}
           value={positionMs}
           disabled={isUnavailable}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
