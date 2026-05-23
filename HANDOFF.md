@@ -30,18 +30,18 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last completed:** seed script on `chore/seed-script` (PR #14, merged 2026-05-23). Defaults: 5 users (shared password `statify123`), 80 artists, 200 albums, 600 tracks, 60 MPD playlists, ~250 `listening_history` rows over 21 days with hour-of-day weighting for heatmap variety.
+- **Last completed:** initial Prisma migration on `chore/initial-prisma-migration` (commit `50d4c5e`, awaiting PR + merge). The migration directory is `packages/db/prisma/migrations/20260523143947_initial/`. Generated against local docker Postgres (`docker compose up -d`) with `DATABASE_URL` sourced from `.env.local`. Verified by running `pnpm --filter @statify/db db:seed` end-to-end: 5 users / 80 artists / 200 albums / 600 tracks / 60 MPD playlists / 1243 playlist tracks / 264 listening history rows.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
 - **Blockers (gate further work):**
-  1. **No Prisma migrations exist yet.** `packages/db/prisma/migrations/` is absent. Until an initial migration is generated and committed, neither `pnpm --filter @statify/db db:seed` nor `pnpm --filter @statify/db db:ingest` can run against a real DB, and `prisma migrate deploy` cannot bring up a fresh production DB. This is a hard prereq for promoting `dev` to `main` and for any Phase 5 end-to-end testing. Added to `CHECKLIST.md` Deployment section.
-  2. **`dev` is 52 commits ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until (1) initial migration lands and (2) Phase 6 deployment items are unblocked.
-- **Next concrete action:** Generate the initial Prisma migration. Bring up local Postgres (`docker compose up -d`), set `DATABASE_URL` in `.env.local` to point at it, run `pnpm --filter @statify/db prisma migrate dev --name initial`, commit the generated `packages/db/prisma/migrations/` files. Then verify the seed end-to-end with `pnpm --filter @statify/db db:seed`. Branch as `chore/initial-prisma-migration`, commit author `aykhan`. CHECKLIST row is in the Deployment section.
-- **Follow-ups (after the migration lands):**
-  - Pick a Phase 5 feature row. Good first targets: Signup/Login forms (commit author `aykhan`, depends on F4 which is done), or any catalog browsing page (commit author `rahila`, depends on F6/F10 which are done).
+  1. **`dev` is 53 commits ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
+- **Next concrete action:** Open the PR for `chore/initial-prisma-migration` into `dev` and merge with `gh pr merge <n> --rebase --delete-branch`. Then pick a Phase 5 feature row: good first targets are Signup/Login forms (commit author `aykhan`, depends on F4 which is done) or any catalog browsing page (commit author `rahila`, depends on F6/F10 which are done).
+- **Follow-ups:**
   - Wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) as those Phase 5 endpoints land.
+  - Phase 5 analytics views (top artists, discover, heatmap, etc.) and catalog browsing are the natural next targets after the auth forms.
+  - Advanced indexes (GIN trigram on `tracks.name`, `artists.name`, `albums.name`; partial index on `tracks` `WHERE preview_url IS NOT NULL`) are still pending. The `schema.prisma` header note flags these for a follow-up raw SQL migration. They are not blocking Phase 5 UI work but should land before the search/filter feature row (`Global search bar with debounce`) since that depends on `pg_trgm`.
 - **Dry-run procedure (F11), once migrations exist:** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.

@@ -4,13 +4,13 @@
 
 ## Current State (updated every session)
 
-- **Phase 4 status:** complete. Seed script also merged. `dev` is 52 commits ahead of `main`; hold the promotion until the initial Prisma migration lands (see blocker).
-- **Last finished:** seed script (PR #14, merged 2026-05-23).
+- **Phase 4 status:** complete. Seed script merged. Initial Prisma migration committed on `chore/initial-prisma-migration` (commit `50d4c5e`), awaiting PR + merge to `dev`. After that lands, `dev` will be 53 commits ahead of `main`; hold the promotion until Phase 6 deployment items are unblocked.
+- **Last finished:** initial Prisma migration (`packages/db/prisma/migrations/20260523143947_initial/`); verified by running `db:seed` end-to-end against local docker Postgres.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Blocker:** no Prisma migrations exist yet. `packages/db/prisma/migrations/` is absent, so neither `db:seed` nor `db:ingest` can run against a real DB, and Render cannot run `prisma migrate deploy` for the first production deploy.
-- **Next concrete action:** generate the initial Prisma migration (see new Deployment row). Branch `chore/initial-prisma-migration`, commit author `aykhan`.
+- **Blocker:** none.
+- **Next concrete action:** open PR for `chore/initial-prisma-migration` into `dev` and merge with `--rebase`. Then start a Phase 5 row: Signup/Login forms (`aykhan`) or Tracks list page (`rahila`).
 
 ---
 
@@ -150,7 +150,7 @@
 
 ## Deployment and submission
 
-- [ ] Generate initial Prisma migration (`prisma migrate dev --name initial`); commit `packages/db/prisma/migrations/` - S - aykhan
+- [x] Generate initial Prisma migration (`prisma migrate dev --name initial`); commit `packages/db/prisma/migrations/` - S - aykhan
 - [ ] Production env vars set in Vercel and Render - S - aykhan
 - [ ] Smoke test against production URLs - S - aykhan
 - [ ] Demo dataset confirmed on prod DB (10k-playlist subset ingested) - M - eljan
