@@ -24,8 +24,24 @@ export const AuthResponseSchema = z.object({
   user: AuthUserSchema,
 });
 
+export const PasswordChangeRequestSchema = z
+  .object({
+    currentPassword: z.string().min(1).max(200),
+    newPassword: z.string().min(8).max(200),
+  })
+  .refine((value) => value.currentPassword !== value.newPassword, {
+    message: 'New password must differ from current password',
+    path: ['newPassword'],
+  });
+
+export const AccountDeleteRequestSchema = z.object({
+  currentPassword: z.string().min(1).max(200),
+});
+
 export type UserRole = z.infer<typeof UserRoleSchema>;
 export type AuthUser = z.infer<typeof AuthUserSchema>;
 export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
+export type PasswordChangeRequest = z.infer<typeof PasswordChangeRequestSchema>;
+export type AccountDeleteRequest = z.infer<typeof AccountDeleteRequestSchema>;
