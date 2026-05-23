@@ -174,10 +174,12 @@ model ListeningHistory {
   playedAt         DateTime        @default(now()) @map("played_at")
   source           ListeningSource @default(preview)
   durationPlayedMs Int             @map("duration_played_ms")
+  idempotencyKey   String?         @map("idempotency_key")
 
   user  User  @relation(fields: [userId], references: [id])
   track Track @relation(fields: [trackId], references: [id])
 
+  @@unique([userId, idempotencyKey])
   @@index([userId, playedAt(sort: Desc)])
   @@index([trackId])
   @@map("listening_history")
