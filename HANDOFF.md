@@ -29,9 +29,9 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F9 (analytics foundation) on `feat/analytics-foundation`. The API now exposes the six advanced SQL queries through `AnalyticsService` (each method via `$queryRaw`): top artists (DENSE_RANK window), discover (NOT EXISTS over co-occurring playlist tracks), heatmap (EXTRACT DOW/HOUR), trending (recent vs prior CTEs with growth threshold), similar playlists (Jaccard CTE with set intersection), and hidden gems (LEFT JOIN with IS NULL). Routes land under `MeStatsController`, `DiscoverController`, `PlaylistsSimilarityController`, and `ExploreController` per ADR-001 Section 3.6. F8 (listening history foundation) merged in PR #9 just before this.
+- **Last completed:** Phase 4 F10 (frontend design system foundation) on `feat/frontend-design-system-foundation`. Tokens expanded in `globals.css` (background, surface, muted, border, input, ring, accent, destructive, radii, fonts, shadows; dark-mode overrides). UI primitives in `apps/web/src/components/ui/` (Button, Card, Container, Header, Input, Label, PageHeader, Sidebar, Skeleton). Route groups split into `(marketing)` and `(app)`; the authed `(app)/layout.tsx` composes Header + Sidebar and redirects unauthenticated visitors to `/login`. Audio player scaffold under `components/player/` uses a `zustand` store (`PlayerState` with idle/loading/playing/paused/unavailable, clamped position/volume, mute toggle, and a graceful "preview unavailable" state).
 - **Currently in progress:** none.
-- **Next concrete action:** Start `feat/frontend-design-system-foundation` from `dev` for Phase 4 F10, using commit author `rahila`. Implement theme tokens, base components, layout primitives, navigation shell, and the audio player component. Read ADR-001 Sections 3.8 and 3.10 before editing.
+- **Next concrete action:** Start `feat/mpd-ingestion-cli` from `dev` for Phase 4 F11, using commit author `eljan`. Implement the MPD parser, normalizer, batched upserts, checkpoint table, resume capability, and the 10k-playlist dry run. Read ADR-001 Sections 3.2, 3.3, 3.10, and 3.14 before editing.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
@@ -50,6 +50,8 @@
 | 2026-05-23 | API listening history module path added          | ADR-001 | Aykhan |
 | 2026-05-23 | `listening_history.idempotency_key` column added | ADR-001 | Aykhan |
 | 2026-05-23 | API analytics module path added                  | ADR-001 | Aykhan |
+| 2026-05-23 | Web `components/` and route-group folders added  | ADR-001 | Rahila |
+| 2026-05-23 | Web `zustand` dependency added (player store)    | ADR-001 | Rahila |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

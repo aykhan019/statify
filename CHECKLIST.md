@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F9 (analytics foundation). `AnalyticsService` exposes the six advanced SQL queries via `$queryRaw` (top artists with DENSE_RANK, discover via NOT EXISTS, heatmap via EXTRACT, trending via CTEs, similar playlists via Jaccard CTE, hidden gems via LEFT JOIN/IS NULL) and is wired into four controllers (`/me/stats/...`, `/discover`, `/playlists/:id/similar`, `/explore/hidden-gems`). F8 (listening history foundation) merged in PR #9 just before this.
+- **Last finished:** Phase 4 F10 (frontend design system foundation). Tokens, primitive components (Button, Card, Input, Label, Skeleton, Container, PageHeader, Header, Sidebar), `(marketing)` and `(app)` route groups with shell composition, and an audio-player scaffold backed by a `zustand` store with idle/loading/playing/paused/unavailable status.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F10. Start `feat/frontend-design-system-foundation` from `dev` with commit author `rahila`; deliver theme tokens, base shadcn components, layout primitives, navigation shell, and the audio player component scaffold.
+- **Next concrete action:** Phase 4 F11. Start `feat/mpd-ingestion-cli` from `dev` with commit author `eljan`; build the MPD parser, normalizer, batched upserts, checkpoint table, resume capability, and the 10k-playlist dry run.
 
 ---
 
@@ -63,7 +63,7 @@
 - [x] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
 - [x] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
 - [x] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
-- [ ] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
+- [x] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
 - [ ] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
 - [ ] **F12: Admin extensibility foundation** (audit log writer, admin module skeleton, RolesGuard usage, no UI yet) - M - aykhan
 
