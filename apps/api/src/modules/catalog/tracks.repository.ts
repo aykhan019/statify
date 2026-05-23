@@ -82,5 +82,12 @@ function buildTrackWhere(query: TracksQuery): Prisma.TrackWhereInput {
     where.previewUrl = query.hasPreview ? { not: null } : null;
   }
 
+  if (query.minDurationMs !== undefined || query.maxDurationMs !== undefined) {
+    where.durationMs = {
+      ...(query.minDurationMs !== undefined ? { gte: query.minDurationMs } : {}),
+      ...(query.maxDurationMs !== undefined ? { lte: query.maxDurationMs } : {}),
+    };
+  }
+
   return where;
 }
