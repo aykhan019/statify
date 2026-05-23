@@ -4,6 +4,7 @@ import type {
   HiddenGemsResponse,
   SimilarPlaylistsResponse,
   TopArtistsResponse,
+  TopTracksResponse,
   TrendingResponse,
 } from '@statify/shared';
 import { apiFetch, type ApiFetchOptions } from '../api-client';
@@ -30,6 +31,13 @@ export function fetchTopArtists(
     `/api/v1/me/stats/top-artists${toQueryString(query)}`,
     options,
   );
+}
+
+export function fetchTopTracks(
+  query: LimitOnly = {},
+  options: ServerFetchOptions = {},
+): Promise<TopTracksResponse> {
+  return apiFetch<TopTracksResponse>(`/api/v1/me/stats/top-tracks${toQueryString(query)}`, options);
 }
 
 export function fetchHeatmap(options: ServerFetchOptions = {}): Promise<HeatmapResponse> {

@@ -19,6 +19,24 @@ export const TopArtistsResponseSchema = z.object({
   entries: z.array(TopArtistEntrySchema),
 });
 
+export const TopTracksQuerySchema = z.object({
+  limit: OptionalLimitSchema(50, 10),
+});
+
+export const TopTrackEntrySchema = z.object({
+  rank: z.number().int(),
+  trackId: z.number().int(),
+  trackName: z.string(),
+  primaryArtistName: z.string(),
+  albumName: z.string(),
+  listenCount: z.number().int(),
+  totalMinutes: z.number(),
+});
+
+export const TopTracksResponseSchema = z.object({
+  entries: z.array(TopTrackEntrySchema),
+});
+
 export const DiscoverQuerySchema = z.object({
   limit: OptionalLimitSchema(50, 20),
 });
@@ -100,6 +118,9 @@ export const HiddenGemsResponseSchema = z.object({
 export type TopArtistsQuery = z.infer<typeof TopArtistsQuerySchema>;
 export type TopArtistEntry = z.infer<typeof TopArtistEntrySchema>;
 export type TopArtistsResponse = z.infer<typeof TopArtistsResponseSchema>;
+export type TopTracksQuery = z.infer<typeof TopTracksQuerySchema>;
+export type TopTrackEntry = z.infer<typeof TopTrackEntrySchema>;
+export type TopTracksResponse = z.infer<typeof TopTracksResponseSchema>;
 export type DiscoverQuery = z.infer<typeof DiscoverQuerySchema>;
 export type DiscoverEntry = z.infer<typeof DiscoverEntrySchema>;
 export type DiscoverResponse = z.infer<typeof DiscoverResponseSchema>;

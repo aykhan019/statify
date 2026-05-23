@@ -4,6 +4,9 @@ import {
   TopArtistsQuery,
   TopArtistsQuerySchema,
   TopArtistsResponse,
+  TopTracksQuery,
+  TopTracksQuerySchema,
+  TopTracksResponse,
   TrendingQuery,
   TrendingQuerySchema,
   TrendingResponse,
@@ -25,6 +28,14 @@ export class MeStatsController {
     @Query(new ZodValidationPipe(TopArtistsQuerySchema)) query: TopArtistsQuery,
   ): Promise<TopArtistsResponse> {
     return this.service.topArtists(user.id, query);
+  }
+
+  @Get('top-tracks')
+  topTracks(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query(new ZodValidationPipe(TopTracksQuerySchema)) query: TopTracksQuery,
+  ): Promise<TopTracksResponse> {
+    return this.service.topTracks(user.id, query);
   }
 
   @Get('heatmap')

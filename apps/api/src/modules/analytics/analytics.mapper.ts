@@ -4,6 +4,7 @@ import type {
   HiddenGemEntry,
   SimilarPlaylistEntry,
   TopArtistEntry,
+  TopTrackEntry,
   TrendingArtistEntry,
 } from '@statify/shared';
 import type {
@@ -12,6 +13,7 @@ import type {
   HiddenGemRow,
   SimilarPlaylistRow,
   TopArtistRow,
+  TopTrackRow,
   TrendingArtistRow,
 } from './analytics.types';
 
@@ -20,6 +22,18 @@ export function toTopArtistEntry(row: TopArtistRow): TopArtistEntry {
     rank: toNumber(row.rank),
     artistId: row.artist_id,
     artistName: row.artist_name,
+    listenCount: toNumber(row.listen_count),
+    totalMinutes: toFloat(row.total_minutes),
+  };
+}
+
+export function toTopTrackEntry(row: TopTrackRow): TopTrackEntry {
+  return {
+    rank: toNumber(row.rank),
+    trackId: row.track_id,
+    trackName: row.track_name,
+    primaryArtistName: row.primary_artist_name,
+    albumName: row.album_name,
     listenCount: toNumber(row.listen_count),
     totalMinutes: toFloat(row.total_minutes),
   };
