@@ -17,7 +17,8 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@prisma/client": "^5.22.0"
+    "@prisma/client": "^5.22.0",
+    "argon2": "^0.44.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
