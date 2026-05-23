@@ -29,18 +29,25 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Seed script (Phase 5 "Seed script that produces meaningful number of tuples reliably") on `chore/seed-script`. `packages/db/src/seed/` provides a deterministic Mulberry32 PRNG, sample data pools, pure generators for users/artists/albums/tracks/track_artists/MPD playlists/playlist_tracks/listening_history, an argon2 password helper, and a `runSeed` orchestrator that truncates the relevant tables then batches `createMany` inserts. `prisma/seed.ts` now calls `runSeed` and logs counts. Defaults: 5 users (shared password `statify123`), 80 artists, 200 albums, 600 tracks, 60 MPD playlists with 12-28 tracks each, ~250 listening_history rows spanning 21 days for 3 users with morning/afternoon/evening weighting for heatmap variety. Runs via `pnpm --filter @statify/db db:seed` against the DB pointed to by `DATABASE_URL`.
+- **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
+- **Last completed:** seed script on `chore/seed-script` (PR #14, merged 2026-05-23). Defaults: 5 users (shared password `statify123`), 80 artists, 200 albums, 600 tracks, 60 MPD playlists, ~250 `listening_history` rows over 21 days with hour-of-day weighting for heatmap variety.
 - **Currently in progress:** none.
-- **Next concrete action:** Pick a Phase 5 feature row from `CHECKLIST.md`. For backend-heavy work, branch from `dev` with the listed commit author. The seed unblocks any UI/analytics task that needs realistic data.
-- **Follow-ups (not yet on CHECKLIST):** generate the initial Prisma migration so `prisma migrate deploy` can bring up a fresh DB (needed before promoting `dev` to `main`). Wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) as those Phase 5 endpoints land.
-- **Dry-run procedure (F11):** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db prisma:migrate:dev`, then `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
+- **Blockers (gate further work):**
+  1. **No Prisma migrations exist yet.** `packages/db/prisma/migrations/` is absent. Until an initial migration is generated and committed, neither `pnpm --filter @statify/db db:seed` nor `pnpm --filter @statify/db db:ingest` can run against a real DB, and `prisma migrate deploy` cannot bring up a fresh production DB. This is a hard prereq for promoting `dev` to `main` and for any Phase 5 end-to-end testing. Added to `CHECKLIST.md` Deployment section.
+  2. **`dev` is 52 commits ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until (1) initial migration lands and (2) Phase 6 deployment items are unblocked.
+- **Next concrete action:** Generate the initial Prisma migration. Bring up local Postgres (`docker compose up -d`), set `DATABASE_URL` in `.env.local` to point at it, run `pnpm --filter @statify/db prisma migrate dev --name initial`, commit the generated `packages/db/prisma/migrations/` files. Then verify the seed end-to-end with `pnpm --filter @statify/db db:seed`. Branch as `chore/initial-prisma-migration`, commit author `aykhan`. CHECKLIST row is in the Deployment section.
+- **Follow-ups (after the migration lands):**
+  - Pick a Phase 5 feature row. Good first targets: Signup/Login forms (commit author `aykhan`, depends on F4 which is done), or any catalog browsing page (commit author `rahila`, depends on F6/F10 which are done).
+  - Wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) as those Phase 5 endpoints land.
+- **Dry-run procedure (F11), once migrations exist:** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.
   2. Neon free tier is 0.5 GB; re-verify headroom after the first MPD ingest dry run.
   3. Render free service spins down after 15 min idle; set up cron-job.org warm ping after the first deploy.
+  4. F8 (PR #9) was squash-merged by mistake instead of rebase-merged; all subsequent PRs (#10, #11, #12, #13, #14) used `--rebase --delete-branch` to preserve per-type commit history. Continue using `--rebase` for future merges to `dev`.
 
 ## 3. Structural Changes Log
 
