@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
+import { AuditLogRepository } from '../admin/audit-log.repository';
+import { AuditLogService } from '../admin/audit-log.service';
 import { AuthController } from './auth.controller';
 import { AuthCookieService } from './auth-cookie.service';
 import { AuthRepository } from './auth.repository';
@@ -14,6 +16,8 @@ import { PasswordService } from './password.service';
   imports: [JwtModule.register({})],
   controllers: [AuthController],
   providers: [
+    AuditLogRepository,
+    AuditLogService,
     AuthCookieService,
     AuthRepository,
     AuthService,
