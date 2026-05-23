@@ -29,9 +29,9 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F6 (Catalog read foundation) on `feat/catalog-read-foundation`. Tracks, artists, and albums now have shared DTOs, read repositories, list/detail API endpoints, offset pagination, search/filter/sort query handling, and focused repository/service tests.
+- **Last completed:** Phase 4 F7 (iTunes adapter foundation) on `feat/itunes-adapter-foundation`. The API now has the iTunes preview provider interface, client, adapter, persistent tracks-table cache, in-process rate limiter, graceful unavailable fallback, and mock-server client coverage.
 - **Currently in progress:** none.
-- **Next concrete action:** Phase 4 F7 (iTunes adapter foundation): client, adapter, persistent cache through tracks, rate limiter, fallback behavior, and mock-server integration test.
+- **Next concrete action:** Phase 4 F8 (Listening history foundation): write endpoint with idempotency, repository, schema, and indexes.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.

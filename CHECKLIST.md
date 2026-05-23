@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F6 (Catalog read foundation). Tracks, artists, and albums now have shared DTOs, read repositories, list/detail API endpoints, offset pagination, search/filter/sort query handling, and focused repository/service tests.
+- **Last finished:** Phase 4 F7 (iTunes adapter foundation). The API now has the iTunes preview provider interface, client, adapter, persistent tracks-table cache, in-process rate limiter, graceful unavailable fallback, and mock-server client coverage.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F7. Build the iTunes adapter foundation: client, adapter, persistent cache through tracks, rate limiter, fallback behavior, and mock-server integration test.
+- **Next concrete action:** Phase 4 F8. Build the listening history foundation: write endpoint with idempotency, repository, schema, and indexes.
 
 ---
 
@@ -60,7 +60,7 @@
 - [x] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
 - [x] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
 - [x] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
-- [ ] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
+- [x] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
 - [ ] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
 - [ ] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
 - [ ] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
