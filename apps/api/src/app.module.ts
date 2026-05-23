@@ -10,6 +10,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { HealthModule } from './modules/health/health.module';
 import { HistoryModule } from './modules/history/history.module';
+import { MpdPlaylistsModule } from './modules/mpd-playlists/mpd-playlists.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { HistoryModule } from './modules/history/history.module';
     CatalogModule,
     HealthModule,
     HistoryModule,
+    MpdPlaylistsModule,
     AnalyticsModule,
     AdminModule,
   ],

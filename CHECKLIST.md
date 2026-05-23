@@ -100,12 +100,13 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Filter UI: duration range and preview availability - M - rahila (genre/year waits for later iTunes-derived data)
   - [x] Sort controls on every list - S - rahila
 
-- [ ] **M5: Personal stats and analytics views** - 0/7
+- [ ] **M5: Personal stats and analytics views** - 0/8
   - [ ] Top artists page (advanced query #1 wired into UI with Recharts) - L - aykhan
   - [ ] Top tracks page (variant of #1) - M - aykhan
   - [ ] Discover page (#2) - L - aykhan
   - [ ] Listening heatmap (#3) - M - aykhan
   - [ ] Trending artists (#4) - M - eljan
+  - [ ] MPD playlist browsing (list + detail endpoints and /catalog/playlists pages, prereq for #5) - M - eljan
   - [ ] Similar playlists (#5) - M - eljan
   - [ ] Hidden gems (#6) - M - eljan
 

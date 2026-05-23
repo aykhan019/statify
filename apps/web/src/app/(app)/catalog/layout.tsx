@@ -6,6 +6,7 @@ const TABS = [
   { href: '/catalog/tracks', label: 'Tracks' },
   { href: '/catalog/artists', label: 'Artists' },
   { href: '/catalog/albums', label: 'Albums' },
+  { href: '/catalog/playlists', label: 'Playlists' },
   { href: '/catalog/genres', label: 'Genres' },
 ] as const;
 
