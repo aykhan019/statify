@@ -1,9 +1,7 @@
 // Statify schema. See docs/adr/0001-tech-stack-and-foundation.md Section 3.2.
 //
-// Advanced indexes (GIN trigram on artists/albums/tracks names, partial index
-// on tracks WHERE preview_url IS NOT NULL) are added via a follow-up raw SQL
-// migration in Phase 4, because pg_trgm requires CREATE EXTENSION which Prisma
-// manages awkwardly.
+// Advanced pg_trgm and partial indexes live in raw SQL migrations because
+// Prisma schema syntax does not cover this Postgres-specific index shape.
 
 generator client {
   provider = "prisma-client-js"
