@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M5 Personal stats and analytics views. Wait for explicit green light before starting.
-- **Last shipped:** M4 Indexes + search/filter 3/3. Catalog search indexes, grouped global search, track duration/preview filters, and sort controls shipped; genre/year is deferred to later iTunes-derived data work.
+- **Current milestone:** M5 implementation complete on `feat/personal-stats-analytics`. Awaiting PR review/merge to `dev`.
+- **Last shipped:** M5 Personal stats and analytics views 8/8. All six advanced SQL queries are wired into UI: top artists/tracks (Recharts vertical bars), discover (track grid), listening heatmap (7x24 CSS grid), trending artists (Recharts), similar playlists (on /catalog/playlists/[id]), hidden gems. MPD playlist browsing was added as a prereq under M5.6.
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
 - **Blocker:** none for milestone work.
-- **Next concrete action:** wait for green light to start M5.
+- **Next concrete action:** open the M5 PR into `dev`, rebase-merge once green, then wait for green light to start M6.
 
 ---
 
@@ -100,15 +100,15 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Filter UI: duration range and preview availability - M - rahila (genre/year waits for later iTunes-derived data)
   - [x] Sort controls on every list - S - rahila
 
-- [ ] **M5: Personal stats and analytics views** - 0/8
-  - [ ] Top artists page (advanced query #1 wired into UI with Recharts) - L - aykhan
-  - [ ] Top tracks page (variant of #1) - M - aykhan
-  - [ ] Discover page (#2) - L - aykhan
-  - [ ] Listening heatmap (#3) - M - aykhan
-  - [ ] Trending artists (#4) - M - eljan
-  - [ ] MPD playlist browsing (list + detail endpoints and /catalog/playlists pages, prereq for #5) - M - eljan
-  - [ ] Similar playlists (#5) - M - eljan
-  - [ ] Hidden gems (#6) - M - eljan
+- [x] **M5: Personal stats and analytics views** - 8/8
+  - [x] Top artists page (advanced query #1 wired into UI with Recharts) - L - aykhan
+  - [x] Top tracks page (variant of #1) - M - aykhan
+  - [x] Discover page (#2) - L - aykhan
+  - [x] Listening heatmap (#3) - M - aykhan
+  - [x] Trending artists (#4) - M - eljan
+  - [x] MPD playlist browsing (list + detail endpoints and /catalog/playlists pages, prereq for #5) - M - eljan
+  - [x] Similar playlists (#5) - M - eljan
+  - [x] Hidden gems (#6) - M - eljan
 
 - [ ] **M6: Playlist creation and management** - 0/4
   - [ ] Create user playlist - M - elshad
