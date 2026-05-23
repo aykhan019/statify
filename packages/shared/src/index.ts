@@ -4,5 +4,6 @@ export * from './dto/auth';
 export * from './dto/catalog';
 export * from './dto/history';
 export * from './dto/analytics';
+export * from './dto/playlists';
 export * from './dto/admin';
 export * from './constants';

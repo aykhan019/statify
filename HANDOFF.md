@@ -81,6 +81,8 @@
 | 2026-05-23 | Web `(auth)` route group + auth forms added             | ADR-001 | Aykhan |
 | 2026-05-23 | Web `catalog/` components + `(app)/catalog` route group | ADR-001 | Rahila |
 | 2026-05-23 | Catalog pg_trgm and partial preview indexes added       | ADR-001 | Aykhan |
+| 2026-05-23 | Web `recharts` dependency added (analytics charts)      | ADR-001 | Aykhan |
+| 2026-05-23 | API `mpd-playlists` module + `/playlists` browsing      | ADR-001 | Eljan  |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
