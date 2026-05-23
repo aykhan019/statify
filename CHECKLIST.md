@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F8 (listening history foundation). The API now has the `POST /api/v1/me/history` write endpoint with `Idempotency-Key` header support, `ListeningHistoryRepository`, JWT + CSRF guards, shared DTOs, and unit coverage. The `ListeningHistory` model gained an `idempotencyKey` column and a `(userId, idempotencyKey)` unique constraint.
+- **Last finished:** Phase 4 F9 (analytics foundation). `AnalyticsService` exposes the six advanced SQL queries via `$queryRaw` (top artists with DENSE_RANK, discover via NOT EXISTS, heatmap via EXTRACT, trending via CTEs, similar playlists via Jaccard CTE, hidden gems via LEFT JOIN/IS NULL) and is wired into four controllers (`/me/stats/...`, `/discover`, `/playlists/:id/similar`, `/explore/hidden-gems`). F8 (listening history foundation) merged in PR #9 just before this.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F9. Start `feat/analytics-foundation` from `dev` with commit author `aykhan`; implement the six advanced SQL queries as `$queryRaw` calls inside the analytics service with typed return types and unit tests against seed data.
+- **Next concrete action:** Phase 4 F10. Start `feat/frontend-design-system-foundation` from `dev` with commit author `rahila`; deliver theme tokens, base shadcn components, layout primitives, navigation shell, and the audio player component scaffold.
 
 ---
 
@@ -62,7 +62,7 @@
 - [x] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
 - [x] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
 - [x] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
-- [ ] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
+- [x] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
 - [ ] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
 - [ ] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
 - [ ] **F12: Admin extensibility foundation** (audit log writer, admin module skeleton, RolesGuard usage, no UI yet) - M - aykhan
