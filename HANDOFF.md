@@ -32,6 +32,7 @@
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
 - **Last completed:** M1 Authentication UI (PR #17 merged 2026-05-23). Backend added `POST /auth/logout`, `POST /auth/password`, `DELETE /auth/account` (CSRF-guarded, audit-logged), plus a `users.deleted_at` soft-delete column and migration `20260523150122_add_user_soft_delete`. Frontend added the `(auth)` route group (`/signup`, `/login`), a minimal `/me` overview, `/me/account` (password change + delete), and a logout button in the app header. Forms use React Hook Form + Zod against shared schemas.
 - **Phase 5 roadmap:** M1 ✓ → **M2 Catalog browsing (current)** → M3 Audio player + listening history → M4 Indexes + search/filter → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
 - **Current milestone:** M2 Catalog browsing (commit author `rahila`, branch `feat/catalog-browsing`).
 - **Currently in progress:** none.
 - **Open files/components:** none.
