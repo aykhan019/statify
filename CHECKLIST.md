@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F7 (iTunes adapter foundation). The API now has the iTunes preview provider interface, client, adapter, persistent tracks-table cache, in-process rate limiter, graceful unavailable fallback, and mock-server client coverage.
+- **Last finished:** Phase 4 F8 (listening history foundation). The API now has the `POST /api/v1/me/history` write endpoint with `Idempotency-Key` header support, `ListeningHistoryRepository`, JWT + CSRF guards, shared DTOs, and unit coverage. The `ListeningHistory` model gained an `idempotencyKey` column and a `(userId, idempotencyKey)` unique constraint.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F8. Start `feat/listening-history-foundation` from `dev` with commit author `aykhan`; build the listening history write endpoint with idempotency, repository, required DTOs/tests, and any required schema/index work.
+- **Next concrete action:** Phase 4 F9. Start `feat/analytics-foundation` from `dev` with commit author `aykhan`; implement the six advanced SQL queries as `$queryRaw` calls inside the analytics service with typed return types and unit tests against seed data.
 
 ---
 
@@ -61,7 +61,7 @@
 - [x] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
 - [x] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
 - [x] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
-- [ ] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
+- [x] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
 - [ ] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
 - [ ] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
 - [ ] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
