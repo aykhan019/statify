@@ -29,9 +29,10 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F10 (frontend design system foundation) on `feat/frontend-design-system-foundation`. Tokens expanded in `globals.css` (background, surface, muted, border, input, ring, accent, destructive, radii, fonts, shadows; dark-mode overrides). UI primitives in `apps/web/src/components/ui/` (Button, Card, Container, Header, Input, Label, PageHeader, Sidebar, Skeleton). Route groups split into `(marketing)` and `(app)`; the authed `(app)/layout.tsx` composes Header + Sidebar and redirects unauthenticated visitors to `/login`. Audio player scaffold under `components/player/` uses a `zustand` store (`PlayerState` with idle/loading/playing/paused/unavailable, clamped position/volume, mute toggle, and a graceful "preview unavailable" state).
+- **Last completed:** Phase 4 F11 (MPD ingestion CLI) on `feat/mpd-ingestion-cli`. `packages/db/src/ingest/` now ships a CLI (`pnpm --filter @statify/db db:ingest -- --data-dir <path> --slices N --resume`) that discovers `mpd.slice.<start>-<end>.json` files, parses one slice at a time, normalizes raw playlists into deduplicated artists/albums/tracks/track_artists plus playlists/playlist_tracks, runs batched `createMany` upserts with `skipDuplicates` (default 500 per batch, configurable via `--batch-size`), and tracks progress in the new `ingest_checkpoints` table for resume on failure. Vitest is now wired into `packages/db` with 31 unit tests (normalize, parse, discover, args, upsert, checkpoint, run).
 - **Currently in progress:** none.
-- **Next concrete action:** Start `feat/mpd-ingestion-cli` from `dev` for Phase 4 F11, using commit author `eljan`. Implement the MPD parser, normalizer, batched upserts, checkpoint table, resume capability, and the 10k-playlist dry run. Read ADR-001 Sections 3.2, 3.3, 3.10, and 3.14 before editing.
+- **Next concrete action:** Start `feat/admin-extensibility-foundation` from `dev` for Phase 4 F12, using commit author `aykhan`. Build the audit log writer, admin module skeleton, and `RolesGuard` usage; no UI yet. Read ADR-001 Sections 3.5, 3.12, and 3.19 before editing.
+- **Dry-run procedure (F11):** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db prisma:migrate:dev`, then `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
@@ -52,6 +53,8 @@
 | 2026-05-23 | API analytics module path added                  | ADR-001 | Aykhan |
 | 2026-05-23 | Web `components/` and route-group folders added  | ADR-001 | Rahila |
 | 2026-05-23 | Web `zustand` dependency added (player store)    | ADR-001 | Rahila |
+| 2026-05-23 | `ingest_checkpoints` table added                 | ADR-001 | Eljan  |
+| 2026-05-23 | DB package `vitest` dependency added             | ADR-001 | Eljan  |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
