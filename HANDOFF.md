@@ -30,21 +30,22 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last completed:** M1 Authentication UI (PR #17 merged 2026-05-23). Backend added `POST /auth/logout`, `POST /auth/password`, `DELETE /auth/account` (CSRF-guarded, audit-logged), plus a `users.deleted_at` soft-delete column and migration `20260523150122_add_user_soft_delete`. Frontend added the `(auth)` route group (`/signup`, `/login`), a minimal `/me` overview, `/me/account` (password change + delete), and a logout button in the app header. Forms use React Hook Form + Zod against shared schemas.
-- **Phase 5 roadmap:** M1 ✓ → **M2 Catalog browsing (current)** → M3 Audio player + listening history → M4 Indexes + search/filter → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last completed:** M2 Catalog browsing 4/5. Web routes `/catalog/tracks`, `/catalog/tracks/[id]`, `/catalog/artists`, `/catalog/artists/[id]`, `/catalog/albums`, `/catalog/albums/[id]` ship with infinite scroll backed by the existing F6 list/detail endpoints. The F10 `AudioPlayer` is now mounted globally in the `(app)` layout and the track detail page has a `PreviewPlayerLauncher` that loads the active track into the player store. `/catalog/genres` is a placeholder; the row stays unchecked pending iTunes-derived genres.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → **M3 Audio player + listening history (current)** → M4 Indexes + search/filter → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M2 Catalog browsing (commit author `rahila`, branch `feat/catalog-browsing`).
+- **Current milestone:** M3 Audio player + listening history (commits authored by `rahila` for the player rows and `aykhan` for the listening-history rows, branch `feat/playback-history`).
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
 - **Blockers (gate further work):**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-- **Next concrete action:** Begin M2 Catalog browsing on branch `feat/catalog-browsing` (commit author `rahila`). Per `CHECKLIST.md`, M2 covers tracks list, track detail, artists list+detail, albums list+detail, and the genres surface (blocked on genre derivation).
+- **Next concrete action:** Begin M3 Audio player + listening history on branch `feat/playback-history`. M3 spans `rahila`-owned audio player wiring (real `<audio>` playback, auto-fetch preview if not cached, graceful "preview unavailable") and `aykhan`-owned listening-history rows (play-event POST, recent listens page, per-track play count).
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change and account deletion already audit-log via `AuthService`.
-  - Advanced indexes (GIN trigram on `tracks.name`, `artists.name`, `albums.name`; partial index on `tracks` `WHERE preview_url IS NOT NULL`) are still pending. The `schema.prisma` header note flags these for a follow-up raw SQL migration. They are not blocking M2 UI work but must land inside M4 before the Global search bar row can complete.
+  - Advanced indexes (GIN trigram on `tracks.name`, `artists.name`, `albums.name`; partial index on `tracks` `WHERE preview_url IS NOT NULL`) are still pending. The `schema.prisma` header note flags these for a follow-up raw SQL migration. They must land inside M4 before the Global search bar row can complete.
   - Genres list/detail (M2 row) is blocked on genre derivation from iTunes `primaryGenreName`. That derivation has no current task row; if M2 needs to fully tick, add a Phase 5 row for it first.
+  - Real `<audio>` playback is still missing from the F10 `AudioPlayer` (UI-only). M3 must add an `<audio ref>` driven by player-store status so the "Play preview" button actually plays the 30 s preview.
 - **Dry-run procedure (F11), once migrations exist:** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.
@@ -54,24 +55,25 @@
 
 ## 3. Structural Changes Log
 
-| Date       | Change                                           | ADR     | By     |
-| ---------- | ------------------------------------------------ | ------- | ------ |
-| 2026-05-22 | Initial repo layout defined                      | ADR-001 | Aykhan |
-| 2026-05-22 | Generated web type shim ignored for git and lint | ADR-001 | Eljan  |
-| 2026-05-23 | API iTunes integration module path added         | ADR-001 | Elshad |
-| 2026-05-23 | API listening history module path added          | ADR-001 | Aykhan |
-| 2026-05-23 | `listening_history.idempotency_key` column added | ADR-001 | Aykhan |
-| 2026-05-23 | API analytics module path added                  | ADR-001 | Aykhan |
-| 2026-05-23 | Web `components/` and route-group folders added  | ADR-001 | Rahila |
-| 2026-05-23 | Web `zustand` dependency added (player store)    | ADR-001 | Rahila |
-| 2026-05-23 | `ingest_checkpoints` table added                 | ADR-001 | Eljan  |
-| 2026-05-23 | DB package `vitest` dependency added             | ADR-001 | Eljan  |
-| 2026-05-23 | API admin module path added                      | ADR-001 | Aykhan |
-| 2026-05-23 | DB seed module path added                        | ADR-001 | Eljan  |
-| 2026-05-23 | DB package `argon2` dependency added             | ADR-001 | Eljan  |
-| 2026-05-23 | `users.deleted_at` column added (soft delete)    | ADR-001 | Aykhan |
-| 2026-05-23 | Web `react-hook-form` dependency added           | ADR-001 | Aykhan |
-| 2026-05-23 | Web `(auth)` route group + auth forms added      | ADR-001 | Aykhan |
+| Date       | Change                                                  | ADR     | By     |
+| ---------- | ------------------------------------------------------- | ------- | ------ |
+| 2026-05-22 | Initial repo layout defined                             | ADR-001 | Aykhan |
+| 2026-05-22 | Generated web type shim ignored for git and lint        | ADR-001 | Eljan  |
+| 2026-05-23 | API iTunes integration module path added                | ADR-001 | Elshad |
+| 2026-05-23 | API listening history module path added                 | ADR-001 | Aykhan |
+| 2026-05-23 | `listening_history.idempotency_key` column added        | ADR-001 | Aykhan |
+| 2026-05-23 | API analytics module path added                         | ADR-001 | Aykhan |
+| 2026-05-23 | Web `components/` and route-group folders added         | ADR-001 | Rahila |
+| 2026-05-23 | Web `zustand` dependency added (player store)           | ADR-001 | Rahila |
+| 2026-05-23 | `ingest_checkpoints` table added                        | ADR-001 | Eljan  |
+| 2026-05-23 | DB package `vitest` dependency added                    | ADR-001 | Eljan  |
+| 2026-05-23 | API admin module path added                             | ADR-001 | Aykhan |
+| 2026-05-23 | DB seed module path added                               | ADR-001 | Eljan  |
+| 2026-05-23 | DB package `argon2` dependency added                    | ADR-001 | Eljan  |
+| 2026-05-23 | `users.deleted_at` column added (soft delete)           | ADR-001 | Aykhan |
+| 2026-05-23 | Web `react-hook-form` dependency added                  | ADR-001 | Aykhan |
+| 2026-05-23 | Web `(auth)` route group + auth forms added             | ADR-001 | Aykhan |
+| 2026-05-23 | Web `catalog/` components + `(app)/catalog` route group | ADR-001 | Rahila |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

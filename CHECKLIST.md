@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M2 Catalog browsing (next up).
-- **Last finished:** M1 Authentication UI (PR #17 merged 2026-05-23). Soft-delete schema column + migration `20260523150122_add_user_soft_delete` landed alongside.
+- **Current milestone:** M3 Audio player + listening history (next up).
+- **Last finished:** M2 Catalog browsing 4/5 (tracks, track detail with preview launcher, artists, albums). Genres row stays unticked; it is blocked on iTunes-derived genre data and ships once derivation lands.
 - **Open file/component:** none.
 - **Open decisions:** none.
 - **Blocker:** none.
-- **Next concrete action:** start M2 Catalog browsing on `feat/catalog-browsing` (commits attributed to `rahila`).
+- **Next concrete action:** start M3 Audio player + listening history on `feat/playback-history` (commits attributed to `rahila` + `aykhan`).
 
 ---
 
@@ -80,11 +80,11 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Password change - M - aykhan
   - [x] Account deletion (soft delete, audit logged) - M - aykhan
 
-- [ ] **M2: Catalog browsing** - 0/5
-  - [ ] Tracks list page with infinite scroll - M - rahila (depends on F6, F10)
-  - [ ] Track detail page with preview player, artist + album links - M - rahila
-  - [ ] Artists list and detail with discography - M - rahila
-  - [ ] Albums list and detail with track list - M - rahila
+- [ ] **M2: Catalog browsing** - 4/5
+  - [x] Tracks list page with infinite scroll - M - rahila (depends on F6, F10)
+  - [x] Track detail page with preview player, artist + album links - M - rahila
+  - [x] Artists list and detail with discography - M - rahila
+  - [x] Albums list and detail with track list - M - rahila
   - [ ] Genres list and detail (post-genre derivation) - M - rahila
 
 - [ ] **M3: Audio player + listening history** - 0/6
