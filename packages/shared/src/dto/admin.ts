@@ -28,6 +28,20 @@ export const AuditLogEntrySchema = z.object({
   createdAt: z.string().datetime(),
 });
 
+export const AuditLogListQuerySchema = OffsetPaginationQuerySchema.extend({
+  action: z.string().trim().min(1).max(100).optional(),
+  actorUserId: z.coerce.number().int().positive().optional(),
+  targetTable: z.string().trim().min(1).max(63).optional(),
+});
+
+export const AuditLogListResponseSchema = z.object({
+  data: z.array(AuditLogEntrySchema),
+  limit: z.number().int(),
+  page: z.number().int(),
+  total: z.number().int(),
+  totalPages: z.number().int(),
+});
+
 export const AdminStatusResponseSchema = z.object({
   user: z.object({
     id: z.number().int(),
@@ -41,6 +55,8 @@ export type AuditLogWriteInput = z.infer<typeof AuditLogWriteInputSchema>;
 export type AuditLogEntry = z.infer<typeof AuditLogEntrySchema>;
 export type AuditLogMetadata = z.infer<typeof AuditLogMetadataSchema>;
 export type AdminStatusResponse = z.infer<typeof AdminStatusResponseSchema>;
+export type AuditLogListQuery = z.infer<typeof AuditLogListQuerySchema>;
+export type AuditLogListResponse = z.infer<typeof AuditLogListResponseSchema>;
 
 export const AdminUserListItemSchema = z.object({
   id: z.number().int(),

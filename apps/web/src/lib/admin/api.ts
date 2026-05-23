@@ -3,6 +3,7 @@ import {
   HEADERS,
   type AdminUserListItem,
   type AdminUserListResponse,
+  type AuditLogListResponse,
   type IngestRunsListResponse,
   type TriggerIngestRunRequest,
   type TriggerIngestRunResponse,
@@ -57,6 +58,21 @@ export function triggerIngestRun(
     method: 'POST',
     body: input,
   });
+}
+
+interface AuditLogQueryInput {
+  page?: number;
+  limit?: number;
+  action?: string;
+  actorUserId?: number;
+  targetTable?: string;
+}
+
+export function fetchAuditLog(
+  query: AuditLogQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<AuditLogListResponse> {
+  return apiFetch<AuditLogListResponse>(`/api/v1/admin/audit-log${toQueryString(query)}`, options);
 }
 
 function mutate<T>(path: string, options: { method: string; body?: unknown }): Promise<T> {
