@@ -4,13 +4,13 @@
 
 ## Current State (updated every session)
 
-- **Phase 4 status:** complete. Seed script merged. Initial Prisma migration committed on `chore/initial-prisma-migration` (commit `50d4c5e`), awaiting PR + merge to `dev`. After that lands, `dev` will be 53 commits ahead of `main`; hold the promotion until Phase 6 deployment items are unblocked.
-- **Last finished:** M1 Auth UI (signup, login, logout, password change, account deletion). Soft-delete schema column + migration `20260523150122_add_user_soft_delete`.
-- **Working on now:** Phase 5 roadmap, milestone by milestone. M2 Catalog browsing is the next milestone.
+- **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
+- **Current milestone:** M2 Catalog browsing (next up).
+- **Last finished:** M1 Authentication UI (PR #17 merged 2026-05-23). Soft-delete schema column + migration `20260523150122_add_user_soft_delete` landed alongside.
 - **Open file/component:** none.
 - **Open decisions:** none.
 - **Blocker:** none.
-- **Next concrete action:** open PR for `feat/auth-ui` into `dev`, merge with `--rebase`. Then start M2 Catalog browsing on `feat/catalog-browsing` (commits attributed to `rahila`).
+- **Next concrete action:** start M2 Catalog browsing on `feat/catalog-browsing` (commits attributed to `rahila`).
 
 ---
 
@@ -69,74 +69,65 @@
 - [x] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
 - [x] **F12: Admin extensibility foundation** (audit log writer, admin module skeleton, RolesGuard usage, no UI yet) - M - aykhan
 
-## Phase 5, Feature Roadmap (decomposed)
+## Phase 5, Feature Roadmap (by milestone)
 
-### Catalog browsing
+Each milestone is one PR into `dev`. Per-task commits are attributed via the "Commit author" column. A milestone is ticked `[x]` only when every row underneath it is ticked.
 
-- [ ] Tracks list page with infinite scroll - M - rahila (depends on F6, F10)
-- [ ] Track detail page with preview player, artist + album links - M - rahila
-- [ ] Artists list and detail with discography - M - rahila
-- [ ] Albums list and detail with track list - M - rahila
-- [ ] Genres list and detail (post-genre derivation) - M - rahila
+- [x] **M1: Authentication UI** - 5/5
+  - [x] Signup form + validation + success state - M - aykhan (depends on F4)
+  - [x] Login form + error states - M - aykhan
+  - [x] Logout - S - aykhan
+  - [x] Password change - M - aykhan
+  - [x] Account deletion (soft delete, audit logged) - M - aykhan
 
-### Search and filtering
+- [ ] **M2: Catalog browsing** - 0/5
+  - [ ] Tracks list page with infinite scroll - M - rahila (depends on F6, F10)
+  - [ ] Track detail page with preview player, artist + album links - M - rahila
+  - [ ] Artists list and detail with discography - M - rahila
+  - [ ] Albums list and detail with track list - M - rahila
+  - [ ] Genres list and detail (post-genre derivation) - M - rahila
 
-- [ ] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
-- [ ] Filter UI: genre, year, duration range - M - rahila
-- [ ] Sort controls on every list - S - rahila
+- [ ] **M3: Audio player + listening history** - 0/6
+  - [ ] Audio player UI (play, pause, scrub, volume) - L - rahila (depends on F7, F10)
+  - [ ] Auto-fetch preview on play if not cached - S - rahila (depends on F7)
+  - [ ] Graceful "preview unavailable" state - S - rahila
+  - [ ] "Play" event fires from audio player to backend - S - aykhan (depends on F8)
+  - [ ] Recent listens page with infinite scroll - M - aykhan
+  - [ ] Per-track play count on detail pages - S - aykhan
 
-### Accounts and authentication
+- [ ] **M4: Indexes + search/filter** - 0/3
+  - [ ] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
+  - [ ] Filter UI: genre, year, duration range - M - rahila
+  - [ ] Sort controls on every list - S - rahila
 
-- [x] Signup form + validation + success state - M - aykhan (depends on F4)
-- [x] Login form + error states - M - aykhan
-- [x] Logout - S - aykhan
-- [x] Password change - M - aykhan
-- [x] Account deletion (soft delete, audit logged) - M - aykhan
+- [ ] **M5: Personal stats and analytics views** - 0/7
+  - [ ] Top artists page (advanced query #1 wired into UI with Recharts) - L - aykhan
+  - [ ] Top tracks page (variant of #1) - M - aykhan
+  - [ ] Discover page (#2) - L - aykhan
+  - [ ] Listening heatmap (#3) - M - aykhan
+  - [ ] Trending artists (#4) - M - eljan
+  - [ ] Similar playlists (#5) - M - eljan
+  - [ ] Hidden gems (#6) - M - eljan
 
-### Listening history
+- [ ] **M6: Playlist creation and management** - 0/4
+  - [ ] Create user playlist - M - elshad
+  - [ ] Add/remove tracks, reorder (drag-drop) - L - elshad
+  - [ ] Public vs private toggle - S - elshad
+  - [ ] Browse other users' public playlists - M - elshad
 
-- [ ] "Play" event fires from audio player to backend - S - aykhan (depends on F8)
-- [ ] Recent listens page with infinite scroll - M - aykhan
-- [ ] Per-track play count on detail pages - S - aykhan
+- [ ] **M7: Admin / data management** - 0/4
+  - [ ] Admin login route + role gate - S - aykhan (depends on F12)
+  - [ ] Users list with search, ban/unban, role change (audit logged) - M - aykhan
+  - [ ] Ingestion run trigger from admin UI - M - eljan
+  - [ ] Audit log viewer - M - aykhan
 
-### Personal stats and analytics views
-
-- [ ] Top artists page (advanced query #1 wired into UI with Recharts) - L - aykhan
-- [ ] Top tracks page (variant of #1) - M - aykhan
-- [ ] Discover page (#2) - L - aykhan
-- [ ] Listening heatmap (#3) - M - aykhan
-- [ ] Trending artists (#4) - M - eljan
-- [ ] Similar playlists (#5) - M - eljan
-- [ ] Hidden gems (#6) - M - eljan
-
-### Playlist creation and management
-
-- [ ] Create user playlist - M - elshad
-- [ ] Add/remove tracks, reorder (drag-drop) - L - elshad
-- [ ] Public vs private toggle - S - elshad
-- [ ] Browse other users' public playlists - M - elshad
-
-### iTunes preview playback integration
-
-- [ ] Audio player UI (play, pause, scrub, volume) - L - rahila (depends on F7, F10)
-- [ ] Auto-fetch preview on play if not cached - S - rahila (depends on F7)
-- [ ] Graceful "preview unavailable" state - S - rahila
-
-### Admin / data management
-
-- [ ] Admin login route + role gate - S - aykhan (depends on F12)
-- [ ] Users list with search, ban/unban, role change (audit logged) - M - aykhan
-- [ ] Ingestion run trigger from admin UI - M - eljan
-- [ ] Audit log viewer - M - aykhan
-
-### Rubric / quality demands
-
-- [ ] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
-- [ ] Relational model write-up in `report/erd-explanation.md` - M - aykhan
-- [ ] Advanced SQL queries documented in `report/sql-queries.md` - M - aykhan
-- [x] Seed script that produces meaningful number of tuples reliably - M - eljan
-- [ ] Final report - L - aykhan
-- [ ] Demo script - M - aykhan
+- [ ] **M8: Rubric / quality demands** - 1/6
+  - [ ] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
+  - [ ] Relational model write-up in `report/erd-explanation.md` - M - aykhan
+  - [ ] Advanced SQL queries documented in `report/sql-queries.md` - M - aykhan
+  - [x] Seed script that produces meaningful number of tuples reliably - M - eljan
+  - [ ] Final report - L - aykhan
+  - [ ] Demo script - M - aykhan
 
 ## Stretch features (post-rubric)
 
