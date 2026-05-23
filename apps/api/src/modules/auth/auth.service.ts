@@ -1,5 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { AppError, ErrorCode, type LoginRequest, type RegisterRequest } from '@statify/shared';
+import {
+  AppError,
+  ErrorCode,
+  type LoginRequest,
+  type PasswordChangeRequest,
+  type RegisterRequest,
+} from '@statify/shared';
+import { AuditLogService } from '../admin/audit-log.service';
 import { AuthRepository, type RefreshTokenWithUser } from './auth.repository';
 import type { AuthRequestContext, AuthSession } from './auth.types';
 import { toAuthUser } from './auth.mapper';
@@ -12,6 +19,7 @@ export class AuthService {
     private readonly repository: AuthRepository,
     private readonly passwordService: PasswordService,
     private readonly tokenService: AuthTokenService,
+    private readonly auditLog: AuditLogService,
   ) {}
 
   async register(input: RegisterRequest, context: AuthRequestContext): Promise<AuthSession> {
@@ -74,6 +82,66 @@ export class AuthService {
     return { user, tokens };
   }
 
+  async logout(refreshToken: string | undefined, actorUserId: number): Promise<void> {
+    if (refreshToken !== undefined && refreshToken.length > 0) {
+      const tokenHash = this.tokenService.hashRefreshToken(refreshToken);
+      await this.repository.revokeRefreshTokenByHash(tokenHash);
+    }
+
+    await this.auditLog.record({
+      actorUserId,
+      action: 'auth.logout',
+      targetTable: 'users',
+      targetId: String(actorUserId),
+      metadata: null,
+    });
+  }
+
+  async changePassword(userId: number, input: PasswordChangeRequest): Promise<void> {
+    const user = await this.repository.findUserById(userId);
+    if (user === null) {
+      throw unauthenticatedError();
+    }
+
+    const isValid = await this.passwordService.verify(user.passwordHash, input.currentPassword);
+    if (!isValid) {
+      throw invalidCredentialsError();
+    }
+
+    const newHash = await this.passwordService.hash(input.newPassword);
+    await this.repository.updatePasswordHash(userId, newHash);
+
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'auth.password_change',
+      targetTable: 'users',
+      targetId: String(userId),
+      metadata: null,
+    });
+  }
+
+  async deleteAccount(userId: number, currentPassword: string): Promise<void> {
+    const user = await this.repository.findUserById(userId);
+    if (user === null) {
+      throw unauthenticatedError();
+    }
+
+    const isValid = await this.passwordService.verify(user.passwordHash, currentPassword);
+    if (!isValid) {
+      throw invalidCredentialsError();
+    }
+
+    await this.repository.softDeleteUser(userId);
+
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'auth.account_deleted',
+      targetTable: 'users',
+      targetId: String(userId),
+      metadata: null,
+    });
+  }
+
   private async issueSession(
     userRecord: Parameters<typeof toAuthUser>[0],
     context: AuthRequestContext,
@@ -99,6 +167,14 @@ function invalidCredentialsError(): AppError {
   return new AppError({
     code: ErrorCode.INVALID_CREDENTIALS,
     message: 'Invalid email or password',
+    httpStatus: HttpStatus.UNAUTHORIZED,
+  });
+}
+
+function unauthenticatedError(): AppError {
+  return new AppError({
+    code: ErrorCode.UNAUTHENTICATED,
+    message: 'Authentication required',
     httpStatus: HttpStatus.UNAUTHORIZED,
   });
 }

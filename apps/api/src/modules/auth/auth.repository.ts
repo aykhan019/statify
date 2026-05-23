@@ -15,11 +15,11 @@ export class AuthRepository extends BaseRepository {
   }
 
   findUserByEmail(email: string): Promise<User | null> {
-    return this.client.user.findUnique({ where: { email } });
+    return this.client.user.findFirst({ where: { email, deletedAt: null } });
   }
 
   findUserById(id: number): Promise<User | null> {
-    return this.client.user.findUnique({ where: { id } });
+    return this.client.user.findFirst({ where: { id, deletedAt: null } });
   }
 
   createUser(data: { email: string; passwordHash: string; displayName: string }): Promise<User> {
@@ -37,6 +37,42 @@ export class AuthRepository extends BaseRepository {
       where: { id: userId },
       data: { lastLoginAt: new Date() },
     });
+  }
+
+  updatePasswordHash(userId: number, passwordHash: string): Promise<void> {
+    return this.prisma.transaction(async (client) => {
+      await client.user.update({
+        where: { id: userId },
+        data: { passwordHash },
+      });
+      await client.refreshToken.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: new Date() },
+      });
+    });
+  }
+
+  softDeleteUser(userId: number): Promise<void> {
+    return this.prisma.transaction(async (client) => {
+      const deletedAt = new Date();
+      await client.user.update({
+        where: { id: userId },
+        data: { deletedAt },
+      });
+      await client.refreshToken.updateMany({
+        where: { userId, revokedAt: null },
+        data: { revokedAt: deletedAt },
+      });
+    });
+  }
+
+  revokeRefreshTokenByHash(tokenHash: string): Promise<number> {
+    return this.client.refreshToken
+      .updateMany({
+        where: { tokenHash, revokedAt: null },
+        data: { revokedAt: new Date() },
+      })
+      .then((result) => result.count);
   }
 
   createRefreshToken(

@@ -1,11 +1,26 @@
-import { Body, Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  AccountDeleteRequest,
+  AccountDeleteRequestSchema,
   AppError,
   AuthResponse,
   COOKIE_NAMES,
   ErrorCode,
   LoginRequest,
   LoginRequestSchema,
+  PasswordChangeRequest,
+  PasswordChangeRequestSchema,
   RegisterRequest,
   RegisterRequestSchema,
 } from '@statify/shared';
@@ -71,6 +86,44 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   me(@Req() request: Request & RequestWithUser): AuthResponse {
     return { user: getAuthenticatedUser(request) };
+  }
+
+  @Post('logout')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard, CsrfGuard)
+  async logout(
+    @Req() request: Request & RequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const user = getAuthenticatedUser(request);
+    await this.authService.logout(getCookie(request, COOKIE_NAMES.REFRESH), user.id);
+    this.cookieService.clearAuthCookies(response);
+  }
+
+  @Post('password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard, CsrfGuard)
+  async changePassword(
+    @Body(new ZodValidationPipe(PasswordChangeRequestSchema)) body: PasswordChangeRequest,
+    @Req() request: Request & RequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const user = getAuthenticatedUser(request);
+    await this.authService.changePassword(user.id, body);
+    this.cookieService.clearAuthCookies(response);
+  }
+
+  @Delete('account')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(JwtAuthGuard, CsrfGuard)
+  async deleteAccount(
+    @Body(new ZodValidationPipe(AccountDeleteRequestSchema)) body: AccountDeleteRequest,
+    @Req() request: Request & RequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<void> {
+    const user = getAuthenticatedUser(request);
+    await this.authService.deleteAccount(user.id, body.currentPassword);
+    this.cookieService.clearAuthCookies(response);
   }
 }
 
