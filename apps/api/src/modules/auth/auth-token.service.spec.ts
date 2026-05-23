@@ -18,11 +18,13 @@ describe('AuthTokenService', () => {
       sub: 1,
       type: 'access',
       role: 'user',
+      displayName: 'User',
     });
     await expect(service.verifyRefreshToken(tokens.refreshToken)).resolves.toMatchObject({
       sub: 1,
       type: 'refresh',
       role: 'user',
+      displayName: 'User',
     });
     expect(tokens.refreshTokenHash).toHaveLength(64);
     expect(tokens.csrfToken).toHaveLength(43);
