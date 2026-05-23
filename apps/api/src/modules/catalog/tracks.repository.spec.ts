@@ -15,6 +15,8 @@ describe('TracksRepository', () => {
       artistId: 4,
       hasPreview: true,
       limit: 10,
+      maxDurationMs: 240000,
+      minDurationMs: 120000,
       page: 2,
       q: 'midnight',
       sort: '-durationMs',
@@ -22,6 +24,7 @@ describe('TracksRepository', () => {
 
     const where = {
       albumId: 3,
+      durationMs: { gte: 120000, lte: 240000 },
       name: { contains: 'midnight', mode: 'insensitive' },
       previewUrl: { not: null },
       trackArtists: { some: { artistId: 4 } },
