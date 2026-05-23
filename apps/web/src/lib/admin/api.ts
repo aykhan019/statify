@@ -3,6 +3,9 @@ import {
   HEADERS,
   type AdminUserListItem,
   type AdminUserListResponse,
+  type IngestRunsListResponse,
+  type TriggerIngestRunRequest,
+  type TriggerIngestRunResponse,
   type UpdateUserBanRequest,
   type UpdateUserRoleRequest,
 } from '@statify/shared';
@@ -39,6 +42,19 @@ export function updateUserBan(
 ): Promise<AdminUserListItem> {
   return mutate<AdminUserListItem>(`/api/v1/admin/users/${userId}/ban`, {
     method: 'PATCH',
+    body: input,
+  });
+}
+
+export function fetchIngestRuns(options: ServerFetchOptions = {}): Promise<IngestRunsListResponse> {
+  return apiFetch<IngestRunsListResponse>('/api/v1/admin/ingest/runs', options);
+}
+
+export function triggerIngestRun(
+  input: TriggerIngestRunRequest,
+): Promise<TriggerIngestRunResponse> {
+  return mutate<TriggerIngestRunResponse>('/api/v1/admin/ingest/runs', {
+    method: 'POST',
     body: input,
   });
 }
