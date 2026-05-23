@@ -4,6 +4,7 @@ import {
   type CreateUserPlaylistRequest,
   type UserPlaylistDetail,
   type UserPlaylistListResponse,
+  type UserPlaylistTracksResponse,
 } from '@statify/shared';
 import { apiFetch, type ApiFetchOptions } from '../api-client';
 
@@ -15,6 +16,11 @@ interface ListMineQueryInput {
   q?: string;
 }
 
+interface TracksQueryInput {
+  page?: number;
+  limit?: number;
+}
+
 export function fetchMyPlaylists(
   query: ListMineQueryInput = {},
   options: ServerFetchOptions = {},
@@ -22,18 +28,69 @@ export function fetchMyPlaylists(
   return apiFetch<UserPlaylistListResponse>(`/api/v1/me/playlists${toQueryString(query)}`, options);
 }
 
+export function fetchMyPlaylistDetail(
+  id: number,
+  options: ServerFetchOptions = {},
+): Promise<UserPlaylistDetail> {
+  return apiFetch<UserPlaylistDetail>(`/api/v1/me/playlists/${id}`, options);
+}
+
+export function fetchMyPlaylistTracks(
+  id: number,
+  query: TracksQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<UserPlaylistTracksResponse> {
+  return apiFetch<UserPlaylistTracksResponse>(
+    `/api/v1/me/playlists/${id}/tracks${toQueryString(query)}`,
+    options,
+  );
+}
+
 export function createMyPlaylist(input: CreateUserPlaylistRequest): Promise<UserPlaylistDetail> {
+  return mutate<UserPlaylistDetail>('/api/v1/me/playlists', {
+    method: 'POST',
+    body: input,
+  });
+}
+
+export function addPlaylistTrack(playlistId: number, trackId: number): Promise<UserPlaylistDetail> {
+  return mutate<UserPlaylistDetail>(`/api/v1/me/playlists/${playlistId}/tracks`, {
+    method: 'POST',
+    body: { trackId },
+  });
+}
+
+export function removePlaylistTrack(
+  playlistId: number,
+  trackId: number,
+): Promise<UserPlaylistDetail> {
+  return mutate<UserPlaylistDetail>(`/api/v1/me/playlists/${playlistId}/tracks/${trackId}`, {
+    method: 'DELETE',
+  });
+}
+
+export function reorderPlaylistTracks(
+  playlistId: number,
+  trackIds: number[],
+): Promise<UserPlaylistDetail> {
+  return mutate<UserPlaylistDetail>(`/api/v1/me/playlists/${playlistId}/tracks/order`, {
+    method: 'PATCH',
+    body: { trackIds },
+  });
+}
+
+function mutate<T>(path: string, options: { method: string; body?: unknown }): Promise<T> {
   const headers = new Headers({ 'Content-Type': 'application/json' });
   const csrf = readCsrfTokenFromDocument();
   if (csrf !== null) {
     headers.set(HEADERS.CSRF, csrf);
   }
 
-  return apiFetch<UserPlaylistDetail>('/api/v1/me/playlists', {
-    method: 'POST',
+  return apiFetch<T>(path, {
+    method: options.method,
     credentials: 'include',
     headers,
-    body: JSON.stringify(input),
+    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
   });
 }
 
