@@ -7,6 +7,7 @@ import { ItunesModule } from './integrations/itunes/itunes.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { HealthModule } from './modules/health/health.module';
+import { HistoryModule } from './modules/history/history.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { HealthModule } from './modules/health/health.module';
     AuthModule,
     CatalogModule,
     HealthModule,
+    HistoryModule,
   ],
 })
 export class AppModule implements NestModule {
