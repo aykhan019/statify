@@ -79,6 +79,16 @@ export function reorderPlaylistTracks(
   });
 }
 
+export function setPlaylistVisibility(
+  playlistId: number,
+  isPublic: boolean,
+): Promise<UserPlaylistDetail> {
+  return mutate<UserPlaylistDetail>(`/api/v1/me/playlists/${playlistId}/visibility`, {
+    method: 'PATCH',
+    body: { isPublic },
+  });
+}
+
 function mutate<T>(path: string, options: { method: string; body?: unknown }): Promise<T> {
   const headers = new Headers({ 'Content-Type': 'application/json' });
   const csrf = readCsrfTokenFromDocument();

@@ -43,6 +43,10 @@ export const UserPlaylistListResponseSchema = z.object({
   totalPages: z.number().int(),
 });
 
+export const UpdateUserPlaylistVisibilityRequestSchema = z.object({
+  isPublic: z.boolean(),
+});
+
 export const AddUserPlaylistTrackRequestSchema = z.object({
   trackId: z.number().int().positive(),
 });
@@ -81,6 +85,9 @@ export type UserPlaylistOwner = z.infer<typeof UserPlaylistOwnerSchema>;
 export type UserPlaylistListItem = z.infer<typeof UserPlaylistListItemSchema>;
 export type UserPlaylistDetail = z.infer<typeof UserPlaylistDetailSchema>;
 export type UserPlaylistListResponse = z.infer<typeof UserPlaylistListResponseSchema>;
+export type UpdateUserPlaylistVisibilityRequest = z.infer<
+  typeof UpdateUserPlaylistVisibilityRequestSchema
+>;
 export type AddUserPlaylistTrackRequest = z.infer<typeof AddUserPlaylistTrackRequestSchema>;
 export type ReorderUserPlaylistTracksRequest = z.infer<
   typeof ReorderUserPlaylistTracksRequestSchema

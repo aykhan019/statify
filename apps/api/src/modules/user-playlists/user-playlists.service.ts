@@ -54,6 +54,15 @@ export class UserPlaylistsService {
     return toOffsetPage(result.data.map(toUserPlaylistTrackEntry), result.total, query);
   }
 
+  async setVisibility(
+    userId: number,
+    playlistId: number,
+    isPublic: boolean,
+  ): Promise<UserPlaylistDetail> {
+    const record = await this.repository.setVisibility(userId, playlistId, isPublic);
+    return toUserPlaylistDetail(record);
+  }
+
   async addTrack(userId: number, playlistId: number, trackId: number): Promise<UserPlaylistDetail> {
     const record = await this.repository.addTrack(userId, playlistId, trackId);
     return toUserPlaylistDetail(record);
