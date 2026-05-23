@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F5 (User session on the frontend). The web app now has server-side session lookup, a typed API client, middleware route guarding for auth-required routes, and a `useCurrentUser` provider/hook wired through the root layout.
+- **Last finished:** Phase 4 F6 (Catalog read foundation). Tracks, artists, and albums now have shared DTOs, read repositories, list/detail API endpoints, offset pagination, search/filter/sort query handling, and focused repository/service tests.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F6. Build the catalog read foundation: tracks, artists, and albums repositories plus list/detail endpoints with shared DTOs.
+- **Next concrete action:** Phase 4 F7. Build the iTunes adapter foundation: client, adapter, persistent cache through tracks, rate limiter, fallback behavior, and mock-server integration test.
 
 ---
 
@@ -59,7 +59,7 @@
 - [x] **F3: Error handling and API envelope foundation** (AllExceptionsFilter, error codes, validation pipe wired end-to-end) - M - elshad
 - [x] **F4: Auth foundation** (registration, login, refresh rotation, password hashing, CSRF, JwtAuthGuard, RolesGuard, refresh_tokens table use) - XL - aykhan
 - [x] **F5: User session on the frontend** (server-side session lookup, middleware route guard, `useCurrentUser` hook) - L - rahila
-- [ ] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
+- [x] **F6: Catalog read foundation** (TracksRepository, ArtistsRepository, AlbumsRepository, list+detail endpoints with pagination/filter/sort, DTOs in `shared`) - L - eljan
 - [ ] **F7: iTunes adapter foundation** (client, adapter, persistent cache via tracks table, rate limiter, fallback behaviour, integration test against a mock server) - L - elshad
 - [ ] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
 - [ ] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
