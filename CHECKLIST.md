@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F12 (admin extensibility foundation). `AuditLogRepository`/`AuditLogService` provide the writer foundation; `AdminController` exposes `GET /api/v1/admin/status` guarded by `JwtAuthGuard` + `RolesGuard('admin')`. Shared DTOs cover `AuditLogWriteInput`, `AuditLogEntry`, and `AdminStatusResponse`. Phase 4 foundations are now complete.
+- **Last finished:** Seed script (Phase 5 "Seed script that produces meaningful number of tuples reliably"). `packages/db/src/seed/` ships deterministic generators (Mulberry32 PRNG), argon2 password hashing, and `runSeed` orchestrator wired into `prisma/seed.ts`. Defaults: 5 users (shared password `statify123`), 80 artists, 200 albums, 600 tracks, 60 MPD playlists, ~250 listening_history rows over 21 days. Runs via `pnpm --filter @statify/db db:seed`.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Transition to Phase 5. Pick the next feature row from the Phase 5 roadmap below; branch from `dev` and use the listed commit author.
+- **Next concrete action:** Pick the next Phase 5 feature row below; branch from `dev` and use the listed commit author. Catalog browsing or auth-form rows are good first targets now that seed data is available.
 
 ---
 
@@ -132,7 +132,7 @@
 - [ ] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
 - [ ] Relational model write-up in `report/erd-explanation.md` - M - aykhan
 - [ ] Advanced SQL queries documented in `report/sql-queries.md` - M - aykhan
-- [ ] Seed script that produces meaningful number of tuples reliably - M - eljan
+- [x] Seed script that produces meaningful number of tuples reliably - M - eljan
 - [ ] Final report - L - aykhan
 - [ ] Demo script - M - aykhan
 
