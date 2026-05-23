@@ -1,19 +1,30 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
+  Patch,
   Post,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import {
+  AddUserPlaylistTrackRequestSchema,
   CreateUserPlaylistRequestSchema,
+  ReorderUserPlaylistTracksRequestSchema,
+  UserPlaylistTracksQuerySchema,
   UserPlaylistsListQuerySchema,
+  type AddUserPlaylistTrackRequest,
   type CreateUserPlaylistRequest,
+  type ReorderUserPlaylistTracksRequest,
   type UserPlaylistDetail,
   type UserPlaylistListResponse,
+  type UserPlaylistTracksQuery,
+  type UserPlaylistTracksResponse,
   type UserPlaylistsListQuery,
 } from '@statify/shared';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
@@ -44,5 +55,55 @@ export class UserPlaylistsController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<UserPlaylistListResponse> {
     return this.service.listForOwner(user.id, query);
+  }
+
+  @Get(':id')
+  getById(
+    @Param('id', ParseIntPipe) id: number,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<UserPlaylistDetail> {
+    return this.service.getOwnedById(user.id, id);
+  }
+
+  @Get(':id/tracks')
+  listTracks(
+    @Param('id', ParseIntPipe) id: number,
+    @Query(new ZodValidationPipe(UserPlaylistTracksQuerySchema)) query: UserPlaylistTracksQuery,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<UserPlaylistTracksResponse> {
+    return this.service.listTracks(user.id, id, query);
+  }
+
+  @Post(':id/tracks')
+  @HttpCode(HttpStatus.CREATED)
+  @UseGuards(CsrfGuard)
+  addTrack(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(AddUserPlaylistTrackRequestSchema))
+    body: AddUserPlaylistTrackRequest,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<UserPlaylistDetail> {
+    return this.service.addTrack(user.id, id, body.trackId);
+  }
+
+  @Delete(':id/tracks/:trackId')
+  @UseGuards(CsrfGuard)
+  removeTrack(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('trackId', ParseIntPipe) trackId: number,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<UserPlaylistDetail> {
+    return this.service.removeTrack(user.id, id, trackId);
+  }
+
+  @Patch(':id/tracks/order')
+  @UseGuards(CsrfGuard)
+  reorderTracks(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(ReorderUserPlaylistTracksRequestSchema))
+    body: ReorderUserPlaylistTracksRequest,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<UserPlaylistDetail> {
+    return this.service.reorderTracks(user.id, id, body.trackIds);
   }
 }

@@ -1,5 +1,10 @@
-import type { UserPlaylistDetail, UserPlaylistListItem } from '@statify/shared';
-import type { UserPlaylistRecord } from './user-playlists.repository';
+import type {
+  UserPlaylistDetail,
+  UserPlaylistListItem,
+  UserPlaylistTrackEntry,
+} from '@statify/shared';
+import { toTrackListItem } from '../catalog/catalog.mapper';
+import type { UserPlaylistRecord, UserPlaylistTrackRecord } from './user-playlists.repository';
 
 export function toUserPlaylistListItem(record: UserPlaylistRecord): UserPlaylistListItem {
   return {
@@ -19,4 +24,12 @@ export function toUserPlaylistListItem(record: UserPlaylistRecord): UserPlaylist
 
 export function toUserPlaylistDetail(record: UserPlaylistRecord): UserPlaylistDetail {
   return toUserPlaylistListItem(record);
+}
+
+export function toUserPlaylistTrackEntry(record: UserPlaylistTrackRecord): UserPlaylistTrackEntry {
+  return {
+    pos: record.pos,
+    addedAt: record.addedAt.toISOString(),
+    track: toTrackListItem(record.track),
+  };
 }

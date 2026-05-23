@@ -38,8 +38,8 @@ export function CreatePlaylistForm() {
         payload.description = values.description;
       }
 
-      await createMyPlaylist(payload);
-      router.replace('/me/playlists');
+      const playlist = await createMyPlaylist(payload);
+      router.replace(`/me/playlists/${playlist.id}`);
       router.refresh();
     } catch (error) {
       setFormError(toFormError(error));
