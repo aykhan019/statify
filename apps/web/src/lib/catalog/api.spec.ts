@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { fetchAlbums, fetchArtistById, fetchTracks } from './api';
+import { fetchAlbums, fetchArtistById, fetchCatalogSearch, fetchTracks } from './api';
 
 const okResponse = (body: unknown) =>
   new Response(JSON.stringify(body), {
@@ -46,5 +46,18 @@ describe('catalog api client', () => {
 
     const [input] = fetchMock.mock.calls[0] as [URL];
     expect(input.toString()).toBe('http://api.local/api/v1/artists/9');
+  });
+
+  it('serializes catalog search query params', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(okResponse({ albums: [], artists: [], tracks: [] }));
+    vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'http://api.local');
+    vi.stubGlobal('fetch', fetchMock);
+
+    await fetchCatalogSearch({ limit: 4, q: 'night' });
+
+    const [input] = fetchMock.mock.calls[0] as [URL];
+    expect(input.toString()).toBe('http://api.local/api/v1/search?limit=4&q=night');
   });
 });

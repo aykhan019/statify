@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { LogoutButton } from '@/components/auth';
+import { GlobalSearch } from '@/components/catalog';
 import { AudioPlayer, PlayHistoryReporter } from '@/components/player';
 import { Header } from '@/components/ui/Header';
 import { Sidebar, type SidebarItem } from '@/components/ui/Sidebar';
@@ -35,10 +36,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           </Link>
         }
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-2">
+            <GlobalSearch />
             <Link
               href="/me/account"
-              className="text-muted-foreground hover:text-foreground text-sm"
+              className="text-muted-foreground hover:text-foreground hidden max-w-40 truncate text-sm lg:block"
             >
               {currentUser.displayName}
             </Link>

@@ -5,6 +5,8 @@ import type {
   ArtistDetail,
   ArtistListResponse,
   ArtistsQuery,
+  CatalogSearchQuery,
+  CatalogSearchResponse,
   TrackDetail,
   TrackListResponse,
   TracksQuery,
@@ -16,6 +18,7 @@ type ServerFetchOptions = Pick<ApiFetchOptions, 'cookieHeader' | 'cache' | 'sign
 type TrackListQuery = Partial<TracksQuery>;
 type ArtistListQuery = Partial<ArtistsQuery>;
 type AlbumListQuery = Partial<AlbumsQuery>;
+type SearchQuery = CatalogSearchQuery;
 
 export function fetchTracks(
   query: TrackListQuery = {},
@@ -51,6 +54,13 @@ export function fetchAlbums(
 
 export function fetchAlbumById(id: number, options: ServerFetchOptions = {}): Promise<AlbumDetail> {
   return apiFetch<AlbumDetail>(`/api/v1/albums/${id}`, options);
+}
+
+export function fetchCatalogSearch(
+  query: SearchQuery,
+  options: ServerFetchOptions = {},
+): Promise<CatalogSearchResponse> {
+  return apiFetch<CatalogSearchResponse>(`/api/v1/search${toQueryString(query)}`, options);
 }
 
 function toQueryString(query: Record<string, unknown>): string {
