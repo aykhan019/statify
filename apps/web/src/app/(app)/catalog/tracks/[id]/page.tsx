@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -5,6 +6,7 @@ import { PageHeader } from '@/components/ui/PageHeader';
 import { formatDurationMs, formatTrackArtists, PreviewPlayerLauncher } from '@/components/catalog';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchTrackById } from '@/lib/catalog/api';
+import { fetchPlayCount } from '@/lib/history/api';
 
 interface TrackDetailPageProps {
   params: Promise<{ id: string }>;
@@ -30,6 +32,12 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
     throw error;
   }
 
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore.toString();
+  const playCount = await fetchPlayCount(trackId, { cookieHeader, cache: 'no-store' }).catch(
+    () => ({ trackId, count: 0 }),
+  );
+
   const primaryArtistName = formatTrackArtists(track.artists);
 
   return (
@@ -42,7 +50,12 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
       <Card>
         <CardHeader>
           <CardTitle>Preview</CardTitle>
-          <CardDescription>30-second preview courtesy of iTunes Search.</CardDescription>
+          <CardDescription>
+            30-second preview courtesy of iTunes Search.{' '}
+            {playCount.count > 0
+              ? `You have played this track ${playCount.count.toLocaleString()} ${playCount.count === 1 ? 'time' : 'times'}.`
+              : 'You have not played this track yet.'}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <PreviewPlayerLauncher
