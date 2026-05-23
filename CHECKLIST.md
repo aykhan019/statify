@@ -8,7 +8,7 @@
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F8. Build the listening history foundation: write endpoint with idempotency, repository, schema, and indexes.
+- **Next concrete action:** Phase 4 F8. Start `feat/listening-history-foundation` from `dev` with commit author `aykhan`; build the listening history write endpoint with idempotency, repository, required DTOs/tests, and any required schema/index work.
 
 ---
 
