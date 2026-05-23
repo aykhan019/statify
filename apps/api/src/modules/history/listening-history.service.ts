@@ -1,6 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
-import { AppError, ErrorCode } from '@statify/shared';
-import { toListeningHistoryEntry } from './history.mapper';
+import {
+  AppError,
+  ErrorCode,
+  type ListeningHistoryListResponse,
+  type TrackPlayCountResponse,
+} from '@statify/shared';
+import { toListeningHistoryEntry, toListeningHistoryListItem } from './history.mapper';
 import type { RecordListenInput, RecordListenResult } from './history.types';
 import { ListeningHistoryRepository } from './listening-history.repository';
 
@@ -24,5 +29,26 @@ export class ListeningHistoryService {
       entry: toListeningHistoryEntry(entry),
       idempotent: !created,
     };
+  }
+
+  async listForUser(
+    userId: number,
+    page: number,
+    limit: number,
+  ): Promise<ListeningHistoryListResponse> {
+    const { data, total } = await this.repository.listForUser(userId, page, limit);
+
+    return {
+      data: data.map(toListeningHistoryListItem),
+      limit,
+      page,
+      total,
+      totalPages: total === 0 ? 0 : Math.ceil(total / limit),
+    };
+  }
+
+  async countByUserAndTrack(userId: number, trackId: number): Promise<TrackPlayCountResponse> {
+    const count = await this.repository.countByUserAndTrack(userId, trackId);
+    return { trackId, count };
   }
 }
