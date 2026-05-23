@@ -14,14 +14,12 @@ describe('history api client', () => {
   });
 
   it('sends CSRF and idempotency headers on recordPlay', async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValue(
-        okResponse({
-          entry: { id: 1, trackId: 5, playedAt: '', source: 'preview', durationPlayedMs: 0 },
-          idempotent: false,
-        }),
-      );
+    const fetchMock = vi.fn().mockResolvedValue(
+      okResponse({
+        entry: { id: 1, trackId: 5, playedAt: '', source: 'preview', durationPlayedMs: 0 },
+        idempotent: false,
+      }),
+    );
     vi.stubEnv('NEXT_PUBLIC_API_BASE_URL', 'http://api.local');
     vi.stubGlobal('fetch', fetchMock);
     vi.stubGlobal('document', { cookie: 'sf_csrf=token' });
