@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { AdminController } from './admin.controller';
+import { AdminAuditController } from './admin-audit.controller';
 import { AdminIngestController } from './admin-ingest.controller';
 import { AdminIngestRepository } from './admin-ingest.repository';
 import { AdminIngestService } from './admin-ingest.service';
@@ -12,7 +13,7 @@ import { AuditLogService } from './audit-log.service';
 
 @Module({
   imports: [AuthModule],
-  controllers: [AdminController, AdminUsersController, AdminIngestController],
+  controllers: [AdminController, AdminUsersController, AdminIngestController, AdminAuditController],
   providers: [
     AdminIngestRepository,
     AdminIngestService,
