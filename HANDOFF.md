@@ -29,10 +29,10 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F12 (admin extensibility foundation) on `feat/admin-extensibility-foundation`. `apps/api/src/modules/admin/` now ships `AuditLogRepository` + `AuditLogService` (write-only foundation, callable by other modules via the exported provider) and a minimal `AdminController` exposing `GET /api/v1/admin/status` guarded by `JwtAuthGuard` + `RolesGuard('admin')`. Shared DTOs for `AuditLogWriteInput`, `AuditLogEntry`, and `AdminStatusResponse` landed in `packages/shared/src/dto/admin.ts`. With this, every Phase 4 foundation piece (F1-F12) is complete.
+- **Last completed:** Seed script (Phase 5 "Seed script that produces meaningful number of tuples reliably") on `chore/seed-script`. `packages/db/src/seed/` provides a deterministic Mulberry32 PRNG, sample data pools, pure generators for users/artists/albums/tracks/track_artists/MPD playlists/playlist_tracks/listening_history, an argon2 password helper, and a `runSeed` orchestrator that truncates the relevant tables then batches `createMany` inserts. `prisma/seed.ts` now calls `runSeed` and logs counts. Defaults: 5 users (shared password `statify123`), 80 artists, 200 albums, 600 tracks, 60 MPD playlists with 12-28 tracks each, ~250 listening_history rows spanning 21 days for 3 users with morning/afternoon/evening weighting for heatmap variety. Runs via `pnpm --filter @statify/db db:seed` against the DB pointed to by `DATABASE_URL`.
 - **Currently in progress:** none.
-- **Next concrete action:** Phase 4 foundation work is done; transition to Phase 5. Pick a feature from the Phase 5 roadmap in `CHECKLIST.md` (catalog browsing pages, auth flows, listening history wiring, analytics views, playlists CRUD, audio player UI, or admin pages). For each, branch from `dev` and use the commit author listed in the row.
-- **Follow-ups (not yet on CHECKLIST):** wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) when those Phase 5 endpoints are built. The audit-log read/list endpoint is part of the Phase 5 "Audit log viewer" task.
+- **Next concrete action:** Pick a Phase 5 feature row from `CHECKLIST.md`. For backend-heavy work, branch from `dev` with the listed commit author. The seed unblocks any UI/analytics task that needs realistic data.
+- **Follow-ups (not yet on CHECKLIST):** generate the initial Prisma migration so `prisma migrate deploy` can bring up a fresh DB (needed before promoting `dev` to `main`). Wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) as those Phase 5 endpoints land.
 - **Dry-run procedure (F11):** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db prisma:migrate:dev`, then `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
@@ -57,6 +57,8 @@
 | 2026-05-23 | `ingest_checkpoints` table added                 | ADR-001 | Eljan  |
 | 2026-05-23 | DB package `vitest` dependency added             | ADR-001 | Eljan  |
 | 2026-05-23 | API admin module path added                      | ADR-001 | Aykhan |
+| 2026-05-23 | DB seed module path added                        | ADR-001 | Eljan  |
+| 2026-05-23 | DB package `argon2` dependency added             | ADR-001 | Eljan  |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
