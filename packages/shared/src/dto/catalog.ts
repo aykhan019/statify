@@ -5,6 +5,10 @@ const OptionalSearchQuerySchema = z.string().trim().min(1).max(100).optional();
 
 const OptionalPositiveIntSchema = z.coerce.number().int().positive().optional();
 
+const OptionalNonNegativeIntSchema = z.coerce.number().int().nonnegative().optional();
+
+const SearchLimitSchema = z.coerce.number().int().min(1).max(10).default(5);
+
 const OptionalBooleanQuerySchema = z
   .preprocess((value) => {
     if (value === 'true') {
@@ -31,9 +35,20 @@ export const TracksQuerySchema = OffsetPaginationQuerySchema.extend({
   albumId: OptionalPositiveIntSchema,
   artistId: OptionalPositiveIntSchema,
   hasPreview: OptionalBooleanQuerySchema,
+  maxDurationMs: OptionalNonNegativeIntSchema,
+  minDurationMs: OptionalNonNegativeIntSchema,
   q: OptionalSearchQuerySchema,
   sort: TrackSortSchema,
-});
+}).refine(
+  (query) =>
+    query.minDurationMs === undefined ||
+    query.maxDurationMs === undefined ||
+    query.minDurationMs <= query.maxDurationMs,
+  {
+    message: 'Minimum duration must be less than or equal to maximum duration',
+    path: ['minDurationMs'],
+  },
+);
 
 export const ArtistsQuerySchema = OffsetPaginationQuerySchema.extend({
   q: OptionalSearchQuerySchema,
@@ -44,6 +59,11 @@ export const AlbumsQuerySchema = OffsetPaginationQuerySchema.extend({
   artistId: OptionalPositiveIntSchema,
   q: OptionalSearchQuerySchema,
   sort: AlbumSortSchema,
+});
+
+export const CatalogSearchQuerySchema = z.object({
+  limit: SearchLimitSchema,
+  q: z.string().trim().min(2).max(100),
 });
 
 export const CatalogArtistSummarySchema = z.object({
@@ -92,6 +112,34 @@ export const AlbumDetailSchema = CatalogAlbumSummarySchema.extend({
   trackCount: z.number().int(),
 });
 
+export const CatalogSearchTrackResultSchema = z.object({
+  albumName: z.string(),
+  id: z.number().int(),
+  name: z.string(),
+  primaryArtistName: z.string(),
+  score: z.number(),
+});
+
+export const CatalogSearchArtistResultSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  score: z.number(),
+  trackCount: z.number().int(),
+});
+
+export const CatalogSearchAlbumResultSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  primaryArtistName: z.string(),
+  score: z.number(),
+});
+
+export const CatalogSearchResponseSchema = z.object({
+  albums: z.array(CatalogSearchAlbumResultSchema),
+  artists: z.array(CatalogSearchArtistResultSchema),
+  tracks: z.array(CatalogSearchTrackResultSchema),
+});
+
 export const TrackListResponseSchema = createOffsetPageSchema(TrackListItemSchema);
 export const ArtistListResponseSchema = createOffsetPageSchema(ArtistListItemSchema);
 export const AlbumListResponseSchema = createOffsetPageSchema(AlbumListItemSchema);
@@ -102,6 +150,7 @@ export type AlbumSort = z.infer<typeof AlbumSortSchema>;
 export type TracksQuery = z.infer<typeof TracksQuerySchema>;
 export type ArtistsQuery = z.infer<typeof ArtistsQuerySchema>;
 export type AlbumsQuery = z.infer<typeof AlbumsQuerySchema>;
+export type CatalogSearchQuery = z.infer<typeof CatalogSearchQuerySchema>;
 export type CatalogArtistSummary = z.infer<typeof CatalogArtistSummarySchema>;
 export type CatalogAlbumSummary = z.infer<typeof CatalogAlbumSummarySchema>;
 export type TrackArtistSummary = z.infer<typeof TrackArtistSummarySchema>;
@@ -114,6 +163,10 @@ export type AlbumDetail = z.infer<typeof AlbumDetailSchema>;
 export type TrackListResponse = z.infer<typeof TrackListResponseSchema>;
 export type ArtistListResponse = z.infer<typeof ArtistListResponseSchema>;
 export type AlbumListResponse = z.infer<typeof AlbumListResponseSchema>;
+export type CatalogSearchTrackResult = z.infer<typeof CatalogSearchTrackResultSchema>;
+export type CatalogSearchArtistResult = z.infer<typeof CatalogSearchArtistResultSchema>;
+export type CatalogSearchAlbumResult = z.infer<typeof CatalogSearchAlbumResultSchema>;
+export type CatalogSearchResponse = z.infer<typeof CatalogSearchResponseSchema>;
 
 function createOffsetPageSchema<T extends z.ZodTypeAny>(itemSchema: T) {
   return z.object({
