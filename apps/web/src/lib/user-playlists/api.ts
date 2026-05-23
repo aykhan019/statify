@@ -28,6 +28,34 @@ export function fetchMyPlaylists(
   return apiFetch<UserPlaylistListResponse>(`/api/v1/me/playlists${toQueryString(query)}`, options);
 }
 
+export function fetchPublicUserPlaylists(
+  query: ListMineQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<UserPlaylistListResponse> {
+  return apiFetch<UserPlaylistListResponse>(
+    `/api/v1/user-playlists${toQueryString(query)}`,
+    options,
+  );
+}
+
+export function fetchPublicUserPlaylistDetail(
+  id: number,
+  options: ServerFetchOptions = {},
+): Promise<UserPlaylistDetail> {
+  return apiFetch<UserPlaylistDetail>(`/api/v1/user-playlists/${id}`, options);
+}
+
+export function fetchPublicUserPlaylistTracks(
+  id: number,
+  query: TracksQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<UserPlaylistTracksResponse> {
+  return apiFetch<UserPlaylistTracksResponse>(
+    `/api/v1/user-playlists/${id}/tracks${toQueryString(query)}`,
+    options,
+  );
+}
+
 export function fetchMyPlaylistDetail(
   id: number,
   options: ServerFetchOptions = {},

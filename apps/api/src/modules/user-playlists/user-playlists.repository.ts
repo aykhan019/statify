@@ -88,6 +88,33 @@ export class UserPlaylistsRepository extends BaseRepository {
     });
   }
 
+  async listPublic(query: UserPlaylistsListQuery): Promise<CatalogListResult<UserPlaylistRecord>> {
+    const where: Prisma.UserPlaylistWhereInput = { isPublic: true };
+    if (query.q !== undefined) {
+      where.name = { contains: query.q, mode: 'insensitive' };
+    }
+
+    const [data, total] = await Promise.all([
+      this.client.userPlaylist.findMany({
+        where,
+        include: USER_PLAYLIST_INCLUDE,
+        orderBy: [{ updatedAt: 'desc' }, { id: 'desc' }],
+        skip: getOffset(query),
+        take: query.limit,
+      }),
+      this.client.userPlaylist.count({ where }),
+    ]);
+
+    return { data, total };
+  }
+
+  findPublicById(playlistId: number): Promise<UserPlaylistRecord | null> {
+    return this.client.userPlaylist.findFirst({
+      where: { id: playlistId, isPublic: true },
+      include: USER_PLAYLIST_INCLUDE,
+    });
+  }
+
   async setVisibility(
     userId: number,
     playlistId: number,

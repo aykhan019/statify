@@ -113,6 +113,55 @@ describe('UserPlaylistsService', () => {
     await expect(service.setVisibility(42, 1, true)).resolves.toMatchObject({ isPublic: true });
     expect(repository.setVisibility).toHaveBeenCalledWith(42, 1, true);
   });
+
+  it('lists public playlists and applies the pagination envelope', async () => {
+    const repository = mockRepository({
+      listPublic: vi.fn().mockResolvedValue({
+        data: [createRecord({ id: 1, isPublic: true })],
+        total: 1,
+      }),
+    });
+    const service = new UserPlaylistsService(repository);
+
+    const response = await service.listPublic({ page: 1, limit: 24 });
+
+    expect(repository.listPublic).toHaveBeenCalledWith({ page: 1, limit: 24 });
+    expect(response.total).toBe(1);
+    expect(response.data[0]?.isPublic).toBe(true);
+  });
+
+  it('returns the public playlist detail when it exists', async () => {
+    const repository = mockRepository({
+      findPublicById: vi.fn().mockResolvedValue(createRecord({ id: 9, isPublic: true })),
+    });
+    const service = new UserPlaylistsService(repository);
+
+    await expect(service.getPublicById(9)).resolves.toMatchObject({ id: 9, isPublic: true });
+    expect(repository.findPublicById).toHaveBeenCalledWith(9);
+  });
+
+  it('throws PLAYLIST_NOT_FOUND when the requested playlist is not public', async () => {
+    const repository = mockRepository({ findPublicById: vi.fn().mockResolvedValue(null) });
+    const service = new UserPlaylistsService(repository);
+
+    await expect(service.getPublicById(9)).rejects.toMatchObject({
+      code: ErrorCode.PLAYLIST_NOT_FOUND,
+    });
+  });
+
+  it('lists public tracks after verifying the playlist is public', async () => {
+    const repository = mockRepository({
+      findPublicById: vi.fn().mockResolvedValue(createRecord({ id: 9, isPublic: true })),
+      listTracks: vi.fn().mockResolvedValue({ data: [createTrackRecord()], total: 1 }),
+    });
+    const service = new UserPlaylistsService(repository);
+
+    const response = await service.listPublicTracks(9, { page: 1, limit: 100 });
+
+    expect(repository.findPublicById).toHaveBeenCalledWith(9);
+    expect(repository.listTracks).toHaveBeenCalledWith(9, { page: 1, limit: 100 });
+    expect(response.data[0]?.track.id).toBe(100);
+  });
 });
 
 function mockRepository(overrides: Partial<UserPlaylistsRepository>): UserPlaylistsRepository {
@@ -125,6 +174,8 @@ function mockRepository(overrides: Partial<UserPlaylistsRepository>): UserPlayli
     removeTrack: vi.fn(),
     reorderTracks: vi.fn(),
     setVisibility: vi.fn(),
+    listPublic: vi.fn(),
+    findPublicById: vi.fn(),
   };
   return { ...base, ...overrides } as UserPlaylistsRepository;
 }

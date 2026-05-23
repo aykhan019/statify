@@ -54,6 +54,25 @@ export class UserPlaylistsService {
     return toOffsetPage(result.data.map(toUserPlaylistTrackEntry), result.total, query);
   }
 
+  async listPublic(query: UserPlaylistsListQuery): Promise<UserPlaylistListResponse> {
+    const result = await this.repository.listPublic(query);
+    return toOffsetPage(result.data.map(toUserPlaylistListItem), result.total, query);
+  }
+
+  async getPublicById(playlistId: number): Promise<UserPlaylistDetail> {
+    const record = await this.requirePublic(playlistId);
+    return toUserPlaylistDetail(record);
+  }
+
+  async listPublicTracks(
+    playlistId: number,
+    query: UserPlaylistTracksQuery,
+  ): Promise<UserPlaylistTracksResponse> {
+    await this.requirePublic(playlistId);
+    const result = await this.repository.listTracks(playlistId, query);
+    return toOffsetPage(result.data.map(toUserPlaylistTrackEntry), result.total, query);
+  }
+
   async setVisibility(
     userId: number,
     playlistId: number,
@@ -88,6 +107,18 @@ export class UserPlaylistsService {
 
   private async requireOwned(userId: number, playlistId: number) {
     const record = await this.repository.findOwnedById(userId, playlistId);
+    if (record === null) {
+      throw new AppError({
+        code: ErrorCode.PLAYLIST_NOT_FOUND,
+        message: 'Playlist not found',
+        httpStatus: HttpStatus.NOT_FOUND,
+      });
+    }
+    return record;
+  }
+
+  private async requirePublic(playlistId: number) {
+    const record = await this.repository.findPublicById(playlistId);
     if (record === null) {
       throw new AppError({
         code: ErrorCode.PLAYLIST_NOT_FOUND,
