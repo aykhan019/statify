@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { PlaylistTracksManager } from '@/components/playlists/PlaylistTracksManager';
+import { VisibilityToggle } from '@/components/playlists/VisibilityToggle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ApiClientError } from '@/lib/api-client';
@@ -41,7 +42,8 @@ export default async function MyPlaylistDetailPage({ params }: { params: Promise
     <div className="flex flex-col gap-6">
       <PageHeader
         title={playlist.name}
-        description={`${playlist.trackCount.toLocaleString()} tracks · ${playlist.isPublic ? 'Public' : 'Private'}`}
+        description={`${playlist.trackCount.toLocaleString()} tracks`}
+        actions={<VisibilityToggle playlistId={playlistId} isPublic={playlist.isPublic} />}
       />
       {playlist.description !== null && playlist.description.length > 0 && (
         <p className="text-muted-foreground text-sm">{playlist.description}</p>

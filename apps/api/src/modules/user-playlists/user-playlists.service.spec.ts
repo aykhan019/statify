@@ -104,6 +104,15 @@ describe('UserPlaylistsService', () => {
     await service.reorderTracks(42, 1, [3, 2, 1]);
     expect(repository.reorderTracks).toHaveBeenCalledWith(42, 1, [3, 2, 1]);
   });
+
+  it('forwards setVisibility to the repository and returns the updated detail', async () => {
+    const updated = createRecord({ isPublic: true });
+    const repository = mockRepository({ setVisibility: vi.fn().mockResolvedValue(updated) });
+    const service = new UserPlaylistsService(repository);
+
+    await expect(service.setVisibility(42, 1, true)).resolves.toMatchObject({ isPublic: true });
+    expect(repository.setVisibility).toHaveBeenCalledWith(42, 1, true);
+  });
 });
 
 function mockRepository(overrides: Partial<UserPlaylistsRepository>): UserPlaylistsRepository {
@@ -115,6 +124,7 @@ function mockRepository(overrides: Partial<UserPlaylistsRepository>): UserPlayli
     addTrack: vi.fn(),
     removeTrack: vi.fn(),
     reorderTracks: vi.fn(),
+    setVisibility: vi.fn(),
   };
   return { ...base, ...overrides } as UserPlaylistsRepository;
 }
