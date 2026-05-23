@@ -89,6 +89,7 @@
 | 2026-05-23 | API `mpd-playlists` module + `/playlists` browsing      | ADR-001 | Eljan  |
 | 2026-05-23 | API `user-playlists` module path added                  | ADR-001 | Elshad |
 | 2026-05-24 | Web `(app)/community` route group + community pages     | ADR-001 | Elshad |
+| 2026-05-24 | Web `(app)/admin` route group + admin shell             | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

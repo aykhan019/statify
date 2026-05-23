@@ -6,9 +6,10 @@ import { GlobalSearch } from '@/components/catalog';
 import { AudioPlayer, PlayHistoryReporter } from '@/components/player';
 import { Header } from '@/components/ui/Header';
 import { Sidebar, type SidebarItem } from '@/components/ui/Sidebar';
+import { isAdmin } from '@/lib/auth/admin';
 import { getServerSession } from '@/lib/auth/session';
 
-const SIDEBAR_ITEMS: SidebarItem[] = [
+const BASE_SIDEBAR_ITEMS: SidebarItem[] = [
   { href: '/me', label: 'Overview' },
   { href: '/me/history', label: 'History' },
   { href: '/me/stats', label: 'Stats' },
@@ -20,12 +21,18 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { href: '/catalog', label: 'Catalog' },
 ];
 
+const ADMIN_SIDEBAR_ITEM: SidebarItem = { href: '/admin', label: 'Admin' };
+
 export default async function AppLayout({ children }: { children: ReactNode }) {
   const currentUser = await getServerSession();
 
   if (currentUser === null) {
     redirect('/login');
   }
+
+  const sidebarItems = isAdmin(currentUser)
+    ? [...BASE_SIDEBAR_ITEMS, ADMIN_SIDEBAR_ITEM]
+    : BASE_SIDEBAR_ITEMS;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -52,7 +59,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         }
       />
       <div className="flex flex-1">
-        <Sidebar items={SIDEBAR_ITEMS} />
+        <Sidebar items={sidebarItems} />
         <main className="flex-1 p-6 sm:p-10">{children}</main>
       </div>
       <PlayHistoryReporter />
