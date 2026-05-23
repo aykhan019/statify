@@ -27,11 +27,11 @@
 
 ## 2. Current State
 
-**Updated:** 2026-05-22
+**Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F4 (Auth foundation) on `feat/auth-foundation`. The API now has register/login/refresh endpoints, Argon2id password hashing, access and refresh JWT cookies, refresh token persistence and rotation, CSRF double-submit guard support, JwtAuthGuard, RolesGuard, auth DTOs, and focused auth tests.
-- **Currently in progress:** none. F4 PR review and merge into `dev` remain with Aykhan after CI is green.
-- **Next concrete action:** Phase 4 F5 (User session on the frontend): server-side session lookup, middleware route guard, and `useCurrentUser` hook.
+- **Last completed:** Phase 4 F5 (User session on the frontend) on `feat/frontend-session-foundation`. The web app now has a typed API client, server-side session lookup through the API auth session endpoint, middleware route guarding for auth-required routes, and a `useCurrentUser` provider/hook wired through the root layout.
+- **Currently in progress:** none.
+- **Next concrete action:** Phase 4 F6 (Catalog read foundation): TracksRepository, ArtistsRepository, AlbumsRepository, list/detail endpoints, pagination/filter/sort, and shared DTOs.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
