@@ -4,11 +4,13 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Seed script (Phase 5 "Seed script that produces meaningful number of tuples reliably"). `packages/db/src/seed/` ships deterministic generators (Mulberry32 PRNG), argon2 password hashing, and `runSeed` orchestrator wired into `prisma/seed.ts`. Defaults: 5 users (shared password `statify123`), 80 artists, 200 albums, 600 tracks, 60 MPD playlists, ~250 listening_history rows over 21 days. Runs via `pnpm --filter @statify/db db:seed`.
+- **Phase 4 status:** complete. Seed script also merged. `dev` is 52 commits ahead of `main`; hold the promotion until the initial Prisma migration lands (see blocker).
+- **Last finished:** seed script (PR #14, merged 2026-05-23).
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Pick the next Phase 5 feature row below; branch from `dev` and use the listed commit author. Catalog browsing or auth-form rows are good first targets now that seed data is available.
+- **Blocker:** no Prisma migrations exist yet. `packages/db/prisma/migrations/` is absent, so neither `db:seed` nor `db:ingest` can run against a real DB, and Render cannot run `prisma migrate deploy` for the first production deploy.
+- **Next concrete action:** generate the initial Prisma migration (see new Deployment row). Branch `chore/initial-prisma-migration`, commit author `aykhan`.
 
 ---
 
@@ -148,6 +150,7 @@
 
 ## Deployment and submission
 
+- [ ] Generate initial Prisma migration (`prisma migrate dev --name initial`); commit `packages/db/prisma/migrations/` - S - aykhan
 - [ ] Production env vars set in Vercel and Render - S - aykhan
 - [ ] Smoke test against production URLs - S - aykhan
 - [ ] Demo dataset confirmed on prod DB (10k-playlist subset ingested) - M - eljan
