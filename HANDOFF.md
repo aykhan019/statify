@@ -29,9 +29,9 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F5 (User session on the frontend) on `feat/frontend-session-foundation`. The web app now has a typed API client, server-side session lookup through the API auth session endpoint, middleware route guarding for auth-required routes, and a `useCurrentUser` provider/hook wired through the root layout.
+- **Last completed:** Phase 4 F6 (Catalog read foundation) on `feat/catalog-read-foundation`. Tracks, artists, and albums now have shared DTOs, read repositories, list/detail API endpoints, offset pagination, search/filter/sort query handling, and focused repository/service tests.
 - **Currently in progress:** none.
-- **Next concrete action:** Phase 4 F6 (Catalog read foundation): TracksRepository, ArtistsRepository, AlbumsRepository, list/detail endpoints, pagination/filter/sort, and shared DTOs.
+- **Next concrete action:** Phase 4 F7 (iTunes adapter foundation): client, adapter, persistent cache through tracks, rate limiter, fallback behavior, and mock-server integration test.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
