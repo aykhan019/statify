@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M4 Indexes + search/filter (next up; wait for explicit green light).
+- **Current milestone:** M4 Indexes + search/filter (in progress, 2/3 complete).
 - **Last finished:** M3 Audio player + listening history 6/6. Real `<audio>` playback, lazy preview-fetch endpoint, play-event POST with idempotency, recent listens page, per-track play count.
 - **Open file/component:** none.
-- **Open decisions:** none.
-- **Blocker:** none.
-- **Next concrete action:** wait for explicit green light, then start M4 Indexes + search/filter on `feat/search-and-filters` (commits attributed to `aykhan` for the raw SQL migration, `eljan` for global search, `rahila` for filter and sort controls).
+- **Open decisions:** M4 genre/year filters need approved backing data fields or an explicit scope revision.
+- **Blocker:** approved schema has no genre or release-year fields; duration and preview filters are implemented, but genre/year controls remain disabled.
+- **Next concrete action:** resolve the M4 filter scope decision before PR/merge or M5.
 
 ---
 
@@ -95,10 +95,10 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Recent listens page with infinite scroll - M - aykhan
   - [x] Per-track play count on detail pages - S - aykhan
 
-- [ ] **M4: Indexes + search/filter** - 0/3
-  - [ ] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
+- [ ] **M4: Indexes + search/filter** - 2/3
+  - [x] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
   - [ ] Filter UI: genre, year, duration range - M - rahila
-  - [ ] Sort controls on every list - S - rahila
+  - [x] Sort controls on every list - S - rahila
 
 - [ ] **M5: Personal stats and analytics views** - 0/7
   - [ ] Top artists page (advanced query #1 wired into UI with Recharts) - L - aykhan
