@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M4 Indexes + search/filter (in progress, 2/3 complete).
-- **Last finished:** M3 Audio player + listening history 6/6. Real `<audio>` playback, lazy preview-fetch endpoint, play-event POST with idempotency, recent listens page, per-track play count.
+- **Current milestone:** M5 Personal stats and analytics views. Wait for explicit green light before starting.
+- **Last shipped:** M4 Indexes + search/filter 2/3. Catalog search indexes, grouped global search, track duration/preview filters, and sort controls shipped; genre/year remains unchecked for later iTunes-derived data work.
 - **Open file/component:** none.
-- **Open decisions:** M4 genre/year filters need approved backing data fields or an explicit scope revision.
-- **Blocker:** approved schema has no genre or release-year fields; duration and preview filters are implemented, but genre/year controls remain disabled.
-- **Next concrete action:** resolve the M4 filter scope decision before PR/merge or M5.
+- **Open decisions:** none for the current milestone.
+- **Blocker:** none for milestone work.
+- **Next concrete action:** wait for green light to start M5.
 
 ---
 
@@ -85,7 +85,7 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Track detail page with preview player, artist + album links - M - rahila
   - [x] Artists list and detail with discography - M - rahila
   - [x] Albums list and detail with track list - M - rahila
-  - [ ] Genres list and detail (post-genre derivation) - M - rahila
+  - [ ] Genres list and detail (post-genre derivation; waits for later iTunes-derived genre data) - M - rahila
 
 - [x] **M3: Audio player + listening history** - 6/6
   - [x] Audio player UI (play, pause, scrub, volume) - L - rahila (depends on F7, F10)
@@ -97,7 +97,7 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
 
 - [ ] **M4: Indexes + search/filter** - 2/3
   - [x] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
-  - [ ] Filter UI: genre, year, duration range - M - rahila
+  - [ ] Filter UI: genre, year, duration range - M - rahila (duration and preview filters shipped; genre/year waits for later iTunes-derived data)
   - [x] Sort controls on every list - S - rahila
 
 - [ ] **M5: Personal stats and analytics views** - 0/7

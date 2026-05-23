@@ -30,27 +30,27 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last completed:** M3 Audio player + listening history 6/6. Real `<audio>` playback inside the F10 `AudioPlayer`, lazy preview resolution via new `POST /api/v1/tracks/:id/preview` (calls the existing `ItunesService.resolvePreview`), `PlayHistoryReporter` subscribes to the player store and POSTs `/api/v1/me/history` once per (track, play session) with a UUID idempotency key, new `GET /api/v1/me/history` (offset paginated, includes track + album + artists) and `GET /api/v1/me/history/track/:trackId/count` endpoints, `/me/history` page with infinite scroll, and per-track play count on `/catalog/tracks/[id]`.
-- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → **M4 Indexes + search/filter (current, 2/3 complete)** → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last shipped:** M4 Indexes + search/filter 2/3. Catalog pg_trgm indexes and the partial preview index are added, grouped global search is exposed through `GET /api/v1/search`, the authenticated header has debounced catalog search, track lists support duration and preview filters, and sort controls are wired on tracks, artists, and albums. Genre/year filtering stays unchecked for later iTunes-derived data work.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 (2/3 shipped) → **M5 Personal stats and analytics views (next)** → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M4 Indexes + search/filter (branch `feat/search-and-filters`). Raw SQL pg_trgm indexes, global search, duration/preview filters, and sort controls are committed locally. The genre/year filter part remains blocked because the approved schema has no genre or release-year fields.
-- **Currently in progress:** M4 filter scope decision.
+- **Current milestone:** M5 Personal stats and analytics views. Wait for explicit green light before starting.
+- **Currently in progress:** none.
 - **Open files/components:** none.
-- **Open decisions:** M4 genre/year filter data shape.
+- **Open decisions:** none for the current milestone.
 - **Open threads:**
-  - M4 branch has three implementation commits: `aykhan` for catalog search indexes, `eljan` for global search, and `rahila` for catalog filters/sort controls.
+  - M4 shipped with three implementation commits: `aykhan` for catalog search indexes, `eljan` for global search, and `rahila` for catalog filters/sort controls.
   - Global search ships as `GET /api/v1/search` with grouped track, artist, and album results. The authenticated app header has a debounced catalog search box.
-  - Track list filters support duration range and preview availability. Genre and year controls are disabled because those fields do not exist in the approved schema. Do not add genre/year schema or derivation without explicit approval and a checklist row.
+  - Track list filters support duration range and preview availability. Genre and year controls are intentionally disabled because those fields do not exist in the approved schema; leave the M4 filter row unchecked until later iTunes-derived genre/year work is approved and implemented.
   - Sort controls are wired on tracks, artists, and albums.
   - Local verification passed for format check, lint, typecheck, tests, production build, Prisma schema validation, and built web routes `/healthz`, `/login`, and `/catalog/tracks` unauthenticated redirect.
   - Full authenticated search/filter UI smoke was not completed locally because the API cannot start under local Node v26 due workspace package source-import resolution. The repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local end-to-end smoke.
-- **Blockers (gate further work):**
-  1. **M4 genre/year filters need a data decision.** Either approve a new genre/year derivation task and schema work, or revise the M4 filter row to duration/preview filters only.
-  2. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-- **Next concrete action:** Resolve the M4 filter scope decision. Do not start M5 until M4 is either fully completed or explicitly narrowed and merged.
+- **Blockers (gate further milestone work):** none.
+- **Deployment gates:**
+  1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
+- **Next concrete action:** Wait for explicit green light to start M5.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change and account deletion already audit-log via `AuthService`.
-  - Genres list/detail (M2 row) is blocked on genre derivation from iTunes `primaryGenreName`. That derivation has no current task row; if M2 needs to fully tick, add a Phase 5 row for it first.
+  - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.
   - The "play event" counts a play as soon as audio starts (one history row per track per session). If we later want a stricter rule (e.g., 50% played), update `PlayHistoryReporter` to fire from `onTimeUpdate` instead of on the playing transition.
 - **Dry-run procedure (F11), once migrations exist:** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Watch list:**
