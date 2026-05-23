@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M5 implementation complete on `feat/personal-stats-analytics`. Awaiting PR review/merge to `dev`.
-- **Last shipped:** M5 Personal stats and analytics views 8/8. All six advanced SQL queries are wired into UI: top artists/tracks (Recharts vertical bars), discover (track grid), listening heatmap (7x24 CSS grid), trending artists (Recharts), similar playlists (on /catalog/playlists/[id]), hidden gems. MPD playlist browsing was added as a prereq under M5.6.
+- **Current milestone:** M6 Playlist creation and management. Wait for explicit green light before starting.
+- **Last shipped:** M5 Personal stats and analytics views 8/8, rebase-merged into `dev` via PR #22 (merge commit `53bf98e`). All six advanced SQL queries are wired into UI; MPD playlist browsing added as a prereq under M5.6.
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
 - **Blocker:** none for milestone work.
-- **Next concrete action:** open the M5 PR into `dev`, rebase-merge once green, then wait for green light to start M6.
+- **Next concrete action:** wait for green light to start M6. Branch from `dev` with `feat/user-playlists` and implement M6 rows in checklist order, all attributed to `elshad`.
 
 ---
 
