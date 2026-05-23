@@ -15,11 +15,11 @@ export class AuthRepository extends BaseRepository {
   }
 
   findUserByEmail(email: string): Promise<User | null> {
-    return this.client.user.findFirst({ where: { email, deletedAt: null } });
+    return this.client.user.findFirst({ where: { email, deletedAt: null, bannedAt: null } });
   }
 
   findUserById(id: number): Promise<User | null> {
-    return this.client.user.findFirst({ where: { id, deletedAt: null } });
+    return this.client.user.findFirst({ where: { id, deletedAt: null, bannedAt: null } });
   }
 
   createUser(data: { email: string; passwordHash: string; displayName: string }): Promise<User> {

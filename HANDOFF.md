@@ -45,7 +45,7 @@
   - Sidebar gained a "Community" entry between "Playlists" and "Account". `/me/playlists`, `/me/playlists/new`, `/me/playlists/[id]`, `/community/playlists`, and `/community/playlists/[id]` are all new routes.
   - Local verification before push: format check, lint, typecheck across all workspaces, 127 API tests (was 116 at M5), production build (30 web routes generated, was 25 at M5). Prisma migrations untouched.
   - Full authenticated end-to-end UI smoke against a running API was not run locally because Node v26 is installed and the API source-import resolution still fails there. Repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke. M5 and M6 surfaces both need that smoke against real seeded data before the dev → main promotion.
-  - `toQueryString` is duplicated across `apps/web/src/lib/{analytics,playlists,history,user-playlists}/api.ts`. Pre-existing pattern, now in four clients; hoist into a shared util when a fifth lands.
+  - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task.
 - **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
@@ -90,6 +90,7 @@
 | 2026-05-23 | API `user-playlists` module path added                  | ADR-001 | Elshad |
 | 2026-05-24 | Web `(app)/community` route group + community pages     | ADR-001 | Elshad |
 | 2026-05-24 | Web `(app)/admin` route group + admin shell             | ADR-001 | Aykhan |
+| 2026-05-24 | `users.banned_at` column added                          | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
