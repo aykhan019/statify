@@ -13,6 +13,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { href: '/me/history', label: 'History' },
   { href: '/me/stats', label: 'Stats' },
   { href: '/discover', label: 'Discover' },
+  { href: '/explore/hidden-gems', label: 'Hidden gems' },
   { href: '/me/playlists', label: 'Playlists' },
   { href: '/me/account', label: 'Account' },
   { href: '/catalog', label: 'Catalog' },
