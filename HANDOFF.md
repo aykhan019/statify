@@ -30,22 +30,23 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last completed:** M2 Catalog browsing 4/5. Web routes `/catalog/tracks`, `/catalog/tracks/[id]`, `/catalog/artists`, `/catalog/artists/[id]`, `/catalog/albums`, `/catalog/albums/[id]` ship with infinite scroll backed by the existing F6 list/detail endpoints. The F10 `AudioPlayer` is now mounted globally in the `(app)` layout and the track detail page has a `PreviewPlayerLauncher` that loads the active track into the player store. `/catalog/genres` is a placeholder; the row stays unchecked pending iTunes-derived genres.
-- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → **M3 Audio player + listening history (current)** → M4 Indexes + search/filter → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last completed:** M3 Audio player + listening history 6/6. Real `<audio>` playback inside the F10 `AudioPlayer`, lazy preview resolution via new `POST /api/v1/tracks/:id/preview` (calls the existing `ItunesService.resolvePreview`), `PlayHistoryReporter` subscribes to the player store and POSTs `/api/v1/me/history` once per (track, play session) with a UUID idempotency key, new `GET /api/v1/me/history` (offset paginated, includes track + album + artists) and `GET /api/v1/me/history/track/:trackId/count` endpoints, `/me/history` page with infinite scroll, and per-track play count on `/catalog/tracks/[id]`.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → **M4 Indexes + search/filter (current)** → M5 Personal stats and analytics views → M6 Playlists → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M3 Audio player + listening history (commits authored by `rahila` for the player rows and `aykhan` for the listening-history rows, branch `feat/playback-history`).
+- **Current milestone:** M4 Indexes + search/filter (commits authored by `aykhan` for the pg_trgm migration, `eljan` for global search, `rahila` for filter and sort controls, branch `feat/search-and-filters`). Wait for explicit green light before starting.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
-- **Open threads:** none.
+- **Open threads:**
+  - Local verification passed for lint, typecheck, tests, production build, and built web routes `/healthz`, `/login`, and `/me/history` unauthenticated redirect.
+  - Full audio/history UI smoke was not completed locally because the API cannot start under local Node v26 due workspace package source-import resolution. The repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local end-to-end smoke.
 - **Blockers (gate further work):**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-- **Next concrete action:** Begin M3 Audio player + listening history on branch `feat/playback-history`. M3 spans `rahila`-owned audio player wiring (real `<audio>` playback, auto-fetch preview if not cached, graceful "preview unavailable") and `aykhan`-owned listening-history rows (play-event POST, recent listens page, per-track play count).
+- **Next concrete action:** Wait for explicit green light, then begin M4 Indexes + search/filter on branch `feat/search-and-filters`. The pg_trgm GIN indexes on `tracks.name`, `artists.name`, `albums.name` and the partial index on `tracks WHERE preview_url IS NOT NULL` ship as a raw SQL Prisma migration first, then the global search endpoint and UI, then the filter and sort controls.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change and account deletion already audit-log via `AuthService`.
-  - Advanced indexes (GIN trigram on `tracks.name`, `artists.name`, `albums.name`; partial index on `tracks` `WHERE preview_url IS NOT NULL`) are still pending. The `schema.prisma` header note flags these for a follow-up raw SQL migration. They must land inside M4 before the Global search bar row can complete.
   - Genres list/detail (M2 row) is blocked on genre derivation from iTunes `primaryGenreName`. That derivation has no current task row; if M2 needs to fully tick, add a Phase 5 row for it first.
-  - Real `<audio>` playback is still missing from the F10 `AudioPlayer` (UI-only). M3 must add an `<audio ref>` driven by player-store status so the "Play preview" button actually plays the 30 s preview.
+  - The "play event" counts a play as soon as audio starts (one history row per track per session). If we later want a stricter rule (e.g., 50% played), update `PlayHistoryReporter` to fire from `onTimeUpdate` instead of on the playing transition.
 - **Dry-run procedure (F11), once migrations exist:** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Watch list:**
   1. Verify commit attribution on GitHub for all four identities after the first push; if Elshad's or Rahila's `@ku.edu.tr`-authored commits do not link to their profiles, the email must be added at https://github.com/settings/emails on each account.

@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M3 Audio player + listening history (next up).
-- **Last finished:** M2 Catalog browsing 4/5 (tracks, track detail with preview launcher, artists, albums). Genres row stays unticked; it is blocked on iTunes-derived genre data and ships once derivation lands.
+- **Current milestone:** M4 Indexes + search/filter (next up; wait for explicit green light).
+- **Last finished:** M3 Audio player + listening history 6/6. Real `<audio>` playback, lazy preview-fetch endpoint, play-event POST with idempotency, recent listens page, per-track play count.
 - **Open file/component:** none.
 - **Open decisions:** none.
 - **Blocker:** none.
-- **Next concrete action:** start M3 Audio player + listening history on `feat/playback-history` (commits attributed to `rahila` + `aykhan`).
+- **Next concrete action:** wait for explicit green light, then start M4 Indexes + search/filter on `feat/search-and-filters` (commits attributed to `aykhan` for the raw SQL migration, `eljan` for global search, `rahila` for filter and sort controls).
 
 ---
 
@@ -87,13 +87,13 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Albums list and detail with track list - M - rahila
   - [ ] Genres list and detail (post-genre derivation) - M - rahila
 
-- [ ] **M3: Audio player + listening history** - 0/6
-  - [ ] Audio player UI (play, pause, scrub, volume) - L - rahila (depends on F7, F10)
-  - [ ] Auto-fetch preview on play if not cached - S - rahila (depends on F7)
-  - [ ] Graceful "preview unavailable" state - S - rahila
-  - [ ] "Play" event fires from audio player to backend - S - aykhan (depends on F8)
-  - [ ] Recent listens page with infinite scroll - M - aykhan
-  - [ ] Per-track play count on detail pages - S - aykhan
+- [x] **M3: Audio player + listening history** - 6/6
+  - [x] Audio player UI (play, pause, scrub, volume) - L - rahila (depends on F7, F10)
+  - [x] Auto-fetch preview on play if not cached - S - rahila (depends on F7)
+  - [x] Graceful "preview unavailable" state - S - rahila
+  - [x] "Play" event fires from audio player to backend - S - aykhan (depends on F8)
+  - [x] Recent listens page with infinite scroll - M - aykhan
+  - [x] Per-track play count on detail pages - S - aykhan
 
 - [ ] **M4: Indexes + search/filter** - 0/3
   - [ ] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
