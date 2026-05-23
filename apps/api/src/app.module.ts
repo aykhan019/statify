@@ -4,6 +4,7 @@ import { RequestIdMiddleware } from './common/logger/request-id.middleware';
 import { ConfigModule } from './config/config.module';
 import { PrismaModule } from './database/prisma.module';
 import { ItunesModule } from './integrations/itunes/itunes.module';
+import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CatalogModule } from './modules/catalog/catalog.module';
 import { HealthModule } from './modules/health/health.module';
@@ -19,6 +20,7 @@ import { HistoryModule } from './modules/history/history.module';
     CatalogModule,
     HealthModule,
     HistoryModule,
+    AnalyticsModule,
   ],
 })
 export class AppModule implements NestModule {
