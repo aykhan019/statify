@@ -30,14 +30,15 @@
 **Updated:** 2026-05-23
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last completed:** initial Prisma migration on `chore/initial-prisma-migration` (commit `50d4c5e`, awaiting PR + merge). The migration directory is `packages/db/prisma/migrations/20260523143947_initial/`. Generated against local docker Postgres (`docker compose up -d`) with `DATABASE_URL` sourced from `.env.local`. Verified by running `pnpm --filter @statify/db db:seed` end-to-end: 5 users / 80 artists / 200 albums / 600 tracks / 60 MPD playlists / 1243 playlist tracks / 264 listening history rows.
+- **Last completed:** M1 Auth UI on `feat/auth-ui` (awaiting PR). Backend adds `POST /auth/logout`, `POST /auth/password`, `DELETE /auth/account` (all CSRF-guarded, audit-logged), plus a `users.deleted_at` soft-delete column and a follow-up migration `20260523150122_add_user_soft_delete`. Frontend adds the `(auth)` route group (`/signup`, `/login`), a minimal `/me` overview page, `/me/account` (password change + delete), and a logout button in the app header. All forms use React Hook Form + Zod against shared schemas.
+- **Phase 5 roadmap:** M1 Auth UI (in flight) → M2 Catalog browsing → M3 Audio player + listening history → M4 pg_trgm indexes + search/filter → M5 Analytics views → M6 Playlists → M7 Admin UI → M8 Rubric docs.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
 - **Open threads:** none.
 - **Blockers (gate further work):**
-  1. **`dev` is 53 commits ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-- **Next concrete action:** Open the PR for `chore/initial-prisma-migration` into `dev` and merge with `gh pr merge <n> --rebase --delete-branch`. Then pick a Phase 5 feature row: good first targets are Signup/Login forms (commit author `aykhan`, depends on F4 which is done) or any catalog browsing page (commit author `rahila`, depends on F6/F10 which are done).
+  1. **`dev` is N commits ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
+- **Next concrete action:** Open PR for `feat/auth-ui` into `dev`, merge with `gh pr merge <n> --rebase --delete-branch`. Then begin M2 Catalog browsing on branch `feat/catalog-browsing` (commit author `rahila`).
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) as those Phase 5 endpoints land.
   - Phase 5 analytics views (top artists, discover, heatmap, etc.) and catalog browsing are the natural next targets after the auth forms.
@@ -66,6 +67,9 @@
 | 2026-05-23 | API admin module path added                      | ADR-001 | Aykhan |
 | 2026-05-23 | DB seed module path added                        | ADR-001 | Eljan  |
 | 2026-05-23 | DB package `argon2` dependency added             | ADR-001 | Eljan  |
+| 2026-05-23 | `users.deleted_at` column added (soft delete)    | ADR-001 | Aykhan |
+| 2026-05-23 | Web `react-hook-form` dependency added           | ADR-001 | Aykhan |
+| 2026-05-23 | Web `(auth)` route group + auth forms added      | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

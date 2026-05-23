@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script merged. Initial Prisma migration committed on `chore/initial-prisma-migration` (commit `50d4c5e`), awaiting PR + merge to `dev`. After that lands, `dev` will be 53 commits ahead of `main`; hold the promotion until Phase 6 deployment items are unblocked.
-- **Last finished:** initial Prisma migration (`packages/db/prisma/migrations/20260523143947_initial/`); verified by running `db:seed` end-to-end against local docker Postgres.
-- **Working on now:** none.
+- **Last finished:** M1 Auth UI (signup, login, logout, password change, account deletion). Soft-delete schema column + migration `20260523150122_add_user_soft_delete`.
+- **Working on now:** Phase 5 roadmap, milestone by milestone. M2 Catalog browsing is the next milestone.
 - **Open file/component:** none.
 - **Open decisions:** none.
 - **Blocker:** none.
-- **Next concrete action:** open PR for `chore/initial-prisma-migration` into `dev` and merge with `--rebase`. Then start a Phase 5 row: Signup/Login forms (`aykhan`) or Tracks list page (`rahila`).
+- **Next concrete action:** open PR for `feat/auth-ui` into `dev`, merge with `--rebase`. Then start M2 Catalog browsing on `feat/catalog-browsing` (commits attributed to `rahila`).
 
 ---
 
@@ -87,11 +87,11 @@
 
 ### Accounts and authentication
 
-- [ ] Signup form + validation + success state - M - aykhan (depends on F4)
-- [ ] Login form + error states - M - aykhan
-- [ ] Logout - S - aykhan
-- [ ] Password change - M - aykhan
-- [ ] Account deletion (soft delete, audit logged) - M - aykhan
+- [x] Signup form + validation + success state - M - aykhan (depends on F4)
+- [x] Login form + error states - M - aykhan
+- [x] Logout - S - aykhan
+- [x] Password change - M - aykhan
+- [x] Account deletion (soft delete, audit logged) - M - aykhan
 
 ### Listening history
 
