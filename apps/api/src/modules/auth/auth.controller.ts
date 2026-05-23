@@ -1,7 +1,9 @@
-import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Post, Req, Res, UseGuards } from '@nestjs/common';
 import {
+  AppError,
   AuthResponse,
   COOKIE_NAMES,
+  ErrorCode,
   LoginRequest,
   LoginRequestSchema,
   RegisterRequest,
@@ -11,8 +13,10 @@ import type { Request, Response } from 'express';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { AuthCookieService } from './auth-cookie.service';
 import { AuthService } from './auth.service';
+import type { AuthenticatedUser, RequestWithUser } from './auth.types';
 import { getCookie } from './cookie.utils';
 import { CsrfGuard } from './guards/csrf.guard';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -62,6 +66,12 @@ export class AuthController {
 
     return { user: session.user };
   }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  me(@Req() request: Request & RequestWithUser): AuthResponse {
+    return { user: getAuthenticatedUser(request) };
+  }
 }
 
 function getRequestContext(request: Request) {
@@ -69,4 +79,16 @@ function getRequestContext(request: Request) {
     userAgent: request.get('user-agent'),
     ipAddr: request.ip,
   };
+}
+
+function getAuthenticatedUser(request: RequestWithUser): AuthenticatedUser {
+  if (request.user === undefined) {
+    throw new AppError({
+      code: ErrorCode.UNAUTHENTICATED,
+      message: 'Authentication required',
+      httpStatus: HttpStatus.UNAUTHORIZED,
+    });
+  }
+
+  return request.user;
 }

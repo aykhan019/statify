@@ -11,6 +11,7 @@ describe('JwtAuthGuard', () => {
       verifyAccessToken: vi.fn().mockResolvedValue({
         sub: 1,
         email: 'user@example.com',
+        displayName: 'Admin User',
         role: 'admin',
       }),
     } as unknown as AuthTokenService;
@@ -23,7 +24,7 @@ describe('JwtAuthGuard', () => {
     expect(request.user).toEqual({
       id: 1,
       email: 'user@example.com',
-      displayName: '',
+      displayName: 'Admin User',
       role: 'admin',
     });
   });

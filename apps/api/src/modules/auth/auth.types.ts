@@ -7,6 +7,7 @@ export type AuthTokenType = 'access' | 'refresh';
 export interface AuthTokenPayload {
   sub: number;
   email: string;
+  displayName: string;
   role: UserRole;
   type: AuthTokenType;
   jti: string;

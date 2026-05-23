@@ -42,6 +42,7 @@ export class AuthTokenService {
       {
         sub: user.id,
         email: user.email,
+        displayName: user.displayName,
         role: user.role,
         type,
         jti: randomUUID(),
