@@ -11,7 +11,8 @@ describe('TracksService', () => {
       findById: vi.fn(),
       list: vi.fn().mockResolvedValue({ data: [createTrackRecord()], total: 1 }),
     } as unknown as TracksRepository;
-    const service = new TracksService(repository);
+    const previewProvider = { resolvePreview: vi.fn() };
+    const service = new TracksService(repository, previewProvider);
 
     await expect(service.list(query)).resolves.toEqual({
       data: [
@@ -53,7 +54,8 @@ describe('TracksService', () => {
       findById: vi.fn().mockResolvedValue(null),
       list: vi.fn(),
     } as unknown as TracksRepository;
-    const service = new TracksService(repository);
+    const previewProvider = { resolvePreview: vi.fn() };
+    const service = new TracksService(repository, previewProvider);
 
     await expect(service.getById(404)).rejects.toMatchObject({
       code: ErrorCode.TRACK_NOT_FOUND,

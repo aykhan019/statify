@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ItunesModule } from '../../integrations/itunes/itunes.module';
+import { AuthModule } from '../auth/auth.module';
 import { AlbumsController } from './albums.controller';
 import { AlbumsRepository } from './albums.repository';
 import { AlbumsService } from './albums.service';
@@ -10,6 +12,7 @@ import { TracksRepository } from './tracks.repository';
 import { TracksService } from './tracks.service';
 
 @Module({
+  imports: [AuthModule, ItunesModule],
   controllers: [AlbumsController, ArtistsController, TracksController],
   providers: [
     AlbumsRepository,
