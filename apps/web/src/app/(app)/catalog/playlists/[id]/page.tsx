@@ -2,14 +2,17 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { TrackRow } from '@/components/catalog';
+import { SimilarPlaylistsList } from '@/components/playlists/SimilarPlaylistsList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { fetchSimilarPlaylists } from '@/lib/analytics/api';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchPlaylistDetail, fetchPlaylistTracks } from '@/lib/playlists/api';
 
 export const dynamic = 'force-dynamic';
 
 const TRACK_PAGE_SIZE = 30;
+const SIMILAR_LIMIT = 10;
 
 interface PageParams {
   id: string;
@@ -39,12 +42,18 @@ export default async function PlaylistDetailPage({
 
   let playlist;
   let tracks;
+  let similar;
   try {
-    [playlist, tracks] = await Promise.all([
+    [playlist, tracks, similar] = await Promise.all([
       fetchPlaylistDetail(playlistId, { cookieHeader, cache: 'no-store' }),
       fetchPlaylistTracks(
         playlistId,
         { page: trackPage, limit: TRACK_PAGE_SIZE },
+        { cookieHeader, cache: 'no-store' },
+      ),
+      fetchSimilarPlaylists(
+        playlistId,
+        { limit: SIMILAR_LIMIT },
         { cookieHeader, cache: 'no-store' },
       ),
     ]);
@@ -61,6 +70,14 @@ export default async function PlaylistDetailPage({
         title={playlist.name}
         description={`${playlist.trackCount.toLocaleString()} tracks · ${playlist.numFollowers.toLocaleString()} followers · MPD #${playlist.mpdPid}`}
       />
+      <Card>
+        <CardHeader>
+          <CardTitle>Similar playlists</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SimilarPlaylistsList entries={similar.entries} />
+        </CardContent>
+      </Card>
       <Card>
         <CardHeader>
           <CardTitle>Tracks</CardTitle>
