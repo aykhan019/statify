@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { LogoutButton } from '@/components/auth';
+import { AudioPlayer } from '@/components/player';
 import { Header } from '@/components/ui/Header';
 import { Sidebar, type SidebarItem } from '@/components/ui/Sidebar';
 import { getServerSession } from '@/lib/auth/session';
@@ -48,6 +49,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       <div className="flex flex-1">
         <Sidebar items={SIDEBAR_ITEMS} />
         <main className="flex-1 p-6 sm:p-10">{children}</main>
+      </div>
+      <div className="pointer-events-none fixed inset-x-0 bottom-4 z-20 flex justify-center px-4">
+        <div className="pointer-events-auto w-full max-w-3xl">
+          <AudioPlayer />
+        </div>
       </div>
     </div>
   );
