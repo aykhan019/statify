@@ -9,5 +9,6 @@ export const COOKIE_NAMES = {
 
 export const HEADERS = {
   CSRF: 'X-CSRF-Token',
+  IDEMPOTENCY: 'Idempotency-Key',
   REQUEST_ID: 'X-Request-Id',
 } as const;
