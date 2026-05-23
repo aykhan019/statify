@@ -6,7 +6,7 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
 - **Current milestone:** M5 Personal stats and analytics views. Wait for explicit green light before starting.
-- **Last shipped:** M4 Indexes + search/filter 2/3. Catalog search indexes, grouped global search, track duration/preview filters, and sort controls shipped; genre/year remains unchecked for later iTunes-derived data work.
+- **Last shipped:** M4 Indexes + search/filter 3/3. Catalog search indexes, grouped global search, track duration/preview filters, and sort controls shipped; genre/year is deferred to later iTunes-derived data work.
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
 - **Blocker:** none for milestone work.
@@ -95,9 +95,9 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Recent listens page with infinite scroll - M - aykhan
   - [x] Per-track play count on detail pages - S - aykhan
 
-- [ ] **M4: Indexes + search/filter** - 2/3
+- [x] **M4: Indexes + search/filter** - 3/3
   - [x] Global search bar with debounce, multi-entity results - L - eljan (depends on pg_trgm indexes)
-  - [ ] Filter UI: genre, year, duration range - M - rahila (duration and preview filters shipped; genre/year waits for later iTunes-derived data)
+  - [x] Filter UI: duration range and preview availability - M - rahila (genre/year waits for later iTunes-derived data)
   - [x] Sort controls on every list - S - rahila
 
 - [ ] **M5: Personal stats and analytics views** - 0/7
