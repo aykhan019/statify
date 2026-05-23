@@ -6,11 +6,11 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
 - **Current milestone:** M7 Admin / data management. Wait for explicit green light before starting.
-- **Last shipped:** M6 Playlist creation and management 4/4, on `feat/user-playlists` branch awaiting PR review. All four rows attributed to `elshad`: create, add/remove + drag-drop reorder, public/private toggle, browse community public playlists. Two new web sections (`/me/playlists`, `/community/playlists`) and two new API surfaces (`/me/playlists`, `/user-playlists`).
+- **Last shipped:** M6 Playlist creation and management 4/4, rebase-merged into `dev` via PR #23 (closeout commit `b2f7485`). All four rows attributed to `elshad`: create, add/remove + drag-drop reorder, public/private toggle, browse community public playlists. Two new web sections (`/me/playlists`, `/community/playlists`) and two new API surfaces (`/me/playlists`, `/user-playlists`).
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
 - **Blocker:** none for milestone work.
-- **Next concrete action:** open PR for `feat/user-playlists` into `dev`, rebase-merge on approval, then wait for green light to start M7. M7 rows include three rows attributed to `aykhan` and one to `eljan`; admin module skeleton (F12) and audit-log writer are already in place.
+- **Next concrete action:** wait for green light to start M7. Branch from `dev` with `feat/admin-ui` and implement M7 rows in checklist order. Three rows are attributed to `aykhan` and one to `eljan`; admin module skeleton (F12) and audit-log writer are already in place.
 
 ---
 
