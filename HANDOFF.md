@@ -86,6 +86,7 @@
 | 2026-05-23 | Catalog pg_trgm and partial preview indexes added       | ADR-001 | Aykhan |
 | 2026-05-23 | Web `recharts` dependency added (analytics charts)      | ADR-001 | Aykhan |
 | 2026-05-23 | API `mpd-playlists` module + `/playlists` browsing      | ADR-001 | Eljan  |
+| 2026-05-23 | API `user-playlists` module path added                  | ADR-001 | Elshad |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

@@ -11,6 +11,7 @@ import { CatalogModule } from './modules/catalog/catalog.module';
 import { HealthModule } from './modules/health/health.module';
 import { HistoryModule } from './modules/history/history.module';
 import { MpdPlaylistsModule } from './modules/mpd-playlists/mpd-playlists.module';
+import { UserPlaylistsModule } from './modules/user-playlists/user-playlists.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { MpdPlaylistsModule } from './modules/mpd-playlists/mpd-playlists.module
     HealthModule,
     HistoryModule,
     MpdPlaylistsModule,
+    UserPlaylistsModule,
     AnalyticsModule,
     AdminModule,
   ],
