@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import { UserRoleSchema } from './auth';
+import { OffsetPaginationQuerySchema } from './pagination';
 
 export const AuditLogActionSchema = z.string().trim().min(1).max(100);
 
@@ -39,3 +41,40 @@ export type AuditLogWriteInput = z.infer<typeof AuditLogWriteInputSchema>;
 export type AuditLogEntry = z.infer<typeof AuditLogEntrySchema>;
 export type AuditLogMetadata = z.infer<typeof AuditLogMetadataSchema>;
 export type AdminStatusResponse = z.infer<typeof AdminStatusResponseSchema>;
+
+export const AdminUserListItemSchema = z.object({
+  id: z.number().int(),
+  email: z.string().email(),
+  displayName: z.string(),
+  role: UserRoleSchema,
+  createdAt: z.string().datetime(),
+  lastLoginAt: z.string().datetime().nullable(),
+  bannedAt: z.string().datetime().nullable(),
+  deletedAt: z.string().datetime().nullable(),
+});
+
+export const AdminUsersListQuerySchema = OffsetPaginationQuerySchema.extend({
+  q: z.string().trim().min(1).max(100).optional(),
+});
+
+export const AdminUserListResponseSchema = z.object({
+  data: z.array(AdminUserListItemSchema),
+  limit: z.number().int(),
+  page: z.number().int(),
+  total: z.number().int(),
+  totalPages: z.number().int(),
+});
+
+export const UpdateUserRoleRequestSchema = z.object({
+  role: UserRoleSchema,
+});
+
+export const UpdateUserBanRequestSchema = z.object({
+  banned: z.boolean(),
+});
+
+export type AdminUserListItem = z.infer<typeof AdminUserListItemSchema>;
+export type AdminUsersListQuery = z.infer<typeof AdminUsersListQuerySchema>;
+export type AdminUserListResponse = z.infer<typeof AdminUserListResponseSchema>;
+export type UpdateUserRoleRequest = z.infer<typeof UpdateUserRoleRequestSchema>;
+export type UpdateUserBanRequest = z.infer<typeof UpdateUserBanRequestSchema>;

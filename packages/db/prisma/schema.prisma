@@ -134,6 +134,7 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   lastLoginAt  DateTime? @map("last_login_at")
   deletedAt    DateTime? @map("deleted_at")
+  bannedAt     DateTime? @map("banned_at")
 
   refreshTokens    RefreshToken[]
   listeningHistory ListeningHistory[]
@@ -141,6 +142,7 @@ model User {
   auditLog         AuditLog[]
 
   @@index([deletedAt])
+  @@index([bannedAt])
   @@map("users")
 }
 
