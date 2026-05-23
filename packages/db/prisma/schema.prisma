@@ -135,12 +135,14 @@ model User {
   role         UserRole  @default(user)
   createdAt    DateTime  @default(now()) @map("created_at")
   lastLoginAt  DateTime? @map("last_login_at")
+  deletedAt    DateTime? @map("deleted_at")
 
   refreshTokens    RefreshToken[]
   listeningHistory ListeningHistory[]
   userPlaylists    UserPlaylist[]
   auditLog         AuditLog[]
 
+  @@index([deletedAt])
   @@map("users")
 }
 
