@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M6 Playlist creation and management. Wait for explicit green light before starting.
-- **Last shipped:** M5 Personal stats and analytics views 8/8, rebase-merged into `dev` via PR #22 (merge commit `53bf98e`). All six advanced SQL queries are wired into UI; MPD playlist browsing added as a prereq under M5.6.
+- **Current milestone:** M7 Admin / data management. Wait for explicit green light before starting.
+- **Last shipped:** M6 Playlist creation and management 4/4, on `feat/user-playlists` branch awaiting PR review. All four rows attributed to `elshad`: create, add/remove + drag-drop reorder, public/private toggle, browse community public playlists. Two new web sections (`/me/playlists`, `/community/playlists`) and two new API surfaces (`/me/playlists`, `/user-playlists`).
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
 - **Blocker:** none for milestone work.
-- **Next concrete action:** wait for green light to start M6. Branch from `dev` with `feat/user-playlists` and implement M6 rows in checklist order, all attributed to `elshad`.
+- **Next concrete action:** open PR for `feat/user-playlists` into `dev`, rebase-merge on approval, then wait for green light to start M7. M7 rows include three rows attributed to `aykhan` and one to `eljan`; admin module skeleton (F12) and audit-log writer are already in place.
 
 ---
 
@@ -110,11 +110,11 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Similar playlists (#5) - M - eljan
   - [x] Hidden gems (#6) - M - eljan
 
-- [ ] **M6: Playlist creation and management** - 0/4
-  - [ ] Create user playlist - M - elshad
-  - [ ] Add/remove tracks, reorder (drag-drop) - L - elshad
-  - [ ] Public vs private toggle - S - elshad
-  - [ ] Browse other users' public playlists - M - elshad
+- [x] **M6: Playlist creation and management** - 4/4
+  - [x] Create user playlist - M - elshad
+  - [x] Add/remove tracks, reorder (drag-drop) - L - elshad
+  - [x] Public vs private toggle - S - elshad
+  - [x] Browse other users' public playlists - M - elshad
 
 - [ ] **M7: Admin / data management** - 0/4
   - [ ] Admin login route + role gate - S - aykhan (depends on F12)

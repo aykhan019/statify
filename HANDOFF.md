@@ -27,30 +27,30 @@
 
 ## 2. Current State
 
-**Updated:** 2026-05-23
+**Updated:** 2026-05-24
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last shipped:** M5 Personal stats and analytics views 8/8, rebase-merged into `dev` via PR #22 (merge commit `53bf98e`). The six advanced SQL queries are wired into UI: top artists and top tracks (Recharts vertical bars + detail lists), discover (track grid), listening heatmap (7x24 CSS grid with accent-token intensity), trending artists (Recharts + growth deltas), similar playlists (on the new `/catalog/playlists/[id]` detail page), and hidden gems (track grid). MPD playlist browsing endpoints and pages shipped as a prereq for the similar-playlists wiring.
-- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → **M6 Playlists (next)** → M7 Admin UI → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last shipped:** M6 Playlist creation and management 4/4, on `feat/user-playlists` branch awaiting PR review and rebase merge into `dev`. All four rows (`create`, `add/remove + drag-drop reorder`, `public/private toggle`, `browse community public`) are attributed to `elshad`. The branch adds the `UserPlaylistsModule` (six owner-scoped routes under `/me/playlists/*` plus three read-only public routes under `/user-playlists/*`) and three new web sections (`/me/playlists`, `/me/playlists/[id]`, `/community/playlists` + detail). No new Prisma migration required since the `user_playlists` and `user_playlist_tracks` tables were already in the schema.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → **M7 Admin UI (next)** → M8 Rubric / quality demands. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M6 Playlist creation and management. Wait for explicit green light before starting.
+- **Current milestone:** M7 Admin / data management. Wait for explicit green light before starting.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none for the current milestone.
 - **Open threads:**
-  - M5 shipped with 10 commits across `aykhan` (Recharts scaffolding, top artists, top tracks, discover, heatmap, docs) and `eljan` (trending artists, MPD playlist browsing, similar playlists, hidden gems). Verified attribution on `dev` after rebase merge.
-  - New shared DTO module `packages/shared/src/dto/playlists.ts` covers the MPD playlist surface. New API module `apps/api/src/modules/mpd-playlists/` owns `GET /playlists`, `GET /playlists/:id`, and `GET /playlists/:id/tracks`. The existing `PlaylistsSimilarityController` still owns `GET /playlists/:id/similar` under the analytics module.
-  - Web side adds `/me/stats/{top-artists,top-tracks,heatmap,trending}`, `/discover`, `/explore/hidden-gems`, and `/catalog/playlists` (list + detail). The detail page hangs the Jaccard similar-playlists section off the existing analytics endpoint. Sidebar got Discover and Hidden gems entries; catalog sub-nav got a Playlists tab.
-  - Recharts is the chart library; the heatmap is a plain CSS grid (Recharts has no first-class categorical heatmap). Chart primitives (`ChartContainer`, theme constants) live in `apps/web/src/components/stats/ChartContainer.tsx`.
-  - Top-tracks endpoint (`/me/stats/top-tracks`) was added in this milestone since F9 only shipped the five other queries. It is a `DENSE_RANK()` variant of the top-artists query without the `HAVING count > 1` filter (track-level repeats are rarer than artist-level).
-  - Local verification before merge: format check, lint, typecheck across all workspaces, 114 API tests, production build (25 web routes generated), Prisma schema validate (with dummy `DATABASE_URL`/`DIRECT_URL` because the local shell has none). CI on PR #22 passed in 1m33s.
-  - Full authenticated end-to-end UI smoke against a running API was not run locally because Node v26 is installed and the API source-import resolution still fails there. Repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke. M5 surfaces still need that smoke against real seeded data before the dev → main promotion.
-  - `toQueryString` is duplicated across `apps/web/src/lib/{analytics,playlists,history}/api.ts`. Pre-existing pattern; hoist later if a fourth client appears.
+  - M6 shipped as four `elshad` feat commits on `feat/user-playlists` plus one `aykhan` docs commit recording the milestone closeout. Drag-drop reorder uses the native HTML5 drag-drop API (no new dependency added, so no ADR was needed); the up/down arrow buttons are the explicit keyboard and touch fallback.
+  - M6 design call (recorded for future similar features): the reorder API takes the full new ordering of `trackIds`, server validates the set matches the current playlist contents, deletes all `user_playlist_tracks` rows in a transaction, and re-inserts in the new order preserving each row's `addedAt`. Add/remove also touch `user_playlists.updated_at` explicitly inside their transactions because Prisma's `@updatedAt` does not fire from child-table writes. Duplicate tracks per user playlist are rejected with 409 (MPD-style "same track at multiple positions" is allowed at the schema layer but not at the API layer).
+  - `UserPlaylistTracksQuerySchema` diverges from the generic `OffsetPaginationQuerySchema` so the detail page can request up to `USER_PLAYLIST_MAX_TRACKS=500` tracks in one request. That bigger window is what makes the full-set reorder PATCH safe from the client.
+  - The `UserPlaylistsModule` has two controllers: `UserPlaylistsController` (`/me/playlists/*`, owner-scoped, mutating routes CSRF guarded) and `PublicUserPlaylistsController` (`/user-playlists/*`, read-only, public-gated). Service-layer `requireOwned` and `requirePublic` helpers keep the authorization decision in one place.
+  - Sidebar gained a "Community" entry between "Playlists" and "Account". `/me/playlists`, `/me/playlists/new`, `/me/playlists/[id]`, `/community/playlists`, and `/community/playlists/[id]` are all new routes.
+  - Local verification before push: format check, lint, typecheck across all workspaces, 127 API tests (was 116 at M5), production build (30 web routes generated, was 25 at M5). Prisma migrations untouched.
+  - Full authenticated end-to-end UI smoke against a running API was not run locally because Node v26 is installed and the API source-import resolution still fails there. Repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke. M5 and M6 surfaces both need that smoke against real seeded data before the dev → main promotion.
+  - `toQueryString` is duplicated across `apps/web/src/lib/{analytics,playlists,history,user-playlists}/api.ts`. Pre-existing pattern, now in four clients; hoist into a shared util when a fifth lands.
 - **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
-  2. M5 surfaces need an authed end-to-end smoke against a Node 22 API with seeded listening history before the dev → main promotion.
-- **Next concrete action:** Start M6 only after explicit green light. Branch from `dev` with `feat/user-playlists`, implement the M6 rows in checklist order. All four M6 rows are attributed to `elshad`. The `user_playlists` and `user_playlist_tracks` tables already exist in the Prisma schema (ADR-001 Section 3.2); no new migrations expected for the core CRUD, though drag-drop reorder may need an `updatedAt` touch pattern worth a quick design decision before coding.
+  2. M5 and M6 surfaces need an authed end-to-end smoke against a Node 22 API with seeded listening history and at least one seeded public user playlist before the dev → main promotion.
+- **Next concrete action:** open PR for `feat/user-playlists` into `dev` with the per-task commits preserved, rebase-merge on approval, then wait for green light to start M7. M7 rows include three attributed to `aykhan` (admin login route, users list with ban/role change, audit-log viewer) and one to `eljan` (ingestion run trigger from admin UI). The `AdminModule` skeleton and `AuditLogService` are already in place from F12; M7 is the UI layer plus the admin-side endpoints.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change and account deletion already audit-log via `AuthService`.
   - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.
@@ -87,6 +87,7 @@
 | 2026-05-23 | Web `recharts` dependency added (analytics charts)      | ADR-001 | Aykhan |
 | 2026-05-23 | API `mpd-playlists` module + `/playlists` browsing      | ADR-001 | Eljan  |
 | 2026-05-23 | API `user-playlists` module path added                  | ADR-001 | Elshad |
+| 2026-05-24 | Web `(app)/community` route group + community pages     | ADR-001 | Elshad |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
