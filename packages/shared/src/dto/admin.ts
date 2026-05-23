@@ -78,3 +78,39 @@ export type AdminUsersListQuery = z.infer<typeof AdminUsersListQuerySchema>;
 export type AdminUserListResponse = z.infer<typeof AdminUserListResponseSchema>;
 export type UpdateUserRoleRequest = z.infer<typeof UpdateUserRoleRequestSchema>;
 export type UpdateUserBanRequest = z.infer<typeof UpdateUserBanRequestSchema>;
+
+export const IngestCheckpointSchema = z.object({
+  id: z.number().int(),
+  sliceFilename: z.string(),
+  playlistsTotal: z.number().int(),
+  playlistsDone: z.number().int(),
+  artistsUpserted: z.number().int(),
+  albumsUpserted: z.number().int(),
+  tracksUpserted: z.number().int(),
+  startedAt: z.string().datetime(),
+  completedAt: z.string().datetime().nullable(),
+  errorMessage: z.string().nullable(),
+});
+
+export const IngestRunsListResponseSchema = z.object({
+  data: z.array(IngestCheckpointSchema),
+  running: z.boolean(),
+  startedAt: z.string().datetime().nullable(),
+});
+
+export const TriggerIngestRunRequestSchema = z.object({
+  dataDir: z.string().trim().min(1).max(255).optional(),
+  slices: z.number().int().min(1).max(50).optional(),
+  resume: z.boolean().default(true),
+  batchSize: z.number().int().min(1).max(5000).optional(),
+});
+
+export const TriggerIngestRunResponseSchema = z.object({
+  accepted: z.boolean(),
+  message: z.string(),
+});
+
+export type IngestCheckpoint = z.infer<typeof IngestCheckpointSchema>;
+export type IngestRunsListResponse = z.infer<typeof IngestRunsListResponseSchema>;
+export type TriggerIngestRunRequest = z.infer<typeof TriggerIngestRunRequestSchema>;
+export type TriggerIngestRunResponse = z.infer<typeof TriggerIngestRunResponseSchema>;
