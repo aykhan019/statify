@@ -29,9 +29,10 @@
 
 **Updated:** 2026-05-23
 
-- **Last completed:** Phase 4 F11 (MPD ingestion CLI) on `feat/mpd-ingestion-cli`. `packages/db/src/ingest/` now ships a CLI (`pnpm --filter @statify/db db:ingest -- --data-dir <path> --slices N --resume`) that discovers `mpd.slice.<start>-<end>.json` files, parses one slice at a time, normalizes raw playlists into deduplicated artists/albums/tracks/track_artists plus playlists/playlist_tracks, runs batched `createMany` upserts with `skipDuplicates` (default 500 per batch, configurable via `--batch-size`), and tracks progress in the new `ingest_checkpoints` table for resume on failure. Vitest is now wired into `packages/db` with 31 unit tests (normalize, parse, discover, args, upsert, checkpoint, run).
+- **Last completed:** Phase 4 F12 (admin extensibility foundation) on `feat/admin-extensibility-foundation`. `apps/api/src/modules/admin/` now ships `AuditLogRepository` + `AuditLogService` (write-only foundation, callable by other modules via the exported provider) and a minimal `AdminController` exposing `GET /api/v1/admin/status` guarded by `JwtAuthGuard` + `RolesGuard('admin')`. Shared DTOs for `AuditLogWriteInput`, `AuditLogEntry`, and `AdminStatusResponse` landed in `packages/shared/src/dto/admin.ts`. With this, every Phase 4 foundation piece (F1-F12) is complete.
 - **Currently in progress:** none.
-- **Next concrete action:** Start `feat/admin-extensibility-foundation` from `dev` for Phase 4 F12, using commit author `aykhan`. Build the audit log writer, admin module skeleton, and `RolesGuard` usage; no UI yet. Read ADR-001 Sections 3.5, 3.12, and 3.19 before editing.
+- **Next concrete action:** Phase 4 foundation work is done; transition to Phase 5. Pick a feature from the Phase 5 roadmap in `CHECKLIST.md` (catalog browsing pages, auth flows, listening history wiring, analytics views, playlists CRUD, audio player UI, or admin pages). For each, branch from `dev` and use the commit author listed in the row.
+- **Follow-ups (not yet on CHECKLIST):** wire `AuditLogService.record(...)` into privileged actions per ADR-001 Section 3.12 (login, password change, account deletion) when those Phase 5 endpoints are built. The audit-log read/list endpoint is part of the Phase 5 "Audit log viewer" task.
 - **Dry-run procedure (F11):** download MPD slices to `data/mpd/` (gitignored), run `pnpm --filter @statify/db prisma:migrate:dev`, then `pnpm --filter @statify/db db:ingest -- --data-dir data/mpd --slices 10 --resume`. Inspect `ingest_checkpoints` for per-slice progress and any `error_message`. The 10k-playlist dry-run itself requires the dataset and is a manual verification step outside CI.
 - **Open files/components:** none.
 - **Open decisions:** none blocking.
@@ -55,6 +56,7 @@
 | 2026-05-23 | Web `zustand` dependency added (player store)    | ADR-001 | Rahila |
 | 2026-05-23 | `ingest_checkpoints` table added                 | ADR-001 | Eljan  |
 | 2026-05-23 | DB package `vitest` dependency added             | ADR-001 | Eljan  |
+| 2026-05-23 | API admin module path added                      | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

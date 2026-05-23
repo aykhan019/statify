@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F11 (MPD ingestion CLI). `packages/db/src/ingest/` ships discover/parse/normalize/upsert/checkpoint modules, a `--data-dir/--slices/--resume/--batch-size` CLI, and the `ingest_checkpoints` table. Vitest is wired into the db package with 31 unit tests covering every module.
+- **Last finished:** Phase 4 F12 (admin extensibility foundation). `AuditLogRepository`/`AuditLogService` provide the writer foundation; `AdminController` exposes `GET /api/v1/admin/status` guarded by `JwtAuthGuard` + `RolesGuard('admin')`. Shared DTOs cover `AuditLogWriteInput`, `AuditLogEntry`, and `AdminStatusResponse`. Phase 4 foundations are now complete.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F12. Start `feat/admin-extensibility-foundation` from `dev` with commit author `aykhan`; build the audit log writer, admin module skeleton, and `RolesGuard` usage. No UI yet.
+- **Next concrete action:** Transition to Phase 5. Pick the next feature row from the Phase 5 roadmap below; branch from `dev` and use the listed commit author.
 
 ---
 
@@ -65,7 +65,7 @@
 - [x] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
 - [x] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
 - [x] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
-- [ ] **F12: Admin extensibility foundation** (audit log writer, admin module skeleton, RolesGuard usage, no UI yet) - M - aykhan
+- [x] **F12: Admin extensibility foundation** (audit log writer, admin module skeleton, RolesGuard usage, no UI yet) - M - aykhan
 
 ## Phase 5, Feature Roadmap (decomposed)
 
