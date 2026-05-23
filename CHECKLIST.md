@@ -4,11 +4,11 @@
 
 ## Current State (updated every session)
 
-- **Last finished:** Phase 4 F10 (frontend design system foundation). Tokens, primitive components (Button, Card, Input, Label, Skeleton, Container, PageHeader, Header, Sidebar), `(marketing)` and `(app)` route groups with shell composition, and an audio-player scaffold backed by a `zustand` store with idle/loading/playing/paused/unavailable status.
+- **Last finished:** Phase 4 F11 (MPD ingestion CLI). `packages/db/src/ingest/` ships discover/parse/normalize/upsert/checkpoint modules, a `--data-dir/--slices/--resume/--batch-size` CLI, and the `ingest_checkpoints` table. Vitest is wired into the db package with 31 unit tests covering every module.
 - **Working on now:** none.
 - **Open file/component:** none.
 - **Open decisions:** none.
-- **Next concrete action:** Phase 4 F11. Start `feat/mpd-ingestion-cli` from `dev` with commit author `eljan`; build the MPD parser, normalizer, batched upserts, checkpoint table, resume capability, and the 10k-playlist dry run.
+- **Next concrete action:** Phase 4 F12. Start `feat/admin-extensibility-foundation` from `dev` with commit author `aykhan`; build the audit log writer, admin module skeleton, and `RolesGuard` usage. No UI yet.
 
 ---
 
@@ -64,7 +64,7 @@
 - [x] **F8: Listening history foundation** (write endpoint with idempotency, repository, schema, indexes) - M - aykhan
 - [x] **F9: Analytics foundation** (the six advanced SQL queries, raw $queryRaw, typed return types, unit tests with seed data) - XL - aykhan
 - [x] **F10: Frontend design system foundation** (theme tokens, base components, layout primitives, navigation shell, audio player component) - L - rahila
-- [ ] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
+- [x] **F11: MPD ingestion CLI** (parser, normalizer, batched upserts, checkpoint table, resume capability, 10k-playlist dry run) - XL - eljan
 - [ ] **F12: Admin extensibility foundation** (audit log writer, admin module skeleton, RolesGuard usage, no UI yet) - M - aykhan
 
 ## Phase 5, Feature Roadmap (decomposed)
