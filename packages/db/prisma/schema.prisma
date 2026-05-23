@@ -230,3 +230,18 @@ model AuditLog {
   @@index([targetTable, targetId])
   @@map("audit_log")
 }
+
+model IngestCheckpoint {
+  id              Int       @id @default(autoincrement())
+  sliceFilename   String    @unique @map("slice_filename")
+  playlistsTotal  Int       @map("playlists_total")
+  playlistsDone   Int       @default(0) @map("playlists_done")
+  artistsUpserted Int       @default(0) @map("artists_upserted")
+  albumsUpserted  Int       @default(0) @map("albums_upserted")
+  tracksUpserted  Int       @default(0) @map("tracks_upserted")
+  startedAt       DateTime  @default(now()) @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  errorMessage    String?   @map("error_message")
+
+  @@map("ingest_checkpoints")
+}
