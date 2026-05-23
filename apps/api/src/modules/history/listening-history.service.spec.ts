@@ -67,6 +67,74 @@ describe('ListeningHistoryService', () => {
     expect(result.idempotent).toBe(true);
   });
 
+  it('returns paginated listens with track shape for the user', async () => {
+    const repository = createRepository({
+      listForUser: vi.fn().mockResolvedValue({
+        data: [
+          {
+            id: 1,
+            userId: 1,
+            trackId: 10,
+            playedAt: new Date('2026-05-23T10:00:00.000Z'),
+            source: 'preview',
+            durationPlayedMs: 30_000,
+            idempotencyKey: null,
+            track: {
+              id: 10,
+              name: 'Track A',
+              durationMs: 180_000,
+              previewUrl: null,
+              album: {
+                id: 5,
+                name: 'Album',
+                spotifyUri: 'spotify:album:5',
+                primaryArtist: { id: 3, name: 'Artist', spotifyUri: 'spotify:artist:3' },
+              },
+              trackArtists: [
+                {
+                  role: 'primary',
+                  artist: { id: 3, name: 'Artist', spotifyUri: 'spotify:artist:3' },
+                },
+              ],
+            },
+          },
+        ],
+        total: 1,
+      }),
+    });
+    const service = new ListeningHistoryService(repository);
+
+    const result = await service.listForUser(1, 1, 20);
+
+    expect(result).toMatchObject({
+      data: [
+        {
+          id: 1,
+          trackId: 10,
+          track: {
+            id: 10,
+            name: 'Track A',
+            album: { id: 5, name: 'Album' },
+            artists: [{ id: 3, role: 'primary' }],
+          },
+        },
+      ],
+      page: 1,
+      limit: 20,
+      total: 1,
+      totalPages: 1,
+    });
+  });
+
+  it('returns the play count for a user and track', async () => {
+    const repository = createRepository({
+      countByUserAndTrack: vi.fn().mockResolvedValue(7),
+    });
+    const service = new ListeningHistoryService(repository);
+
+    await expect(service.countByUserAndTrack(1, 10)).resolves.toEqual({ trackId: 10, count: 7 });
+  });
+
   it('rejects unknown tracks with TRACK_NOT_FOUND', async () => {
     const record = vi.fn();
     const repository = createRepository({

@@ -7,9 +7,27 @@ import type { RecordListenInput } from './history.types';
 
 const UNIQUE_CONSTRAINT_ERROR = 'P2002';
 
+const LISTEN_INCLUDE = {
+  track: {
+    include: {
+      album: { include: { primaryArtist: true } },
+      trackArtists: { include: { artist: true }, orderBy: { artistId: 'asc' } },
+    },
+  },
+} as const satisfies Prisma.ListeningHistoryInclude;
+
+export type ListeningHistoryWithTrack = Prisma.ListeningHistoryGetPayload<{
+  include: typeof LISTEN_INCLUDE;
+}>;
+
 export interface RecordListenPersistResult {
   entry: ListeningHistory;
   created: boolean;
+}
+
+export interface ListForUserResult {
+  data: ListeningHistoryWithTrack[];
+  total: number;
 }
 
 @Injectable()
@@ -20,6 +38,26 @@ export class ListeningHistoryRepository extends BaseRepository {
 
   findTrackById(trackId: number): Promise<Track | null> {
     return this.client.track.findUnique({ where: { id: trackId } });
+  }
+
+  async listForUser(userId: number, page: number, limit: number): Promise<ListForUserResult> {
+    const where: Prisma.ListeningHistoryWhereInput = { userId };
+    const [data, total] = await Promise.all([
+      this.client.listeningHistory.findMany({
+        where,
+        include: LISTEN_INCLUDE,
+        orderBy: [{ playedAt: 'desc' }, { id: 'desc' }],
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      this.client.listeningHistory.count({ where }),
+    ]);
+
+    return { data, total };
+  }
+
+  countByUserAndTrack(userId: number, trackId: number): Promise<number> {
+    return this.client.listeningHistory.count({ where: { userId, trackId } });
   }
 
   findByIdempotencyKey(userId: number, idempotencyKey: string): Promise<ListeningHistory | null> {
