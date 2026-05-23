@@ -15,6 +15,7 @@ const SIDEBAR_ITEMS: SidebarItem[] = [
   { href: '/discover', label: 'Discover' },
   { href: '/explore/hidden-gems', label: 'Hidden gems' },
   { href: '/me/playlists', label: 'Playlists' },
+  { href: '/community/playlists', label: 'Community' },
   { href: '/me/account', label: 'Account' },
   { href: '/catalog', label: 'Catalog' },
 ];
