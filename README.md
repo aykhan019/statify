@@ -46,19 +46,20 @@ Prerequisites:
 ```bash
 git clone https://github.com/aykhan019/statify.git
 cd statify
-pnpm install
 cp .env.example .env
-# Edit .env with your DATABASE_URL and JWT secrets
+# Edit .env with your DATABASE_URL, DIRECT_URL, and JWT secrets
 
 # Start local Postgres (option A: Docker)
 docker compose up -d
 
-# Apply schema
-pnpm --filter @statify/db prisma:migrate:dev
+# Install deps, generate Prisma client, apply migrations, build every workspace
+pnpm setup
 
 # Run both apps in dev mode
 pnpm dev
 ```
+
+`pnpm setup` is the recommended one-shot bootstrap (chains `pnpm install`, `prisma generate`, `prisma migrate deploy`, and `pnpm build`). Run it any time after pulling new commits to keep dependencies, Prisma client, and migrations in sync. Schema drift requires a one-time `pnpm --filter @statify/db run prisma:migrate:dev` first to author the new migration.
 
 The API runs on http://localhost:4000 and the web app on http://localhost:3000.
 
