@@ -249,6 +249,73 @@ Gutters (inline padding) per breakpoint:
 | `lg`       | ≥ 1024 | 32            |
 | `xl`       | ≥ 1280 | 40            |
 
+### 3.1 Layout primitives
+
+P6-M5 ships token-bound primitives in `apps/web/src/components/layout/`. These are the only layout building blocks for redesigned route shells and major sections. They may compose each other, but they must not encode raw pixel values, hex colors, or font-family declarations.
+
+`Container` controls max-inline width and responsive gutters:
+
+| Prop value | Token / behavior                                    | Use                                    |
+| ---------- | --------------------------------------------------- | -------------------------------------- |
+| `narrow`   | `--container-narrow`                                | Forms, settings, single-column reads   |
+| `prose`    | `--container-prose`                                 | Detail pages with long text            |
+| `wide`     | `--container-wide`                                  | Default authed app shell               |
+| `full`     | `--container-full`                                  | Dashboards, analytics with wide charts |
+| `bleed`    | no max width                                        | Full-width section blocks              |
+| `page`     | 16 / 20 / 24 / 32 / 40px responsive gutter sequence | Default route gutter                   |
+| `compact`  | 12 / 16 / 20px responsive gutter sequence           | Dense nested surfaces                  |
+| `none`     | no inline gutter                                    | Flush compositions                     |
+
+`Stack` sets flex direction and token gap:
+
+| Prop value   | Behavior                             |
+| ------------ | ------------------------------------ |
+| `vertical`   | column flow                          |
+| `horizontal` | row flow                             |
+| `responsive` | column at `xs`, row from `sm` upward |
+| `none`       | `--space-0` gap                      |
+| `xs`         | `--space-2` gap                      |
+| `sm`         | `--space-3` gap                      |
+| `md`         | `--space-4` gap                      |
+| `lg`         | `--space-6` gap                      |
+| `xl`         | `--space-8` gap                      |
+| `section`    | `--space-10` gap                     |
+
+`Grid` defines responsive column steps:
+
+| Prop value | Columns                                                           |
+| ---------- | ----------------------------------------------------------------- |
+| `one`      | 1 column at every breakpoint                                      |
+| `two`      | 1 column at `xs`; 2 columns from `md` upward                      |
+| `three`    | 1 column at `xs`; 2 columns from `md`; 3 columns from `xl` upward |
+| `four`     | 1 column at `xs`; 2 columns from `sm`; 4 columns from `lg` upward |
+
+`Section` sets full-width route bands:
+
+| Prop value | Behavior                                 |
+| ---------- | ---------------------------------------- |
+| `plain`    | transparent band                         |
+| `tint`     | `--section-tint` band                    |
+| `block`    | `--section-block` / `--section-block-fg` |
+| `sunken`   | `--surface-sunken` band                  |
+| `none`     | no block-axis padding                    |
+| `sm`       | `--space-6` block-axis padding           |
+| `md`       | `--space-8` block-axis padding           |
+| `lg`       | `--space-10`, then `--space-12` at `lg`  |
+| `xl`       | `--space-12`, then `--space-16` at `lg`  |
+
+`Surface` frames local work areas:
+
+| Prop      | Values                                                     |
+| --------- | ---------------------------------------------------------- |
+| `tone`    | `page`, `work`, `raised`, `sunken`, `overlay`, `section`   |
+| `border`  | `none`, `default`, `strong`, `section`                     |
+| `radius`  | `none`, `xs`, `sm`, `md`, `lg`, `xl`, `2xl`, `full`        |
+| `shadow`  | `none`, `xs`, `sm`, `md`, `lg`, `xl`                       |
+| `padding` | `none`, `sm`, `md`, `lg`, `xl` mapped to the spacing scale |
+
+`Divider` uses horizontal or vertical orientation with `default`, `strong`, or `section` border tone. `Spacer` uses every spacing token from `0` through `48` on either the vertical or horizontal axis.
+
 ---
 
 ## 4. Radius scale
