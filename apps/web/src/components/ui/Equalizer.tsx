@@ -15,7 +15,7 @@ export interface EqualizerProps {
 export function Equalizer({ size = 16, className, static: isStatic = false }: EqualizerProps) {
   const barWidth = size / 5;
   const gap = barWidth / 2;
-  const animClass = isStatic ? '' : 'animate-pulse-eq';
+  const animClass = isStatic ? '' : 'motion-eq-bar';
   return (
     <svg
       width={size}
@@ -35,10 +35,6 @@ export function Equalizer({ size = 16, className, static: isStatic = false }: Eq
           rx={barWidth / 2}
           fill="currentColor"
           className={animClass}
-          style={{
-            transformOrigin: `${i * (barWidth + gap) + barWidth / 2}px ${size}px`,
-            animationDelay: `${i * 150}ms`,
-          }}
         />
       ))}
     </svg>

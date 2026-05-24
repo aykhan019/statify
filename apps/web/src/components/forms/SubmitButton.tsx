@@ -26,7 +26,7 @@ export const SubmitButton = forwardRef<HTMLButtonElement, SubmitButtonProps>(fun
       className={cn(loading && 'cursor-progress', className)}
       {...rest}
     >
-      {loading && <Icon as={Loader2} size="sm" className="motion-safe:animate-spin" />}
+      {loading && <Icon as={Loader2} size="sm" className="motion-spinner" />}
       <span>{loading ? (loadingLabel ?? children) : children}</span>
     </Button>
   );

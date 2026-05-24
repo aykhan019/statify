@@ -82,7 +82,7 @@ function labelToString(label: ReactNode): string | undefined {
 function switchTrackClasses(checked: boolean, invalid: boolean): string {
   return cn(
     'relative inline-flex h-6 w-10 shrink-0 cursor-pointer items-center rounded-full border',
-    'transition-colors duration-[var(--duration-fast)]',
+    'motion-form-control',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page',
     'disabled:cursor-not-allowed disabled:opacity-60',
     checked ? 'bg-section-accent border-section-accent' : 'bg-surface-sunken border-border-strong',
@@ -93,7 +93,7 @@ function switchTrackClasses(checked: boolean, invalid: boolean): string {
 function switchThumbClasses(checked: boolean): string {
   return cn(
     'inline-block size-4 transform rounded-full bg-surface-work shadow-(--shadow-xs)',
-    'transition-transform duration-[var(--duration-fast)]',
+    'motion-toggle-thumb',
     checked ? 'translate-x-5' : 'translate-x-1',
   );
 }

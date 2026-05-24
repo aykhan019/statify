@@ -21,7 +21,10 @@ export function SectionBlockHeader({
   title,
 }: SectionBlockHeaderProps) {
   return (
-    <header data-section-block className={cn('bg-section-block text-section-block-fg', className)}>
+    <header
+      data-section-block
+      className={cn('motion-block-reveal bg-section-block text-section-block-fg', className)}
+    >
       <Container size="wide" gutter="page" className="py-12 lg:py-16">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div className="min-w-0 max-w-(--container-prose)">

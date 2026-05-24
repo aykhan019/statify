@@ -33,7 +33,10 @@ export default async function HiddenGemsPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry) => (
-            <Card key={entry.trackId} className="transition-colors hover:bg-section-row-hover">
+            <Card
+              key={entry.trackId}
+              className="motion-colors motion-list-item hover:bg-section-row-hover"
+            >
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">
                   <Link

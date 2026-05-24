@@ -42,8 +42,8 @@ export default function StatsOverviewPage() {
       <SectionContent>
         <div className="grid gap-4 sm:grid-cols-2">
           {STATS_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className="block">
-              <Card className="transition-colors hover:bg-section-row-hover">
+            <Link key={link.href} href={link.href} className="block motion-list-item">
+              <Card className="motion-colors hover:bg-section-row-hover">
                 <CardHeader>
                   <CardTitle>{link.title}</CardTitle>
                   <CardDescription>{link.description}</CardDescription>

@@ -507,6 +507,8 @@
   --duration-base: 200ms;
   --duration-slow: 320ms;
   --duration-slower: 500ms;
+  --duration-stagger: 45ms;
+  --duration-equalizer: 1.2s;
 
   /* ----- Motion easings ----- */
   --ease-linear: linear;
@@ -525,8 +527,11 @@
   --animate-scale-in: scale-in var(--duration-fast) var(--ease-out);
   --animate-scale-out: scale-out var(--duration-fast) var(--ease-in);
   --animate-block-reveal: block-reveal var(--duration-slower) var(--ease-standard);
-  --animate-row-stagger: fade-in var(--duration-base) var(--ease-out);
-  --animate-pulse-eq: pulse-eq 1.2s var(--ease-linear) infinite;
+  --animate-row-stagger: row-stagger var(--duration-base) var(--ease-out);
+  --animate-pulse-eq: pulse-eq var(--duration-equalizer) var(--ease-linear) infinite;
+  --animate-skeleton-pulse: skeleton-pulse var(--duration-slower) var(--ease-standard) infinite
+    alternate;
+  --animate-spinner: spinner var(--duration-slower) var(--ease-linear) infinite;
 
   @keyframes fade-in {
     from {
@@ -612,6 +617,16 @@
       clip-path: inset(0 0 0 0);
     }
   }
+  @keyframes row-stagger {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   @keyframes pulse-eq {
     0%,
     100% {
@@ -625,6 +640,19 @@
     }
     75% {
       transform: scaleY(0.85);
+    }
+  }
+  @keyframes skeleton-pulse {
+    from {
+      opacity: 0.58;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes spinner {
+    to {
+      transform: rotate(360deg);
     }
   }
 
@@ -690,6 +718,132 @@
 }
 
 /* ============================================================
+ * Motion utilities. All transition and animation classes below
+ * resolve through the DESIGN.md §6 tokens.
+ * ============================================================ */
+
+@utility motion-colors {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+@utility motion-interactive {
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, transform, text-decoration-color,
+    fill, stroke;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+@utility motion-transform {
+  transition-property: transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-spring);
+}
+
+@utility motion-form-control {
+  transition-property: background-color, border-color, box-shadow, color, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+@utility motion-toggle-thumb {
+  transition-property: transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-spring);
+}
+
+@utility motion-player {
+  transition-property: background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: var(--duration-base);
+  transition-timing-function: var(--ease-spring);
+}
+
+@utility motion-list-item {
+  animation: var(--animate-row-stagger);
+  animation-delay: calc(var(--motion-stagger-index, 0) * var(--duration-stagger));
+  animation-fill-mode: both;
+}
+
+.motion-list-item:nth-child(2) {
+  --motion-stagger-index: 1;
+}
+
+.motion-list-item:nth-child(3) {
+  --motion-stagger-index: 2;
+}
+
+.motion-list-item:nth-child(4) {
+  --motion-stagger-index: 3;
+}
+
+.motion-list-item:nth-child(5) {
+  --motion-stagger-index: 4;
+}
+
+.motion-list-item:nth-child(6) {
+  --motion-stagger-index: 5;
+}
+
+.motion-list-item:nth-child(7) {
+  --motion-stagger-index: 6;
+}
+
+.motion-list-item:nth-child(n + 8) {
+  --motion-stagger-index: 7;
+}
+
+@utility motion-block-reveal {
+  animation: var(--animate-block-reveal);
+}
+
+@utility motion-panel {
+  animation: var(--animate-scale-in);
+  transform-origin: top right;
+}
+
+@utility motion-sheet {
+  animation: var(--animate-slide-in-top);
+}
+
+@utility motion-fade-in {
+  animation: var(--animate-fade-in);
+}
+
+@utility motion-skeleton {
+  animation: var(--animate-skeleton-pulse);
+}
+
+@utility motion-spinner {
+  animation: var(--animate-spinner);
+}
+
+.motion-eq-bar {
+  animation: var(--animate-pulse-eq);
+  transform-box: fill-box;
+  transform-origin: center bottom;
+}
+
+.motion-eq-bar:nth-of-type(2) {
+  animation-delay: calc(var(--duration-stagger) * 3);
+}
+
+.motion-eq-bar:nth-of-type(3) {
+  animation-delay: calc(var(--duration-stagger) * 6);
+}
+
+.motion-reduce-preview,
+.motion-reduce-preview *,
+.motion-reduce-preview::before,
+.motion-reduce-preview::after {
+  animation-duration: var(--duration-instant) !important;
+  transition-duration: var(--duration-instant) !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* ============================================================
  * Document defaults
  * ============================================================ */
 
@@ -714,6 +868,14 @@ body {
   outline-offset: 2px;
 }
 
+:where(a, button, summary, input, select, textarea) {
+  transition-property:
+    color, background-color, border-color, box-shadow, opacity, transform, text-decoration-color,
+    fill, stroke;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
 /* Tabular numerics opt-in: mono utility plus the feature-setting */
 .font-mono,
 [class*='font-mono'] {
@@ -735,5 +897,10 @@ body {
     animation-duration: var(--duration-instant) !important;
     transition-duration: var(--duration-instant) !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .motion-eq-bar {
+    animation: none !important;
+    transform: none !important;
   }
 }

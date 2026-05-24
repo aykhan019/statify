@@ -276,7 +276,7 @@ function ResultLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 hover:bg-section-row-hover"
+      className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 motion-colors motion-list-item hover:bg-section-row-hover"
     >
       <Cover
         src={imageUrl}

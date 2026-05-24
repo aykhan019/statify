@@ -63,7 +63,7 @@ export default async function TrendingPage() {
             {entries.map((entry) => (
               <li
                 key={entry.artistId}
-                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 transition-colors hover:bg-section-row-hover"
+                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 motion-colors motion-list-item hover:bg-section-row-hover"
               >
                 <Link
                   href={`/catalog/artists/${entry.artistId}`}

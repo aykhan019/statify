@@ -232,6 +232,22 @@ const CHART_LEGEND_ITEMS = [
 const RADII = ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'] as const;
 const SHADOWS = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 
+const DURATION_TOKENS = [
+  ['instant', '0ms'],
+  ['fast', '120ms'],
+  ['base', '200ms'],
+  ['slow', '320ms'],
+  ['slower', '500ms'],
+  ['stagger', '45ms'],
+  ['equalizer', '1.2s'],
+] as const;
+const EASING_TOKENS = [
+  ['linear', 'linear'],
+  ['out', 'enter'],
+  ['in', 'exit'],
+  ['standard', 'two-way'],
+  ['spring', 'play state'],
+] as const;
 const ANIMATIONS = [
   'fade-in',
   'slide-in-top',
@@ -240,6 +256,8 @@ const ANIMATIONS = [
   'slide-in-right',
   'scale-in',
   'block-reveal',
+  'skeleton-pulse',
+  'spinner',
 ] as const;
 
 const ASPECTS: Array<{ token: string; ratio: string; label: string }> = [
@@ -1170,6 +1188,30 @@ export default function StyleguidePage() {
         Fire any named animation. Durations and easings live in --duration-* / --ease-* tokens.
         Reduce-motion collapses every transition to 0ms globally.
       </Caption>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-(--radius-md) border border-border-default bg-surface-raised p-4">
+          <p className="mb-3 font-mono text-xs text-fg-muted">Duration tokens</p>
+          <div className="grid gap-2">
+            {DURATION_TOKENS.map(([token, value]) => (
+              <div key={token} className="flex items-center justify-between gap-3 text-sm">
+                <span className="font-mono">--duration-{token}</span>
+                <span className="text-fg-muted">{value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="rounded-(--radius-md) border border-border-default bg-surface-raised p-4">
+          <p className="mb-3 font-mono text-xs text-fg-muted">Easing tokens</p>
+          <div className="grid gap-2">
+            {EASING_TOKENS.map(([token, use]) => (
+              <div key={token} className="flex items-center justify-between gap-3 text-sm">
+                <span className="font-mono">--ease-{token}</span>
+                <span className="text-fg-muted">{use}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
       <div className="flex flex-wrap items-start gap-3">
         <Button onClick={() => setPulseKey((k) => k + 1)}>Replay all</Button>
         {ANIMATIONS.map((name) => (
@@ -1189,6 +1231,26 @@ export default function StyleguidePage() {
             <Equalizer size={32} />
           </span>
           <span className="font-mono text-xs">pulse-eq</span>
+        </div>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <div className="rounded-(--radius-md) border border-border-default bg-surface-raised p-4">
+          <p className="mb-3 font-mono text-xs text-fg-muted">Standard motion</p>
+          <div
+            key={`standard-${pulseKey}`}
+            className="motion-list-item motion-colors rounded-(--radius-sm) border border-border-default bg-surface-work p-4 hover:bg-section-row-hover"
+          >
+            <div className="motion-transform size-10 rounded-(--radius-sm) bg-section-accent" />
+          </div>
+        </div>
+        <div className="motion-reduce-preview rounded-(--radius-md) border border-border-default bg-surface-raised p-4">
+          <p className="mb-3 font-mono text-xs text-fg-muted">Reduced motion preview</p>
+          <div
+            key={`reduced-${pulseKey}`}
+            className="motion-list-item motion-colors rounded-(--radius-sm) border border-border-default bg-surface-work p-4 hover:bg-section-row-hover"
+          >
+            <div className="motion-transform size-10 rounded-(--radius-sm) bg-section-accent" />
+          </div>
         </div>
       </div>
 

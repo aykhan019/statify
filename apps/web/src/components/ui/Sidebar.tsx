@@ -30,7 +30,7 @@ export function Sidebar({ items, activeHref, className }: SidebarProps) {
               href={item.href}
               aria-current={isActive ? 'page' : undefined}
               className={cn(
-                'flex items-center gap-2 rounded-(--radius-sm) px-3 py-2 text-sm transition-colors',
+                'flex items-center gap-2 rounded-(--radius-sm) px-3 py-2 text-sm motion-colors',
                 isActive
                   ? 'bg-accent text-accent-foreground'
                   : 'text-foreground hover:bg-muted hover:text-foreground',

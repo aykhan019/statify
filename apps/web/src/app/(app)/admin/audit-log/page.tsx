@@ -83,7 +83,7 @@ export default async function AdminAuditLogPage({
                   {response.data.map((entry) => (
                     <tr
                       key={entry.id}
-                      className="border-t align-top transition-colors hover:bg-section-row-hover"
+                      className="border-t align-top motion-colors motion-list-item hover:bg-section-row-hover"
                     >
                       <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">
                         {formatDate(entry.createdAt)}

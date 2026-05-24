@@ -378,13 +378,15 @@ Driven through `tailwindcss-animate` utilities (P6-M3 install). All custom keyfr
 
 ### 6.1 Duration tokens
 
-| Token                | Value | Use                                       |
-| -------------------- | ----- | ----------------------------------------- |
-| `--duration-instant` | 0ms   | `prefers-reduced-motion: reduce` fallback |
-| `--duration-fast`    | 120ms | Hover, tap, focus ring, color transitions |
-| `--duration-base`    | 200ms | Default transitions, tooltips, popovers   |
-| `--duration-slow`    | 320ms | Modals, dialogs, sheet panels             |
-| `--duration-slower`  | 500ms | Page transitions (if used), block reveals |
+| Token                  | Value | Use                                       |
+| ---------------------- | ----- | ----------------------------------------- |
+| `--duration-instant`   | 0ms   | `prefers-reduced-motion: reduce` fallback |
+| `--duration-fast`      | 120ms | Hover, tap, focus ring, color transitions |
+| `--duration-base`      | 200ms | Default transitions, tooltips, popovers   |
+| `--duration-slow`      | 320ms | Modals, dialogs, sheet panels             |
+| `--duration-slower`    | 500ms | Page transitions (if used), block reveals |
+| `--duration-stagger`   | 45ms  | Row / card list stagger offset            |
+| `--duration-equalizer` | 1.2s  | Currently-playing equalizer pulse         |
 
 ### 6.2 Easing tokens
 
@@ -398,19 +400,21 @@ Driven through `tailwindcss-animate` utilities (P6-M3 install). All custom keyfr
 
 ### 6.3 Named animations
 
-| Token / utility           | Definition                                               | Use                                      |
-| ------------------------- | -------------------------------------------------------- | ---------------------------------------- |
-| `animate-fade-in`         | opacity 0→1, `base`, `ease-out`                          | Default mount                            |
-| `animate-fade-out`        | opacity 1→0, `base`, `ease-in`                           | Default unmount                          |
-| `animate-slide-in-top`    | `translateY(-8px) → 0` + fade, `base`                    | Toast, notification                      |
-| `animate-slide-in-bottom` | `translateY(8px) → 0` + fade, `base`                     | Sheet from bottom (mobile)               |
-| `animate-slide-in-left`   | `translateX(-8px) → 0` + fade, `base`                    | Drawer, sidebar                          |
-| `animate-slide-in-right`  | `translateX(8px) → 0` + fade, `base`                     | Mirror                                   |
-| `animate-scale-in`        | `scale(0.96) → 1` + fade, `fast`, `ease-out`             | Dropdown, popover                        |
-| `animate-scale-out`       | `scale(1) → 0.96` + fade, `fast`, `ease-in`              | Dropdown close                           |
-| `animate-block-reveal`    | `clip-path` reveal top→bottom, `slower`, `ease-standard` | Section block first mount on route enter |
-| `animate-row-stagger`     | child fade-up with `45ms` stagger, `base`                | List mount (catalog, history, playlists) |
-| `animate-pulse-eq`        | 3-bar equalizer height pulse, `1.2s`, `linear` infinite  | Currently-playing indicator              |
+| Token / utility           | Definition                                                   | Use                                      |
+| ------------------------- | ------------------------------------------------------------ | ---------------------------------------- |
+| `animate-fade-in`         | opacity 0→1, `base`, `ease-out`                              | Default mount                            |
+| `animate-fade-out`        | opacity 1→0, `base`, `ease-in`                               | Default unmount                          |
+| `animate-slide-in-top`    | `translateY(-8px) → 0` + fade, `base`                        | Toast, notification                      |
+| `animate-slide-in-bottom` | `translateY(8px) → 0` + fade, `base`                         | Sheet from bottom (mobile)               |
+| `animate-slide-in-left`   | `translateX(-8px) → 0` + fade, `base`                        | Drawer, sidebar                          |
+| `animate-slide-in-right`  | `translateX(8px) → 0` + fade, `base`                         | Mirror                                   |
+| `animate-scale-in`        | `scale(0.96) → 1` + fade, `fast`, `ease-out`                 | Dropdown, popover                        |
+| `animate-scale-out`       | `scale(1) → 0.96` + fade, `fast`, `ease-in`                  | Dropdown close                           |
+| `animate-block-reveal`    | `clip-path` reveal top→bottom, `slower`, `ease-standard`     | Section block first mount on route enter |
+| `animate-row-stagger`     | child fade-up with `45ms` stagger, `base`                    | List mount (catalog, history, playlists) |
+| `animate-pulse-eq`        | 3-bar equalizer height pulse, `equalizer`, `linear` infinite | Currently-playing indicator              |
+| `animate-skeleton-pulse`  | opacity pulse, `slower`, `ease-standard`, infinite           | Skeleton shimmer                         |
+| `animate-spinner`         | rotate, `slower`, `linear`, infinite                         | Inflight submit glyph                    |
 
 ### 6.4 Reduce-motion behavior
 
@@ -629,7 +633,7 @@ Side label and description (when provided) sit to the right of the control in a 
 
 ### 9.5 Submit button
 
-`<SubmitButton>` is a thin wrapper over the base `Button`. It defaults `type="submit"`, forwards `loading` to `disabled` + `aria-busy`, and renders a leading `Loader2` glyph with `motion-safe:animate-spin` while inflight. Label can be swapped via `loadingLabel`; if omitted it shows the same children (so callers can pass `Sign in` as children and `Signing in...` as `loadingLabel`).
+`<SubmitButton>` is a thin wrapper over the base `Button`. It defaults `type="submit"`, forwards `loading` to `disabled` + `aria-busy`, and renders a leading `Loader2` glyph with the tokenized `motion-spinner` utility while inflight. Label can be swapped via `loadingLabel`; if omitted it shows the same children (so callers can pass `Sign in` as children and `Signing in...` as `loadingLabel`).
 
 Reduce-motion: the spinner inherits the global reduce-motion guard from `globals.css §6.4`, so under `prefers-reduced-motion: reduce` the glyph stops rotating.
 
@@ -655,7 +659,7 @@ Every list and detail route resolves to one of four states when it is not showin
 
 | Primitive              | File                       | Role                                          | Tone                                                    |
 | ---------------------- | -------------------------- | --------------------------------------------- | ------------------------------------------------------- |
-| `Skeleton` + templates | `states/Skeleton.tsx`      | Loading placeholder while a server fetch runs | Neutral shimmer (`--surface-sunken`, motion-safe pulse) |
+| `Skeleton` + templates | `states/Skeleton.tsx`      | Loading placeholder while a server fetch runs | Neutral shimmer (`--surface-sunken`, `motion-skeleton`) |
 | `EmptyState`           | `states/EmptyState.tsx`    | Fetch succeeded, zero rows                    | Neutral, dashed `--border-default` recess               |
 | `ErrorState`           | `states/ErrorState.tsx`    | Fetch threw                                   | Error, `--state-error-*` border and chip                |
 | `NotFoundState`        | `states/NotFoundState.tsx` | Entity missing (`notFound()`)                 | Neutral, with a link back to a known-good route         |
@@ -772,7 +776,7 @@ P6-M3 emits the following families inside `apps/web/src/app/globals.css` `@theme
 --shadow-{none|xs|sm|md|lg|xl}
 
 /* §6 motion */
---duration-{instant|fast|base|slow|slower}, --ease-{linear|out|in|standard|spring}, plus @keyframes for animate-{fade-in|fade-out|slide-in-*|scale-in|scale-out|block-reveal|row-stagger|pulse-eq}
+--duration-{instant|fast|base|slow|slower|stagger|equalizer}, --ease-{linear|out|in|standard|spring}, plus @keyframes for animate-{fade-in|fade-out|slide-in-*|scale-in|scale-out|block-reveal|row-stagger|pulse-eq|skeleton-pulse|spinner}
 
 /* §7 image */
 --aspect-{square|wide|cinema|artist|thumb}, --cover-{xs|sm|md|lg|xl|hero|display}

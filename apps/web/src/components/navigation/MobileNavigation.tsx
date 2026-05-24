@@ -44,7 +44,7 @@ export function MobileNavigation({ activePath, className, includeAdmin }: Mobile
         aria-label={isOpen ? 'Close navigation' : 'Open navigation'}
         onClick={() => setIsOpen((value) => !value)}
         className={cn(
-          'inline-flex size-10 items-center justify-center rounded-(--radius-sm) text-fg-default transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page md:hidden',
+          'inline-flex size-10 items-center justify-center rounded-(--radius-sm) text-fg-default motion-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page md:hidden',
           isOpen ? 'bg-section-accent text-section-accent-fg' : 'hover:bg-section-row-hover',
           className,
         )}
@@ -61,7 +61,7 @@ export function MobileNavigation({ activePath, className, includeAdmin }: Mobile
           radius="none"
           shadow="lg"
           padding="none"
-          className="fixed inset-x-0 top-16 z-40 border-b border-border-default md:hidden"
+          className="motion-sheet fixed inset-x-0 top-16 z-40 border-b border-border-default md:hidden"
         >
           <Container size="full" gutter="page" className="py-4">
             <div className="mb-4">

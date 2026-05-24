@@ -8,7 +8,7 @@ import { deriveFieldProps } from './_helpers';
 
 const textareaBase =
   'block w-full rounded-(--radius-sm) border bg-surface-work text-fg-default placeholder:text-fg-faint ' +
-  'transition-[background-color,border-color,box-shadow] duration-[var(--duration-fast)] ' +
+  'motion-form-control ' +
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page ' +
   'disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:text-fg-faint disabled:opacity-70 ' +
   'aria-busy:cursor-progress aria-busy:opacity-70 ' +

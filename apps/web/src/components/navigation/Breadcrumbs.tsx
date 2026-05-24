@@ -29,7 +29,7 @@ export function Breadcrumbs({ activePath, className }: BreadcrumbsProps) {
             ) : (
               <Link
                 href={item.href}
-                className="truncate rounded-(--radius-xs) px-1 text-fg-muted hover:bg-section-row-hover hover:text-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus"
+                className="truncate rounded-(--radius-xs) px-1 text-fg-muted motion-colors hover:bg-section-row-hover hover:text-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus"
               >
                 {item.label}
               </Link>

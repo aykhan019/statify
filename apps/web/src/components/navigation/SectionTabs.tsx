@@ -27,7 +27,7 @@ export function SectionTabs({ ariaLabel, items }: SectionTabsProps) {
             href={item.href}
             aria-current={active ? 'page' : undefined}
             className={cn(
-              'border-b-2 px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus',
+              'border-b-2 px-3 py-2 text-sm font-medium motion-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus',
               active
                 ? 'border-section-accent text-section-accent'
                 : 'border-transparent text-fg-muted hover:bg-section-row-hover hover:text-fg-strong',

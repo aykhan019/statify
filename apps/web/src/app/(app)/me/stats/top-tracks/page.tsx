@@ -66,7 +66,7 @@ export default async function TopTracksPage() {
             {entries.map((entry) => (
               <li
                 key={entry.trackId}
-                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 transition-colors hover:bg-section-row-hover"
+                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 motion-colors motion-list-item hover:bg-section-row-hover"
               >
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="w-8 shrink-0 text-right text-sm font-medium text-fg-muted">

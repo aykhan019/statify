@@ -9,7 +9,7 @@ interface HistoryRowProps {
 
 export function HistoryRow({ item }: HistoryRowProps) {
   return (
-    <Card className="transition-colors hover:bg-section-row-hover">
+    <Card className="motion-colors motion-list-item hover:bg-section-row-hover">
       <div className="flex flex-wrap items-center justify-between gap-4 p-4">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <Link

@@ -73,7 +73,7 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
 function checkboxBoxClasses(invalid: boolean): string {
   return cn(
     'peer absolute inset-0 size-full cursor-pointer appearance-none rounded-(--radius-xs) border bg-surface-work',
-    'transition-[background-color,border-color,box-shadow] duration-[var(--duration-fast)]',
+    'motion-form-control',
     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page',
     'disabled:cursor-not-allowed disabled:bg-surface-sunken disabled:opacity-70',
     'checked:bg-section-accent checked:border-section-accent',

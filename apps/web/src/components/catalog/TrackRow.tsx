@@ -12,7 +12,7 @@ export function TrackRow({ track }: TrackRowProps) {
   const coverImage = track.imageUrl ?? track.album.imageUrl;
 
   return (
-    <div className="group rounded-(--radius-md) border border-border-default bg-surface-raised transition-colors hover:bg-section-row-hover">
+    <div className="group rounded-(--radius-md) border border-border-default bg-surface-raised motion-colors motion-list-item hover:bg-section-row-hover">
       <div className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
         <Link href={`/catalog/tracks/${track.id}`} className="shrink-0">
           <Cover src={coverImage} name={track.name} entity="track" size="sm" context="list-dense" />
