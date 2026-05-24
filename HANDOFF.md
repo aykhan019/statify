@@ -44,8 +44,9 @@
   - PR #25 CI passed before the rebase merge. The follow-up ERD/docs update was format-checked locally.
   - Local runtime fix after M8: `@statify/shared` and `@statify/db` now resolve runtime imports from built `dist` outputs while keeping TypeScript declarations pointed at source, root `pnpm dev` and `pnpm test` build those packages before starting app runtime/tests, and the API config loads the root `.env` when launched from `apps/api`. This fixes the local API crash where current Node 22 rejected TypeScript source directory imports.
   - `AuthModule` now exports `AuthTokenService` so `JwtAuthGuard` can be injected from modules that import `AuthModule` (analytics, admin, history, catalog, and user playlists).
-  - Verification after the local runtime fix: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm --filter @statify/api test`, `pnpm build`, and `GET /healthz` on the local API all passed under Node 22.
-  - Full authenticated end-to-end UI smoke against seeded data still needs to be repeated under Node 22 before the dev → main promotion. The API now starts locally; use admin and user seed accounts for the smoke.
+  - API bootstrap now enables CORS from `ALLOWED_ORIGINS` with credentials, so browser preflight requests from the local web app can reach authenticated endpoints.
+  - Verification after the local runtime and CORS fixes: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm --filter @statify/api test`, `pnpm build`, `GET /healthz` on the local API, `OPTIONS /api/v1/auth/login`, and `POST /api/v1/auth/login` with the seeded user all passed under Node 22.
+  - Full authenticated end-to-end UI smoke against seeded data still needs to be repeated under Node 22 before the dev → main promotion. The API now starts locally and accepts browser login preflight; use admin and user seed accounts for the smoke.
   - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task (not in M8 scope).
 - **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
@@ -96,6 +97,7 @@
 | 2026-05-24 | Workspace runtime entrypoints switched to `dist`        | ADR-001 | Aykhan |
 | 2026-05-24 | Root dev/test builds runtime workspace packages first   | ADR-001 | Aykhan |
 | 2026-05-24 | API config loads root `.env` from app workspace         | ADR-001 | Aykhan |
+| 2026-05-24 | API CORS wired to `ALLOWED_ORIGINS` config              | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

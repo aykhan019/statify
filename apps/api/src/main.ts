@@ -23,9 +23,16 @@ async function bootstrap(): Promise<void> {
   app.useLogger(app.get(Logger));
   app.useGlobalFilters(new AllExceptionsFilter());
 
+  const config = app.get(ConfigService);
+  app.enableCors({
+    origin: config.allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   app.setGlobalPrefix('api/v1', { exclude: ['healthz'] });
 
-  const config = app.get(ConfigService);
   const port = config.apiPort;
   await app.listen(port);
 
