@@ -63,6 +63,18 @@ import {
   type NavigationLinkDemoState,
 } from '@/components/navigation';
 import { AlbumCard, ArtistCard, CatalogDetailHero, TrackRow } from '@/components/catalog';
+import {
+  Checkbox,
+  Field,
+  FormError,
+  FormHint,
+  Input,
+  Label,
+  Select,
+  SubmitButton,
+  Switch,
+  Textarea,
+} from '@/components/forms';
 import { PlaylistCard } from '@/components/playlists/PlaylistCard';
 import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { UserPlaylistCard } from '@/components/playlists/UserPlaylistCard';
@@ -313,6 +325,180 @@ const SAMPLE_USER_PLAYLIST = {
   trackCount: 12,
   updatedAt: '2026-05-24T00:00:00.000Z',
 };
+
+function FormsShowcase() {
+  const [text, setText] = useState('aykhan@example.com');
+  const [textarea, setTextarea] = useState('');
+  const [select, setSelect] = useState('library');
+  const [checkbox, setCheckbox] = useState(true);
+  const [switchOn, setSwitchOn] = useState(true);
+  const [loading, setLoading] = useState(false);
+
+  function fireLoading() {
+    setLoading(true);
+    window.setTimeout(() => setLoading(false), 1200);
+  }
+
+  return (
+    <SectionFrame hue="indigo">
+      <div className="space-y-8">
+        <LayoutGrid columns="two" gap="lg">
+          <LayoutSurface tone="work" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Input states (DESIGN.md §9.3)</p>
+            <LayoutStack gap="md">
+              <Field id="sg-input-default" label="Default" hint="Helper text appears here.">
+                <Input
+                  value={text}
+                  onChange={(event) => setText(event.target.value)}
+                  placeholder="Type something"
+                />
+              </Field>
+              <Field id="sg-input-required" label="Required" required>
+                <Input placeholder="Cannot be empty" defaultValue="" />
+              </Field>
+              <Field id="sg-input-optional" label="Optional" optional>
+                <Input placeholder="Nice to have" defaultValue="" />
+              </Field>
+              <Field
+                id="sg-input-error"
+                label="Invalid"
+                error="Email must include an @ sign."
+                required
+              >
+                <Input defaultValue="not an email" />
+              </Field>
+              <Field id="sg-input-disabled" label="Disabled">
+                <Input disabled defaultValue="alex@statify.local" />
+              </Field>
+              <Field id="sg-input-loading" label="Loading">
+                <Input loading defaultValue="Submitting…" />
+              </Field>
+              <Field id="sg-input-sizes" label="Sizes (sm / md / lg)">
+                <div className="flex flex-col gap-2">
+                  <Input size="sm" placeholder="size sm" />
+                  <Input size="md" placeholder="size md" />
+                  <Input size="lg" placeholder="size lg" />
+                </div>
+              </Field>
+            </LayoutStack>
+          </LayoutSurface>
+
+          <LayoutSurface tone="work" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Textarea + Select</p>
+            <LayoutStack gap="md">
+              <Field id="sg-textarea" label="Description" hint="Up to 1000 characters." optional>
+                <Textarea
+                  value={textarea}
+                  onChange={(event) => setTextarea(event.target.value)}
+                  placeholder="A short note about what this playlist is for."
+                />
+              </Field>
+              <Field
+                id="sg-textarea-invalid"
+                label="Invalid textarea"
+                error="Required field cannot be empty."
+                required
+              >
+                <Textarea rows={2} defaultValue="" />
+              </Field>
+              <Field id="sg-select" label="Section" hint="Pick a top-level area.">
+                <Select
+                  value={select}
+                  onChange={(event) => setSelect(event.target.value)}
+                  placeholder="Pick a section"
+                >
+                  <option value="library">Library</option>
+                  <option value="discover">Discover</option>
+                  <option value="playlists">Playlists</option>
+                  <option value="community">Community</option>
+                </Select>
+              </Field>
+              <Field id="sg-select-error" label="Invalid select" error="Choose a value." required>
+                <Select defaultValue="" placeholder="Pick a section">
+                  <option value="a">A</option>
+                  <option value="b">B</option>
+                </Select>
+              </Field>
+            </LayoutStack>
+          </LayoutSurface>
+
+          <LayoutSurface tone="work" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Checkbox + Switch (§9.4)</p>
+            <LayoutStack gap="md">
+              <Checkbox
+                checked={checkbox}
+                onChange={(event) => setCheckbox(event.target.checked)}
+                label="Subscribe to the newsletter"
+                description="Roughly one email a month."
+              />
+              <Checkbox
+                disabled
+                checked
+                label="Disabled (checked)"
+                description="Pointer events suppressed."
+              />
+              <Checkbox invalid label="Invalid" description="Border switches to error border." />
+              <div>
+                <Label>Switch (uncontrolled demo)</Label>
+                <Switch
+                  className="mt-2"
+                  checked={switchOn}
+                  onCheckedChange={setSwitchOn}
+                  label={switchOn ? 'Public' : 'Private'}
+                  description={
+                    switchOn
+                      ? 'Anyone can browse this playlist.'
+                      : 'Only you can see this playlist.'
+                  }
+                />
+              </div>
+              <Switch
+                checked={false}
+                onCheckedChange={() => undefined}
+                disabled
+                label="Disabled switch"
+                description="Cannot toggle while a save is inflight."
+              />
+            </LayoutStack>
+          </LayoutSurface>
+
+          <LayoutSurface tone="work" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">
+              Submit button + feedback (§9.5, §9.6)
+            </p>
+            <LayoutStack gap="md">
+              <div className="flex flex-wrap gap-3">
+                <SubmitButton onClick={fireLoading} loading={loading} loadingLabel="Saving…">
+                  Save changes
+                </SubmitButton>
+                <SubmitButton
+                  variant="destructive"
+                  onClick={fireLoading}
+                  loading={loading}
+                  loadingLabel="Deleting…"
+                >
+                  Permanently delete
+                </SubmitButton>
+                <SubmitButton variant="secondary" disabled>
+                  Disabled
+                </SubmitButton>
+              </div>
+              <FormHint>
+                Use the field variant of FormError under a Field; use summary at the top of a form
+                for submit-level errors.
+              </FormHint>
+              <FormError>Field-scoped error: passwords must match.</FormError>
+              <FormError variant="summary">
+                Summary error: the server rejected the request. Try again, or contact support if the
+                issue persists.
+              </FormError>
+            </LayoutStack>
+          </LayoutSurface>
+        </LayoutGrid>
+      </div>
+    </SectionFrame>
+  );
+}
 
 function HuesGrid() {
   return (
@@ -1048,6 +1234,13 @@ export default function StyleguidePage() {
           )),
         )}
       </div>
+
+      <H2 id="forms">18. Form system</H2>
+      <Caption>
+        P6-M8 primitives live in apps/web/src/components/forms. Every state from DESIGN.md §9 is
+        rendered against the token layer so drift between spec and implementation is visible.
+      </Caption>
+      <FormsShowcase />
 
       <footer className="text-fg-muted border-border-default mt-24 border-t pt-8 font-mono text-xs">
         Spec: DESIGN.md · Implementation: apps/web/src/app/globals.css · Route: /styleguide
