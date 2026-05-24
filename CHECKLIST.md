@@ -6,8 +6,8 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 complete and merged via PR #28 (Vivid Workshop direction locked). Next milestone P6-M2: author DESIGN.md + ADR-002. (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** none active; P6-M2 ready to start in the next session.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29). DESIGN.md + ADR-002 merged. Next milestone P6-M3 (token layer implementation + dep install + `/styleguide` route, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** none active; P6-M3 ready to start in the next session.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
@@ -153,7 +153,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `docs/design/explorations.md` (new), `HANDOFF.md` (decision recorded), `CHECKLIST.md` (this row ticked).
   - Depends on: none.
 
-- [ ] **P6-M2: Author DESIGN.md from locked direction** - M - aykhan
+- [x] **P6-M2: Author DESIGN.md from locked direction** - M - aykhan
   - Goal: turn the locked direction into a complete token specification document at repo root.
   - Entry criteria: P6-M1 merged; direction picked.
   - Exit criteria: `DESIGN.md` committed at repo root specifying full color token set in oklch (semantic naming layer over raw palette, including data-viz palette of at least eight hues), type scale (font families with weight axis, size scale, line-height pairs, letter-spacing per role), spacing scale, radius scale, shadow scale, motion tokens (durations, easings, named transitions, all driven through `tailwindcss-animate` utilities), image aspect ratio scale with frame and overlay treatments and explicit fallback strategy when media fields are NULL, icon size scale with locked stroke weight and role mapping (inline / navigation / feature), and a one-screen "do / do not" section calling out the hard constraints from the design intent. ADR-002 drafted to record the deviation from ADR-001 §3.8 / §3.20 and the locked `image_url` schema decision.
