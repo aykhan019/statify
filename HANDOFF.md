@@ -30,28 +30,26 @@
 **Updated:** 2026-05-24
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last shipped:** M7 Admin / data management 4/4, rebase-merged into `dev` via PR #24. Three rows attributed to `aykhan` (admin route shell + role gate, users list with ban/unban + role change, audit log viewer) and one to `eljan` (ingest run trigger). Adds the `AdminUsersModule`/`AdminIngestModule`/`AdminAuditController` surfaces under `/api/v1/admin/*` plus four new admin web pages (`/admin`, `/admin/users`, `/admin/ingest`, `/admin/audit-log`). A new migration adds `users.banned_at` and the auth lookup filters out banned accounts so they cannot log in or refresh.
-- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → **M8 Rubric / quality demands (next)**. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last shipped:** M8 Rubric / quality demands 5/6, rebase-merged into `dev` via PR #25. Four new rows landed, all attributed to `aykhan`: relational model write-up, advanced SQL queries documentation, final report, and demo script. `docs/erd.dbml` also landed in the PR, but the ERD row stays unticked until `docs/erd.png` is exported and committed. The seed script row was already ticked from F11.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → **M8 Rubric / quality demands (5/6 current)**. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M8 Rubric / quality demands. Wait for explicit green light before starting.
+- **Current milestone:** M8 Rubric / quality demands, 5/6. Only the ERD PNG export remains.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none for the current milestone.
 - **Open threads:**
-  - M7 shipped as three `aykhan` feat commits plus one `eljan` feat commit on `feat/admin-ui`. Per-task split: `aykhan` owns the admin shell + role gate, user management (ban/role with audit-logged refresh-token revocation), and the audit log viewer; `eljan` owns the ingest trigger.
-  - M7 design call (recorded for future similar features): role-gating uses a layered approach. The middleware (`apps/web/src/middleware.ts`) only checks for an access cookie. The role check happens in the server-rendered `(app)/admin/layout.tsx` (and the individual page server components for defense in depth) which redirects non-admins to `/me`. The API guards every `/admin/*` route with `@UseGuards(JwtAuthGuard, RolesGuard)` plus `@Roles('admin')`.
-  - Ban and role changes both revoke active refresh tokens inside the same transaction as the column update so the JWT's role claim cannot lag. Access JWTs still live for their 15-min ceiling, but no new ones can be minted. Banned accounts are filtered at `AuthRepository.findUserByEmail`/`findUserById` (`bannedAt: null`), mirroring `deletedAt: null`, so a banned user gets `INVALID_CREDENTIALS` rather than a distinguishing error.
-  - The ingest trigger uses a single in-flight slot held on the `AdminIngestService` instance. `runIngest` is now exported from `@statify/db` so the API process can call it directly with `PrismaService` as its client. A second trigger while a run is active returns `{ accepted: false }` instead of double-starting; the slot is cleared in `finally` so a failure does not jam future triggers. The choice to run in-process matches the free-tier constraint (no separate worker) and keeps the audit-log entry tied to the actor who pressed the button.
-  - `AdminUsersService.setRole` and `setBan` refuse self-targets so an admin cannot accidentally lock themselves out. The web table also disables the action buttons for the actor's own row.
-  - Sidebar conditionally appends an "Admin" entry only when `currentUser.role === 'admin'`. The conditional is computed in `(app)/layout.tsx`; the gate util is `apps/web/src/lib/auth/admin.ts` (with `isAdmin()` and a unit spec).
-  - Local verification before push: format check, lint, typecheck across all workspaces, 139 API tests (was 127 at M6), 48 web tests, 44 db tests. Production build emits 33 web routes (was 30 at M6).
+  - PR #25 shipped five docs commits on `feat/rubric-docs`: DBML source, relational model write-up, advanced SQL queries doc, final project report, and in-class demo script.
+  - `docs/erd.dbml` exists and is ready to import into dbdiagram.io. `docs/erd.png` is still missing, so the M8 ERD row remains unticked.
+  - No schema, dependency, config, or folder-structure changes landed in PR #25. The structural changes log does not need a new row for the docs/report file additions.
+  - PR #25 CI passed before the rebase merge. The close-session docs update was format-checked locally.
   - Full authenticated end-to-end UI smoke against a running API was not run locally because Node v26 is installed and the API source-import resolution still fails there. Repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke. M5, M6, and M7 surfaces all need that smoke against real seeded data before the dev → main promotion.
   - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task (not in M8 scope).
-- **Blockers (gate further milestone work):** none.
+- **Blockers (gate further milestone work):**
+  1. **M8 ERD PNG export.** Export `docs/erd.dbml` from dbdiagram.io into `docs/erd.png`, then tick the ERD row. No code blockers.
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
   2. M5, M6, and M7 surfaces need an authed end-to-end smoke against a Node 22 API with seeded listening history, at least one seeded public user playlist, and at least one admin account before the dev → main promotion.
-- **Next concrete action:** wait for green light to start M8. Branch from `dev` with `feat/rubric-docs` (or similar) and work through the five remaining M8 rows: ERD diagram + DBML, relational model write-up, advanced SQL queries doc, final report, demo script. All five are attributed to `aykhan`. The seed script row is already ticked. M8 is mostly authoring under `docs/` and `report/`; no schema or API changes are required.
+- **Next concrete action:** export `docs/erd.dbml` from dbdiagram.io, save the image as `docs/erd.png`, commit it directly on `dev` as a docs-only `aykhan` commit, and tick the M8 ERD row. After that, move to Phase 6 deployment only after approval.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change, account deletion, admin ban/unban, admin role change, and admin ingest trigger already audit-log via their respective services.
   - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.

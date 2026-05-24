@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M8 Rubric / quality demands. Wait for explicit green light before starting.
-- **Last shipped:** M7 Admin / data management 4/4, rebase-merged into `dev` via PR #24. Three rows attributed to `aykhan` (admin route shell + role gate, users list with ban/unban/role change, audit log viewer) and one to `eljan` (ingest run trigger). Adds `users.banned_at` plus four new admin pages (`/admin`, `/admin/users`, `/admin/ingest`, `/admin/audit-log`) and admin-only API surfaces under `/api/v1/admin/*`.
+- **Current milestone:** M8 Rubric / quality demands, 5/6. Only the ERD PNG export from dbdiagram.io is outstanding; everything else has shipped.
+- **Last shipped:** M8 Rubric / quality demands 5/6, rebase-merged into `dev` via PR #25. Four new rows ticked, all attributed to `aykhan` (relational model write-up, advanced SQL queries doc, final report, demo script). The DBML source landed in the same PR but the M8 ERD row stays unticked until `docs/erd.png` lands. The seed script row was already ticked from F11.
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
-- **Blocker:** none for milestone work.
-- **Next concrete action:** wait for green light to start M8. Five rows remain (all attributed to `aykhan`): ERD diagram + DBML, relational model write-up, advanced SQL queries doc, final report, demo script. The seed script row is already ticked. M8 is the academic submission bundle; the work is mostly authoring under `docs/` and `report/` plus exporting the DBML + ERD into `docs/`.
+- **Blocker:** ERD PNG export from dbdiagram.io is the only thing keeping the M8 ERD row from ticking. No code blockers.
+- **Next concrete action:** export `docs/erd.dbml` from dbdiagram.io, drop `docs/erd.png` into the repo as a docs-only commit on `dev` authored as `aykhan`, then tick the M8 ERD row. After that, the only remaining scope is Phase 6 deployment.
 
 ---
 
@@ -122,13 +122,13 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Ingestion run trigger from admin UI - M - eljan
   - [x] Audit log viewer - M - aykhan
 
-- [ ] **M8: Rubric / quality demands** - 1/6
+- [ ] **M8: Rubric / quality demands** - 5/6
   - [ ] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
-  - [ ] Relational model write-up in `report/erd-explanation.md` - M - aykhan
-  - [ ] Advanced SQL queries documented in `report/sql-queries.md` - M - aykhan
+  - [x] Relational model write-up in `report/erd-explanation.md` - M - aykhan
+  - [x] Advanced SQL queries documented in `report/sql-queries.md` - M - aykhan
   - [x] Seed script that produces meaningful number of tuples reliably - M - eljan
-  - [ ] Final report - L - aykhan
-  - [ ] Demo script - M - aykhan
+  - [x] Final report - L - aykhan
+  - [x] Demo script - M - aykhan
 
 ## Stretch features (post-rubric)
 
