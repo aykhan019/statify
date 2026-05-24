@@ -6,9 +6,9 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`). Next milestone P6-M11 (analytics surfaces re-skin, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M11 Analytics surfaces re-skin. Green light already given; branch from latest `dev`.
-- **Last shipped:** P6-M10 Section identity headers + section-hue propagation. Adds `apps/web/src/components/section/` with a route-aware section resolver, provider, block header, and content wrapper; moves the runtime section aliases to provider-driven `data-section-hue` CSS; adds full-width section block headers across top-level route surfaces while keeping `/me/account` neutral; wires active navigation/catalog tabs, row hover, cover frames, and chart series index 0 to the active section hue; documents block behavior in DESIGN.md §1.3.1 and renders all eleven section headers in `/styleguide`. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, and authenticated local HTTP smoke against the user/admin route set all passed.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`), M11 ✓ (PR #39, `ec35ed2`). Next milestone P6-M12 (motion pass, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M12 Motion pass. Green light already given; branch from latest `dev`.
+- **Last shipped:** P6-M11 Analytics surfaces re-skin. Adds `apps/web/src/components/charts/` with shared chart container, legend, and token helpers; wires stats bar charts and the heatmap through CSS-variable chart tokens with section hue at series index 0; documents tooltip, legend, and heatmap treatment in DESIGN.md §1.6.1; fixes analytics numeric mapper coercion so Decimal-like values return as numbers for stats routes. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, authenticated local HTTP smoke for stats chart routes and `/styleguide`, and local browser smoke confirming chart render/reflow all passed.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Last merge (non-milestone):** PR #36 `chore: add pnpm setup one-shot bootstrap` rebase-merged into `dev` 2026-05-25 (HEAD `3ad5c16`). Adds `pnpm setup` + `scripts/setup.sh`; not a milestone task, so no Phase 6 milestone status changed this session.
 - **Open file/component:** none.
@@ -21,7 +21,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** start P6-M11 (analytics surfaces re-skin, aykhan) on `feat/p6-m11-analytics-reskin` off latest `dev` (`f16bb46`); one PR into `dev`; rebase-merge.
+- **Next concrete action:** start P6-M12 (motion pass, rahila) on `feat/p6-m12-motion-polish` off latest `dev` (`ec35ed2`); one PR into `dev`; rebase-merge.
 
 ---
 
@@ -219,7 +219,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/section/**` (new section provider + block header), `apps/web/src/app/(app)/**` (per-route headers / layouts), `apps/web/src/components/navigation/**` (active indicator reads section hue), `apps/web/src/components/{catalog,playlists}/**` (cover frame reads `--color-section-frame`), `DESIGN.md` (section-header addendum), `apps/web/src/app/styleguide/page.tsx`.
   - Depends on: P6-M5, P6-M6.
 
-- [ ] **P6-M11: Analytics surfaces re-skin (Recharts against tokens)** - M - aykhan
+- [x] **P6-M11: Analytics surfaces re-skin (Recharts against tokens)** - M - aykhan
   - Goal: re-skin every Recharts surface (top artists, top tracks, discover, heatmap, trending, hidden gems) against the locked token palette and motion tokens, including a shared chart wrapper that pulls axis / grid / tooltip / palette from CSS variables.
   - Entry criteria: P6-M3 merged; data-viz palette (at least eight hues) defined in DESIGN.md; P6-M10 merged (active section hue available for the series index-0 swap).
   - Exit criteria: a single chart theme module at `apps/web/src/components/charts/` reads axis, grid, tooltip, and series colors from CSS variables; every existing `stats/**` page wired through it with no inline hex; heatmap uses a documented multi-stop scale from the DESIGN.md data-viz palette; tooltip and legend treatments documented; lint / typecheck / build pass; manual smoke confirms charts render with the new palette and reflow on resize.
