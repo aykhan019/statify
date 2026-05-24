@@ -132,6 +132,7 @@
 | 2026-05-24 | Web iTunes image remotePatterns allowlist added         | ADR-002 | Aykhan |
 | 2026-05-24 | Web `components/layout` primitives path added           | ADR-002 | Rahila |
 | 2026-05-24 | Web `components/navigation` system path added           | ADR-002 | Rahila |
+| 2026-05-24 | Web `components/forms` system path added                | ADR-002 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
