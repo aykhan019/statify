@@ -7,6 +7,7 @@ import { parseEnv } from './env.schema';
 @Module({
   imports: [
     NestConfigModule.forRoot({
+      envFilePath: ['.env', '../../.env'],
       isGlobal: true,
       validate: parseEnv,
     }),
