@@ -8,7 +8,7 @@ interface SimilarPlaylistsListProps {
 export function SimilarPlaylistsList({ entries }: SimilarPlaylistsListProps) {
   if (entries.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm">
+      <p className="text-fg-muted text-sm">
         No similar playlists share enough tracks with this one.
       </p>
     );

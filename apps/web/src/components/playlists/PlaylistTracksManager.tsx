@@ -180,15 +180,13 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
       />
 
       {error !== null && (
-        <p role="alert" className="text-destructive text-sm">
+        <p role="alert" className="text-state-error-fg text-sm">
           {error}
         </p>
       )}
 
       {tracks.length === 0 ? (
-        <p className="text-muted-foreground text-sm">
-          No tracks yet. Search for one above to add it.
-        </p>
+        <p className="text-fg-muted text-sm">No tracks yet. Search for one above to add it.</p>
       ) : (
         <ul
           className={cn('flex flex-col gap-1', committingOrder && 'pointer-events-none opacity-70')}

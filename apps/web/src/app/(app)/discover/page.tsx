@@ -1,5 +1,8 @@
+import { Compass } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { EmptyState } from '@/components/states';
+import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -28,19 +31,19 @@ export default async function DiscoverPage() {
           title="Discover"
           description="Tracks that travel with your favorites, but you haven't played yet."
         />
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">
-              Play a few tracks first so we can find new ones that share playlists with them.
-            </p>
+        <EmptyState
+          icon={Compass}
+          title="Nothing to discover yet"
+          description="Play a few tracks first so we can find new ones that share playlists with them."
+          action={
             <Link
               href="/catalog/tracks"
-              className="text-accent mt-2 inline-block text-sm font-medium"
+              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
             >
-              Open the catalog →
+              Open the catalog
             </Link>
-          </CardContent>
-        </Card>
+          }
+        />
       </Container>
     );
   }

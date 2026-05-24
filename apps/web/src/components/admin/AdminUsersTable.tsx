@@ -1,8 +1,10 @@
 'use client';
 
+import { UserX } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import type { AdminUserListItem, UserRole } from '@statify/shared';
+import { EmptyState } from '@/components/states';
 import { Button } from '@/components/ui/Button';
 import { ApiClientError } from '@/lib/api-client';
 import { updateUserBan, updateUserRole } from '@/lib/admin/api';
@@ -20,7 +22,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
   const [, startTransition] = useTransition();
 
   if (users.length === 0) {
-    return <p className="text-muted-foreground text-sm">No users match your search.</p>;
+    return <EmptyState icon={UserX} title="No users match your search" />;
   }
 
   async function applyRole(userId: number, role: UserRole) {

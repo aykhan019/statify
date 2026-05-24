@@ -1,6 +1,7 @@
+import { ListMusic } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { PlaylistCard } from '@/components/playlists/PlaylistCard';
-import { Card, CardContent } from '@/components/ui/Card';
+import { EmptyState } from '@/components/states';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchPlaylists } from '@/lib/playlists/api';
 
@@ -39,11 +40,7 @@ export default async function PlaylistsPage({
         description={`MPD playlists, ranked by followers. ${response.total.toLocaleString()} total.`}
       />
       {response.data.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">No playlists yet.</p>
-          </CardContent>
-        </Card>
+        <EmptyState icon={ListMusic} title="No playlists yet" />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

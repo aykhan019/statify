@@ -66,7 +66,7 @@ export default async function AdminAuditLogPage({
       <Card>
         <CardContent className="p-3 sm:p-4">
           {response.data.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No audit log entries to show.</p>
+            <p className="text-fg-muted text-sm">No audit log entries to show.</p>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">

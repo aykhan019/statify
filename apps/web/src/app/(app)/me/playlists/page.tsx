@@ -1,8 +1,9 @@
+import { ListMusic } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { UserPlaylistCard } from '@/components/playlists/UserPlaylistCard';
-import { Button } from '@/components/ui/Button';
-import { Card, CardContent } from '@/components/ui/Card';
+import { EmptyState } from '@/components/states';
+import { Button, buttonVariants } from '@/components/ui/Button';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchMyPlaylists } from '@/lib/user-playlists/api';
 
@@ -46,14 +47,19 @@ export default async function MyPlaylistsPage({
         }
       />
       {response.data.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">You have not created any playlists yet.</p>
-            <Link href="/me/playlists/new" className="text-accent mt-3 inline-block text-sm">
-              Create your first playlist →
+        <EmptyState
+          icon={ListMusic}
+          title="No playlists yet"
+          description="You have not created any playlists yet."
+          action={
+            <Link
+              href="/me/playlists/new"
+              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+            >
+              Create your first playlist
             </Link>
-          </CardContent>
-        </Card>
+          }
+        />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

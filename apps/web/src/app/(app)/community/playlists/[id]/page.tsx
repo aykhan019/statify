@@ -63,7 +63,7 @@ export default async function CommunityPlaylistDetailPage({
         </CardHeader>
         <CardContent>
           {tracks.data.length === 0 ? (
-            <p className="text-muted-foreground text-sm">This playlist has no tracks yet.</p>
+            <p className="text-fg-muted text-sm">This playlist has no tracks yet.</p>
           ) : (
             <ul className="flex flex-col gap-2">
               {tracks.data.map((entry) => (

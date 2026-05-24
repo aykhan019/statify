@@ -50,7 +50,7 @@ export default async function AdminIngestPage() {
         </CardHeader>
         <CardContent>
           {response.data.length === 0 ? (
-            <p className="text-muted-foreground text-sm">
+            <p className="text-fg-muted text-sm">
               No ingest checkpoints recorded yet. Trigger a run above to populate this list.
             </p>
           ) : (
