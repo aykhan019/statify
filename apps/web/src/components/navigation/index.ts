@@ -21,6 +21,8 @@ export type {
 } from './NavigationLink';
 export { SideNavigation } from './SideNavigation';
 export type { SideNavigationProps } from './SideNavigation';
+export { SectionTabs } from './SectionTabs';
+export type { SectionTabItem, SectionTabsProps } from './SectionTabs';
 export { TopNavigation } from './TopNavigation';
 export type { TopNavigationProps } from './TopNavigation';
 export { UserMenu } from './UserMenu';

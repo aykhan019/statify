@@ -1,5 +1,5 @@
+import { SectionContent } from '@/components/section';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { DeleteAccountForm, PasswordChangeForm } from '@/components/auth';
 
@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function AccountSettingsPage() {
   return (
-    <Container size="md" className="flex flex-col gap-8 py-2">
+    <SectionContent size="prose" className="flex flex-col gap-8">
       <PageHeader
         title="Account settings"
         description="Manage your password and remove your account."
@@ -39,6 +39,6 @@ export default function AccountSettingsPage() {
           <DeleteAccountForm />
         </CardContent>
       </Card>
-    </Container>
+    </SectionContent>
   );
 }

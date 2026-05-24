@@ -67,7 +67,7 @@ export default async function CommunityPlaylistsPage({
             <div className="flex gap-2">
               {response.page > 1 && (
                 <Link
-                  className="text-accent font-medium"
+                  className="font-medium text-section-accent"
                   href={`/community/playlists?page=${response.page - 1}${
                     params.q ? `&q=${encodeURIComponent(params.q)}` : ''
                   }`}
@@ -77,7 +77,7 @@ export default async function CommunityPlaylistsPage({
               )}
               {response.page < response.totalPages && (
                 <Link
-                  className="text-accent font-medium"
+                  className="font-medium text-section-accent"
                   href={`/community/playlists?page=${response.page + 1}${
                     params.q ? `&q=${encodeURIComponent(params.q)}` : ''
                   }`}

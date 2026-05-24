@@ -5,8 +5,6 @@ import { TopArtistsChart } from '@/components/stats/TopArtistsChart';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchTopArtists } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -27,25 +25,19 @@ export default async function TopArtistsPage() {
 
   if (entries.length === 0) {
     return (
-      <Container size="lg" className="flex flex-col gap-6 py-2">
-        <PageHeader
-          title="Top artists"
-          description="Your most played artists, ranked by play count."
-        />
-        <EmptyState
-          icon={Mic2}
-          title="Not enough listens yet"
-          description="Play a few previews from the catalog and check back to see your most-played artists."
-          action={
-            <Link
-              href="/catalog/tracks"
-              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-            >
-              Open the catalog
-            </Link>
-          }
-        />
-      </Container>
+      <EmptyState
+        icon={Mic2}
+        title="Not enough listens yet"
+        description="Play a few previews from the catalog and check back to see your most-played artists."
+        action={
+          <Link
+            href="/catalog/tracks"
+            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+          >
+            Open the catalog
+          </Link>
+        }
+      />
     );
   }
 
@@ -53,11 +45,10 @@ export default async function TopArtistsPage() {
   const totalPlays = entries.reduce((sum, entry) => sum + entry.listenCount, 0);
 
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <PageHeader
-        title="Top artists"
-        description={`Ranked across ${totalPlays.toLocaleString()} plays / ${totalMinutes.toFixed(0)} min.`}
-      />
+    <>
+      <p className="text-sm text-fg-muted">
+        Ranked across {totalPlays.toLocaleString()} plays / {totalMinutes.toFixed(0)} min.
+      </p>
       <Card>
         <CardHeader>
           <CardTitle>Plays per artist</CardTitle>
@@ -73,19 +64,22 @@ export default async function TopArtistsPage() {
         <CardContent>
           <ol className="divide-y">
             {entries.map((entry) => (
-              <li key={entry.artistId} className="flex items-center justify-between gap-4 py-2">
+              <li
+                key={entry.artistId}
+                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 transition-colors hover:bg-section-row-hover"
+              >
                 <div className="flex items-center gap-3">
-                  <span className="text-muted-foreground w-8 text-right text-sm font-medium">
+                  <span className="w-8 text-right text-sm font-medium text-fg-muted">
                     #{entry.rank}
                   </span>
                   <Link
                     href={`/catalog/artists/${entry.artistId}`}
-                    className="text-foreground hover:text-accent text-sm font-medium"
+                    className="text-sm font-medium text-fg-strong hover:text-section-accent"
                   >
                     {entry.artistName}
                   </Link>
                 </div>
-                <div className="text-muted-foreground flex shrink-0 gap-4 text-xs sm:text-sm">
+                <div className="flex shrink-0 gap-4 text-xs text-fg-muted sm:text-sm">
                   <span>{entry.listenCount} plays</span>
                   <span>{entry.totalMinutes.toFixed(1)} min</span>
                 </div>
@@ -94,6 +88,6 @@ export default async function TopArtistsPage() {
           </ol>
         </CardContent>
       </Card>
-    </Container>
+    </>
   );
 }

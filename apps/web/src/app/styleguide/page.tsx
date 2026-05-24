@@ -85,6 +85,13 @@ import {
 import { PlaylistCard } from '@/components/playlists/PlaylistCard';
 import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { UserPlaylistCard } from '@/components/playlists/UserPlaylistCard';
+import {
+  SECTION_DEFINITIONS,
+  SectionBlockHeader,
+  SectionProvider,
+  type SectionDefinition,
+  type SectionHue,
+} from '@/components/section';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
@@ -115,19 +122,23 @@ const HUES = [
 ] as const;
 const STEPS = ['50', '100', '200', '400', '500', '600', '700', '900'] as const;
 
-const SECTIONS = [
-  { id: 'library', label: 'Library', hue: 'indigo' },
-  { id: 'discover', label: 'Discover', hue: 'green' },
-  { id: 'top-artists', label: 'Top Artists', hue: 'coral' },
-  { id: 'top-tracks', label: 'Top Tracks', hue: 'magenta' },
-  { id: 'heatmap', label: 'Heatmap', hue: 'azure' },
-  { id: 'trending', label: 'Trending', hue: 'amber' },
-  { id: 'hidden-gems', label: 'Hidden Gems', hue: 'teal' },
-  { id: 'history', label: 'History', hue: 'vermilion' },
-  { id: 'playlists', label: 'Playlists', hue: 'violet' },
-  { id: 'community', label: 'Community', hue: 'cyan' },
-  { id: 'admin', label: 'Admin', hue: 'pink' },
+const SECTION_DEMO_ORDER = [
+  'library',
+  'discover',
+  'top-artists',
+  'top-tracks',
+  'heatmap',
+  'trending',
+  'hidden-gems',
+  'history',
+  'playlists',
+  'community',
+  'admin',
 ] as const;
+
+const SECTION_DEMOS = SECTION_DEMO_ORDER.map(
+  (id) => SECTION_DEFINITIONS.find((section) => section.id === id)!,
+);
 
 const TYPE_ROLES: Array<{ token: string; size: string; weight: number; role: string }> = [
   { token: 'text-micro', size: '0.6875rem', weight: 600, role: 'Chip text, micro-labels' },
@@ -534,22 +545,25 @@ function HuesGrid() {
 }
 
 interface SectionFrameProps {
-  hue: string;
+  hue: SectionHue;
   children: React.ReactNode;
 }
 
-/** Sets the section CSS variables on the wrapper so descendants pick up the active hue. */
 function SectionFrame({ hue, children }: SectionFrameProps) {
-  const style = {
-    ['--section-block' as string]: `var(--color-${hue}-500)`,
-    ['--section-block-fg' as string]: 'var(--fg-on-block)',
-    ['--section-tint' as string]: `var(--color-${hue}-50)`,
-    ['--section-accent' as string]: `var(--color-${hue}-500)`,
-    ['--section-accent-fg' as string]: 'var(--fg-on-block)',
-    ['--section-row-hover' as string]: `var(--color-${hue}-50)`,
-    ['--section-frame' as string]: `var(--color-${hue}-500)`,
-  } as React.CSSProperties;
-  return <div style={style}>{children}</div>;
+  const section = SECTION_DEMOS.find((item) => item.hue === hue) ?? SECTION_DEMOS[0]!;
+  return <SectionProvider pathname={section.routePrefixes[0]}>{children}</SectionProvider>;
+}
+
+function SectionBlockDemo({ section }: { section: SectionDefinition }) {
+  return (
+    <SectionProvider pathname={section.routePrefixes[0]}>
+      <SectionBlockHeader
+        eyebrow={section.routePrefixes[0]}
+        title={section.label}
+        description={`${section.hue} section hue`}
+      />
+    </SectionProvider>
+  );
 }
 
 function H2({ children, id }: { children: string; id: string }) {
@@ -642,20 +656,10 @@ export default function StyleguidePage() {
         series pick up the section's hue.
       </Caption>
       <div className="grid gap-3">
-        {SECTIONS.map((s) => (
-          <SectionFrame key={s.id} hue={s.hue}>
-            <div
-              className="flex items-center gap-4 rounded-(--radius-md) p-4"
-              style={{ backgroundColor: 'var(--color-section-block)' }}
-            >
-              <Cover src={null} name={s.label} entity="album" size="sm" inSection />
-              <div className="flex-1" style={{ color: 'var(--color-section-block-fg)' }}>
-                <p className="font-mono text-xs uppercase tracking-[0.04em] opacity-80">/{s.id}</p>
-                <p className="text-xl font-bold">{s.label}</p>
-              </div>
-              <Badge variant="section">{s.hue}</Badge>
-            </div>
-          </SectionFrame>
+        {SECTION_DEMOS.map((section) => (
+          <div key={section.id} className="overflow-hidden rounded-(--radius-md)">
+            <SectionBlockDemo section={section} />
+          </div>
         ))}
       </div>
 
@@ -1138,7 +1142,7 @@ export default function StyleguidePage() {
         Frame thickness varies by context.
       </Caption>
       <div className="space-y-8">
-        {SECTIONS.slice(0, 4).map((s) => (
+        {SECTION_DEMOS.slice(0, 4).map((s) => (
           <SectionFrame key={s.id} hue={s.hue}>
             <div className="rounded-(--radius-md) border border-border-default bg-surface-raised p-4">
               <p className="text-fg-muted mb-3 font-mono text-xs">

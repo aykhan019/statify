@@ -108,7 +108,7 @@ export default async function PlaylistDetailPage({
             <div className="flex gap-2">
               {tracks.page > 1 && (
                 <Link
-                  className="text-accent font-medium"
+                  className="font-medium text-section-accent"
                   href={`/catalog/playlists/${playlistId}?page=${tracks.page - 1}`}
                 >
                   ← Prev
@@ -116,7 +116,7 @@ export default async function PlaylistDetailPage({
               )}
               {tracks.page < tracks.totalPages && (
                 <Link
-                  className="text-accent font-medium"
+                  className="font-medium text-section-accent"
                   href={`/catalog/playlists/${playlistId}?page=${tracks.page + 1}`}
                 >
                   Next →

@@ -23,7 +23,7 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
     <div className="overflow-x-auto">
       <div className="inline-flex min-w-full flex-col gap-1">
         <div
-          className="grid gap-1 text-[10px] text-muted-foreground"
+          className="grid gap-1 text-[10px] text-fg-muted"
           style={{ gridTemplateColumns: `2.5rem repeat(${HEATMAP_HOURS}, minmax(1.25rem, 1fr))` }}
         >
           <div />
@@ -39,7 +39,7 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
             className="grid gap-1"
             style={{ gridTemplateColumns: `2.5rem repeat(${HEATMAP_HOURS}, minmax(1.25rem, 1fr))` }}
           >
-            <div className="text-muted-foreground self-center text-xs">{DAY_LABELS[day]}</div>
+            <div className="self-center text-xs text-fg-muted">{DAY_LABELS[day]}</div>
             {Array.from({ length: HEATMAP_HOURS }, (_, hour) => {
               const count = counts.get(day * HEATMAP_HOURS + hour) ?? 0;
               const intensity = max === 0 ? 0 : count / max;
@@ -49,15 +49,13 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
                   title={`${DAY_LABELS[day]} ${hour.toString().padStart(2, '0')}:00 — ${count} plays`}
                   className={cn(
                     'aspect-square min-h-5 rounded-(--radius-xs) border',
-                    count === 0 && 'bg-muted',
+                    count === 0 && 'bg-surface-sunken',
                   )}
                   style={
                     count === 0
                       ? undefined
                       : {
-                          backgroundColor: `color-mix(in oklch, var(--color-accent) ${Math.round(
-                            15 + intensity * 85,
-                          )}%, transparent)`,
+                          backgroundColor: `color-mix(in oklch, var(--color-chart-series-0) ${Math.round(15 + intensity * 85)}%, transparent)`,
                         }
                   }
                 />
@@ -66,7 +64,7 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
           </div>
         ))}
       </div>
-      <p className="text-muted-foreground mt-4 text-xs">
+      <p className="mt-4 text-xs text-fg-muted">
         Darker cells indicate more plays. Hover a cell for the exact count.
       </p>
     </div>

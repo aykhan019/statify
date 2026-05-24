@@ -71,20 +71,20 @@ Cards do **not** use shadows by default; the block-driven language carries depth
 
 Each top-level section owns one hue. The block at the top of a route renders in `--color-{hue}-500` with `--fg-on-block` text. Section hue propagates to: active nav indicator, row hover tint (`--color-{hue}-50` light / `--color-{hue}-900` at 40% dark), chart series default, and cover frame in that section.
 
-| Section     | Route prefix                    | Hue token             | Reason                   |
-| ----------- | ------------------------------- | --------------------- | ------------------------ |
-| Library     | `/catalog/*`                    | `--hue-indigo`        | Foundational, broad      |
-| Discover    | `/discover`                     | `--hue-green`         | Exploration              |
-| Top Artists | `/me/stats/top-artists`         | `--hue-coral`         | Warm headline            |
-| Top Tracks  | `/me/stats/top-tracks`          | `--hue-magenta`       | Rhythm                   |
-| Heatmap     | `/me/stats/heatmap`             | `--hue-azure`         | Time of day              |
-| Trending    | `/me/stats/trending`            | `--hue-amber`         | Movement, momentum       |
-| Hidden Gems | `/me/stats/hidden-gems`         | `--hue-teal`          | Depth, undiscovered      |
-| History     | `/me/history`                   | `--hue-vermilion`     | Recency                  |
-| Playlists   | `/me/playlists`, `/playlists/*` | `--hue-violet`        | Curation                 |
-| Community   | `/community`                    | `--hue-cyan`          | People                   |
-| Admin       | `/admin`                        | `--hue-pink`          | Operator, distinct       |
-| Account     | `/me/account`                   | none (neutral chrome) | Settings shouldn't shout |
+| Section     | Route prefix                                    | Hue token             | Reason                   |
+| ----------- | ----------------------------------------------- | --------------------- | ------------------------ |
+| Library     | `/catalog/*`                                    | `--hue-indigo`        | Foundational, broad      |
+| Discover    | `/discover`                                     | `--hue-green`         | Exploration              |
+| Top Artists | `/me/stats/top-artists`                         | `--hue-coral`         | Warm headline            |
+| Top Tracks  | `/me/stats/top-tracks`                          | `--hue-magenta`       | Rhythm                   |
+| Heatmap     | `/me/stats/heatmap`                             | `--hue-azure`         | Time of day              |
+| Trending    | `/me/stats/trending`                            | `--hue-amber`         | Movement, momentum       |
+| Hidden Gems | `/explore/hidden-gems`, `/me/stats/hidden-gems` | `--hue-teal`          | Depth, undiscovered      |
+| History     | `/me/history`                                   | `--hue-vermilion`     | Recency                  |
+| Playlists   | `/me/playlists`, `/playlists/*`                 | `--hue-violet`        | Curation                 |
+| Community   | `/community`                                    | `--hue-cyan`          | People                   |
+| Admin       | `/admin`                                        | `--hue-pink`          | Operator, distinct       |
+| Account     | `/me/account`                                   | none (neutral chrome) | Settings shouldn't shout |
 
 Semantic alias tokens (P6-M3 emits these alongside the raw set, so a route layout can do `bg-section-block text-section-on-block` and React reads `--color-section-*` from the route's section provider):
 
@@ -98,7 +98,17 @@ Semantic alias tokens (P6-M3 emits these alongside the raw set, so a route layou
 --color-section-frame      → var(--color-section-accent)
 ```
 
-When a route has no section (global search, sign-in, error pages), the active section resolves to `--hue-indigo` (Library default).
+When a route has no section (global search, sign-in, error pages, stats overview, app overview), the active section resolves to `--hue-indigo` (Library default).
+
+### 1.3.1 Section block headers
+
+Every routed section except Account renders a full-width block header as the first section-owned surface beneath breadcrumbs. The block has no radius, no shadow, no card wrapper, and fills the main content width with `--color-section-block` and `--color-section-block-fg`. The inner content is constrained to the normal wide container with page gutters.
+
+Block vertical padding is `--space-12` on compact viewports and `--space-16` on large viewports. The title uses `text-5xl`, weight `800`, tight line-height, and normal letter spacing. Optional route labels use the mono micro-label treatment; optional icons render at `--icon-lg` inside a simple on-block border chip.
+
+The section provider resolves the active section from the current route prefix and sets these runtime aliases on the app subtree: `--color-section-block`, `--color-section-block-fg`, `--color-section-tint`, `--color-section-accent`, `--color-section-accent-fg`, `--color-section-row-hover`, and `--color-section-frame`. It also moves the active section hue to `--color-chart-series-0`, so default chart marks match the route. Active nav and tabs use `--color-section-accent`; row and breadcrumb hover fills use `--color-section-row-hover`; cover frames use `--color-section-frame`.
+
+Account remains neutral chrome: it resolves the indigo defaults for focus and nav consistency, but does not render a block header.
 
 ### 1.4 Entity type hues
 
@@ -652,7 +662,7 @@ All four share `states/StatePanel.tsx`: a centered column of icon chip, title (`
 | Title            | `--fg-strong`                                 | `--state-error-fg`                            |
 | ARIA role        | `status`                                      | `alert`                                       |
 
-The empty / not-found chip uses the active section hue, so the state reads as part of the section rather than a generic system surface. Until the section header pass (P6-M10) wires a per-route hue, the chip resolves to the indigo default.
+The empty / not-found chip uses the active section hue, so the state reads as part of the section rather than a generic system surface. Section-less routes resolve to the indigo Library default.
 
 ### 10.3 Skeleton templates
 

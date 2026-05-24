@@ -68,7 +68,10 @@ export default async function AdminIngestPage() {
                 </thead>
                 <tbody>
                   {response.data.map((row) => (
-                    <tr key={row.id} className="border-t">
+                    <tr
+                      key={row.id}
+                      className="border-t transition-colors hover:bg-section-row-hover"
+                    >
                       <td className="px-3 py-2 font-medium">{row.sliceFilename}</td>
                       <td className="px-3 py-2">
                         {row.playlistsDone.toLocaleString()} / {row.playlistsTotal.toLocaleString()}

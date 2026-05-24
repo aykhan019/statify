@@ -49,7 +49,7 @@ export function TrendingArtistsChart({ entries }: TrendingArtistsChartProps) {
           tick={{ fill: CHART_AXIS_FILL, fontSize: 12 }}
         />
         <Tooltip
-          cursor={{ fill: 'var(--color-muted)' }}
+          cursor={{ fill: 'var(--color-section-row-hover)' }}
           contentStyle={CHART_TOOLTIP_STYLE}
           formatter={(value, _name, item) => {
             const datum = item.payload as TrendingDatum;

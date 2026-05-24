@@ -27,14 +27,14 @@ export function ChartContainer({
 }
 
 export const CHART_TOOLTIP_STYLE = {
-  backgroundColor: 'var(--color-surface)',
-  border: '1px solid var(--color-border)',
+  backgroundColor: 'var(--color-chart-tooltip-bg)',
+  border: '1px solid var(--color-chart-tooltip-border)',
   borderRadius: 'var(--radius-sm)',
-  color: 'var(--color-surface-foreground)',
+  color: 'var(--color-chart-tooltip-fg)',
   fontSize: '0.875rem',
   padding: '0.5rem 0.75rem',
 } as const;
 
-export const CHART_GRID_STROKE = 'var(--color-border)';
-export const CHART_AXIS_FILL = 'var(--color-muted-foreground)';
-export const CHART_BAR_FILL = 'var(--color-accent)';
+export const CHART_GRID_STROKE = 'var(--color-chart-grid)';
+export const CHART_AXIS_FILL = 'var(--color-chart-axis)';
+export const CHART_BAR_FILL = 'var(--color-chart-series-0)';

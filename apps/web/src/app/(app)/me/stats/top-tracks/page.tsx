@@ -5,8 +5,6 @@ import { TopTracksChart } from '@/components/stats/TopTracksChart';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchTopTracks } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -27,25 +25,19 @@ export default async function TopTracksPage() {
 
   if (entries.length === 0) {
     return (
-      <Container size="lg" className="flex flex-col gap-6 py-2">
-        <PageHeader
-          title="Top tracks"
-          description="Your most played tracks, ranked by play count."
-        />
-        <EmptyState
-          icon={Music2}
-          title="Nothing played yet"
-          description="Play a few previews from the catalog and check back to see your most-played tracks."
-          action={
-            <Link
-              href="/catalog/tracks"
-              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-            >
-              Open the catalog
-            </Link>
-          }
-        />
-      </Container>
+      <EmptyState
+        icon={Music2}
+        title="Nothing played yet"
+        description="Play a few previews from the catalog and check back to see your most-played tracks."
+        action={
+          <Link
+            href="/catalog/tracks"
+            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+          >
+            Open the catalog
+          </Link>
+        }
+      />
     );
   }
 
@@ -53,11 +45,10 @@ export default async function TopTracksPage() {
   const totalMinutes = entries.reduce((sum, entry) => sum + entry.totalMinutes, 0);
 
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <PageHeader
-        title="Top tracks"
-        description={`Ranked across ${totalPlays.toLocaleString()} plays / ${totalMinutes.toFixed(0)} min.`}
-      />
+    <>
+      <p className="text-sm text-fg-muted">
+        Ranked across {totalPlays.toLocaleString()} plays / {totalMinutes.toFixed(0)} min.
+      </p>
       <Card>
         <CardHeader>
           <CardTitle>Plays per track</CardTitle>
@@ -73,24 +64,27 @@ export default async function TopTracksPage() {
         <CardContent>
           <ol className="divide-y">
             {entries.map((entry) => (
-              <li key={entry.trackId} className="flex items-center justify-between gap-4 py-2">
+              <li
+                key={entry.trackId}
+                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 transition-colors hover:bg-section-row-hover"
+              >
                 <div className="flex min-w-0 items-center gap-3">
-                  <span className="text-muted-foreground w-8 shrink-0 text-right text-sm font-medium">
+                  <span className="w-8 shrink-0 text-right text-sm font-medium text-fg-muted">
                     #{entry.rank}
                   </span>
                   <div className="min-w-0">
                     <Link
                       href={`/catalog/tracks/${entry.trackId}`}
-                      className="text-foreground hover:text-accent block truncate text-sm font-medium"
+                      className="block truncate text-sm font-medium text-fg-strong hover:text-section-accent"
                     >
                       {entry.trackName}
                     </Link>
-                    <p className="text-muted-foreground truncate text-xs">
+                    <p className="truncate text-xs text-fg-muted">
                       {entry.primaryArtistName} · {entry.albumName}
                     </p>
                   </div>
                 </div>
-                <div className="text-muted-foreground flex shrink-0 gap-4 text-xs sm:text-sm">
+                <div className="flex shrink-0 gap-4 text-xs text-fg-muted sm:text-sm">
                   <span>{entry.listenCount} plays</span>
                   <span>{entry.totalMinutes.toFixed(1)} min</span>
                 </div>
@@ -99,6 +93,6 @@ export default async function TopTracksPage() {
           </ol>
         </CardContent>
       </Card>
-    </Container>
+    </>
   );
 }

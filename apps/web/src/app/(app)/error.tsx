@@ -1,5 +1,6 @@
 'use client';
 
+import { SectionContent } from '@/components/section';
 import { ErrorState } from '@/components/states';
 
 /**
@@ -14,8 +15,8 @@ export default function AppError({
   reset: () => void;
 }) {
   return (
-    <div className="py-10">
+    <SectionContent>
       <ErrorState onRetry={reset} />
-    </div>
+    </SectionContent>
   );
 }

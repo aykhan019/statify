@@ -4,8 +4,6 @@ import { cookies } from 'next/headers';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchDiscover } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -26,55 +24,43 @@ export default async function DiscoverPage() {
 
   if (entries.length === 0) {
     return (
-      <Container size="lg" className="flex flex-col gap-6 py-2">
-        <PageHeader
-          title="Discover"
-          description="Tracks that travel with your favorites, but you haven't played yet."
-        />
-        <EmptyState
-          icon={Compass}
-          title="Nothing to discover yet"
-          description="Play a few tracks first so we can find new ones that share playlists with them."
-          action={
-            <Link
-              href="/catalog/tracks"
-              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-            >
-              Open the catalog
-            </Link>
-          }
-        />
-      </Container>
+      <EmptyState
+        icon={Compass}
+        title="Nothing to discover yet"
+        description="Play a few tracks first so we can find new ones that share playlists with them."
+        action={
+          <Link
+            href="/catalog/tracks"
+            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+          >
+            Open the catalog
+          </Link>
+        }
+      />
     );
   }
 
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <PageHeader
-        title="Discover"
-        description="Tracks that appear in playlists alongside your top track but you haven't heard yet."
-      />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {entries.map((entry) => (
-          <Card key={entry.trackId} className="hover:bg-muted transition-colors">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-base">
-                <Link href={`/catalog/tracks/${entry.trackId}`} className="hover:text-accent">
-                  {entry.trackName}
-                </Link>
-              </CardTitle>
-              <p className="text-muted-foreground truncate text-sm">
-                {entry.primaryArtistName} · {entry.albumName}
-              </p>
-            </CardHeader>
-            <CardContent className="pt-2">
-              <span className="bg-accent/15 text-accent rounded-(--radius-sm) px-2 py-1 text-xs font-medium">
-                Shared with {entry.cooccurrenceCount} playlists
-              </span>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Container>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      {entries.map((entry) => (
+        <Card key={entry.trackId} className="transition-colors hover:bg-section-row-hover">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base">
+              <Link href={`/catalog/tracks/${entry.trackId}`} className="hover:text-section-accent">
+                {entry.trackName}
+              </Link>
+            </CardTitle>
+            <p className="truncate text-sm text-fg-muted">
+              {entry.primaryArtistName} · {entry.albumName}
+            </p>
+          </CardHeader>
+          <CardContent className="pt-2">
+            <span className="rounded-(--radius-sm) bg-section-tint px-2 py-1 text-xs font-medium text-section-accent">
+              Shared with {entry.cooccurrenceCount} playlists
+            </span>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
   );
 }
