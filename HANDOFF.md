@@ -30,26 +30,25 @@
 **Updated:** 2026-05-24
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
-- **Last shipped:** M8 Rubric / quality demands 5/6, rebase-merged into `dev` via PR #25. Four new rows landed, all attributed to `aykhan`: relational model write-up, advanced SQL queries documentation, final report, and demo script. `docs/erd.dbml` also landed in the PR, but the ERD row stays unticked until `docs/erd.png` is exported and committed. The seed script row was already ticked from F11.
-- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → **M8 Rubric / quality demands (5/6 current)**. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
+- **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 landed the DBML source, relational model write-up, advanced SQL queries documentation, final report, and demo script; the follow-up docs commit added `docs/erd.png` and ticked the ERD row. The seed script row was already ticked from F11.
+- **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → M8 ✓. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** M8 Rubric / quality demands, 5/6. Only the ERD PNG export remains.
+- **Current milestone:** Deployment and submission. Wait for explicit approval before starting.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none for the current milestone.
 - **Open threads:**
-  - PR #25 shipped five docs commits on `feat/rubric-docs`: DBML source, relational model write-up, advanced SQL queries doc, final project report, and in-class demo script.
-  - `docs/erd.dbml` exists and is ready to import into dbdiagram.io. `docs/erd.png` is still missing, so the M8 ERD row remains unticked.
+  - M8 shipped through PR #25 plus one follow-up docs commit on `dev`. The completed rubric artifact set is `docs/erd.dbml`, `docs/erd.png`, `report/erd-explanation.md`, `report/sql-queries.md`, `report/final-report.md`, and `report/demo-script.md`.
+  - `docs/erd.png` is a dbdiagram.io export generated from `docs/erd.dbml`.
   - No schema, dependency, config, or folder-structure changes landed in PR #25. The structural changes log does not need a new row for the docs/report file additions.
-  - PR #25 CI passed before the rebase merge. The close-session docs update was format-checked locally.
+  - PR #25 CI passed before the rebase merge. The follow-up ERD/docs update was format-checked locally.
   - Full authenticated end-to-end UI smoke against a running API was not run locally because Node v26 is installed and the API source-import resolution still fails there. Repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke. M5, M6, and M7 surfaces all need that smoke against real seeded data before the dev → main promotion.
   - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task (not in M8 scope).
-- **Blockers (gate further milestone work):**
-  1. **M8 ERD PNG export.** Export `docs/erd.dbml` from dbdiagram.io into `docs/erd.png`, then tick the ERD row. No code blockers.
+- **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until Phase 6 deployment items (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked.
   2. M5, M6, and M7 surfaces need an authed end-to-end smoke against a Node 22 API with seeded listening history, at least one seeded public user playlist, and at least one admin account before the dev → main promotion.
-- **Next concrete action:** export `docs/erd.dbml` from dbdiagram.io, save the image as `docs/erd.png`, commit it directly on `dev` as a docs-only `aykhan` commit, and tick the M8 ERD row. After that, move to Phase 6 deployment only after approval.
+- **Next concrete action:** wait for explicit approval to start deployment and submission work. First deployment row is production env vars in Vercel and Render, followed by production smoke testing, prod demo dataset confirmation, warm-up ping verification, final demo dry-run, and submission.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change, account deletion, admin ban/unban, admin role change, and admin ingest trigger already audit-log via their respective services.
   - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.

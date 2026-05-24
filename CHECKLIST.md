@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M8 Rubric / quality demands, 5/6. Only the ERD PNG export from dbdiagram.io is outstanding; everything else has shipped.
-- **Last shipped:** M8 Rubric / quality demands 5/6, rebase-merged into `dev` via PR #25. Four new rows ticked, all attributed to `aykhan` (relational model write-up, advanced SQL queries doc, final report, demo script). The DBML source landed in the same PR but the M8 ERD row stays unticked until `docs/erd.png` lands. The seed script row was already ticked from F11.
+- **Current milestone:** Deployment and submission. Wait for explicit approval before starting.
+- **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 landed the DBML source, relational model write-up, advanced SQL queries doc, final report, and demo script; the follow-up docs commit added `docs/erd.png` and ticked the ERD row. The seed script row was already ticked from F11.
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
-- **Blocker:** ERD PNG export from dbdiagram.io is the only thing keeping the M8 ERD row from ticking. No code blockers.
-- **Next concrete action:** export `docs/erd.dbml` from dbdiagram.io, drop `docs/erd.png` into the repo as a docs-only commit on `dev` authored as `aykhan`, then tick the M8 ERD row. After that, the only remaining scope is Phase 6 deployment.
+- **Blocker:** none for milestone work.
+- **Next concrete action:** wait for approval to start deployment and submission. First deployment row is production env vars set in Vercel and Render.
 
 ---
 
@@ -122,8 +122,8 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Ingestion run trigger from admin UI - M - eljan
   - [x] Audit log viewer - M - aykhan
 
-- [ ] **M8: Rubric / quality demands** - 5/6
-  - [ ] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
+- [x] **M8: Rubric / quality demands** - 6/6
+  - [x] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
   - [x] Relational model write-up in `report/erd-explanation.md` - M - aykhan
   - [x] Advanced SQL queries documented in `report/sql-queries.md` - M - aykhan
   - [x] Seed script that produces meaningful number of tuples reliably - M - eljan
