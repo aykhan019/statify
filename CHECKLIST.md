@@ -6,9 +6,9 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`), M11 ✓ (PR #39, `ec35ed2`). Next milestone P6-M12 (motion pass, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M12 Motion pass. Green light already given; branch from latest `dev`.
-- **Last shipped:** P6-M11 Analytics surfaces re-skin. Adds `apps/web/src/components/charts/` with shared chart container, legend, and token helpers; wires stats bar charts and the heatmap through CSS-variable chart tokens with section hue at series index 0; documents tooltip, legend, and heatmap treatment in DESIGN.md §1.6.1; fixes analytics numeric mapper coercion so Decimal-like values return as numbers for stats routes. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, authenticated local HTTP smoke for stats chart routes and `/styleguide`, and local browser smoke confirming chart render/reflow all passed.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`), M11 ✓ (PR #39, `ec35ed2`), M12 ✓ (PR #40, `ea76c55`). Next milestone P6-M13 (accessibility pass, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M13 Accessibility pass. Awaiting Aykhan's explicit green light before starting; branch from latest `dev` once approved.
+- **Last shipped:** P6-M12 Motion pass. Adds semantic motion utilities backed by DESIGN.md duration, easing, and animation tokens; replaces raw transition and built-in pulse/spinner classes across navigation, forms, lists, player, section headers, and loading states; expands `/styleguide` with motion token visibility and a reduced-motion preview. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, and local UI smoke for styleguide motion tokens / reduced motion, user and admin routes, user menu panel, mobile navigation sheet, and audio player surface transitions all passed.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Last merge (non-milestone):** PR #36 `chore: add pnpm setup one-shot bootstrap` rebase-merged into `dev` 2026-05-25 (HEAD `3ad5c16`). Adds `pnpm setup` + `scripts/setup.sh`; not a milestone task, so no Phase 6 milestone status changed this session.
 - **Open file/component:** none.
@@ -17,11 +17,11 @@
   - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. Recorded in ADR-002 during P6-M4.
   - Playlist media shape: list/detail DTOs expose `coverImages: string[]` derived from the first four member tracks' `track.imageUrl ?? album.imageUrl`; UI repeats fewer than four to fill the 2x2 collage and falls back to the playlist letter when none exist. Landed in P6-M7.
   - Form primitives: built on RHF + native control elements (no @radix-ui/react-switch / -select), styled through CSS-variable + state-color tokens; spec lives in DESIGN.md §9. Landed in P6-M8.
-  - Motion library: `tailwindcss-animate`; `framer-motion` opt-in at P6-M12 only if required.
+  - Motion library: `tailwindcss-animate`; `framer-motion` was not introduced during P6-M12.
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** start P6-M12 (motion pass, rahila) on `feat/p6-m12-motion-polish` off latest `dev` (`ec35ed2`); one PR into `dev`; rebase-merge.
+- **Next concrete action:** wait for explicit green light, then start P6-M13 (accessibility pass, aykhan) on `feat/p6-m13-accessibility-pass` off latest `dev` (`ea76c55`); one PR into `dev`; rebase-merge.
 
 ---
 
@@ -226,7 +226,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/charts/**`, `apps/web/src/components/stats/**`, `apps/web/src/app/(app)/me/stats/**`, `DESIGN.md` (data-viz palette addendum).
   - Depends on: P6-M3, P6-M10.
 
-- [ ] **P6-M12: Motion pass** - M - rahila
+- [x] **P6-M12: Motion pass** - M - rahila
   - Goal: apply the DESIGN.md motion tokens across navigation, list mounts, modal / dialog open / close, hover and focus transitions, and player state changes; honour `prefers-reduced-motion`. `framer-motion` may be introduced here only if a specific surface needs layout / exit animation that `tailwindcss-animate` cannot deliver; recorded in HANDOFF Structural Changes Log if added.
   - Entry criteria: P6-M7, P6-M8, P6-M9, P6-M10, P6-M11 merged.
   - Exit criteria: every transition in the app references a named motion token (no inline durations, no inline easings); `prefers-reduced-motion: reduce` swaps to a no-motion variant globally; motion tokens visible on `/styleguide` with side-by-side reduce-motion preview; lint / typecheck / build pass; manual smoke of every authed route confirms transitions feel coherent and no surface flashes.
