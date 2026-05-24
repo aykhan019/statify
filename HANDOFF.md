@@ -31,12 +31,12 @@
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28, `e39bdeb`), M2 ✓ (PR #29, `e7e9053`), M3 ✓ (PR #30, `a543cc2`), M4 ✓ locally (media foundation implemented and verified; ready for commit/PR). Next milestone P6-M5 (layout primitives + app shell rewrite, rahila). The Phase 5 frontend works against the API but was built against the prior visual posture (single-hue accent on grayscale, no semantic token layer, no real entity imagery, no shared icon vocabulary). Phase 6 replaces it. (Note: the original draft numbered redesign as Phase 7 with deployment as Phase 6; the canonical docs never actually numbered deployment, so Phase 6 is the redesign and the existing "Deployment and submission" section stays unnumbered.)
+- **Phase 6 status:** M1 ✓ (PR #28, `e39bdeb`), M2 ✓ (PR #29, `e7e9053`), M3 ✓ (PR #30, `a543cc2`), M4 ✓ (`98ad518`), M5 ✓ locally (layout primitives + app shell rewrite implemented and verified; ready for commit/PR). Next milestone P6-M6 (navigation system, rahila). The Phase 5 frontend works against the API but was built against the prior visual posture (single-hue accent on grayscale, no semantic token layer, no real entity imagery, no shared icon vocabulary). Phase 6 replaces it. (Note: the original draft numbered redesign as Phase 7 with deployment as Phase 6; the canonical docs never actually numbered deployment, so Phase 6 is the redesign and the existing "Deployment and submission" section stays unnumbered.)
 - **Deployment and submission status:** the unnumbered "Deployment and submission" section in `CHECKLIST.md` is paused behind Phase 6 frontend redesign per Aykhan's direction; resumes after P6-M12 merges.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 landed the DBML source, relational model write-up, advanced SQL queries documentation, final report, and demo script; the follow-up docs commit added `docs/erd.png` and ticked the ERD row. The seed script row was already ticked from F11.
 - **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → M8 ✓. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Phase 6 branches use `feat/p6-m<n>-<slug>`. Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** none active. P6-M5 is greenlit after P6-M4 lands.
+- **Current milestone:** P6-M5 complete locally; ready for commit and PR.
 - **Currently in progress:** none.
 - **Open files/components:** none.
 - **Open decisions:** none for the current milestone. Locked decisions feeding Phase 6:
@@ -45,10 +45,10 @@
   - **Motion library:** `tailwindcss-animate` (shadcn / Radix default, CSS-only, near-zero bundle). `framer-motion` stays opt-in for a specific surface in P6-M11 only if layout / exit animation is required.
   - **Webfonts:** self-hosted via `next/font`. Specific families locked in P6-M2 DESIGN.md.
   - **Existing UI during Phase 6:** destructively replaced as each P6 milestone lands; `dev` will show visual inconsistency between merged and unmerged surfaces during Phase 6.
-- **ADR-001 deviations queued for Phase 6:**
+- **ADR-001 deviations recorded for Phase 6:**
   - §3.8 "Tokens (color, spacing, radii) defined once in `tailwind.config.ts`" is superseded by Phase 6's CSS-variable + Tailwind 4 `@theme` token layer. Recorded in ADR-002 during P6-M2.
   - §3.20 "Custom design tokens system; Tailwind config is enough" is superseded by the same ADR.
-  - The schema gap (no media fields on `Artist`, `Album`, `Track`) is recorded in the same ADR or a follow-up ADR during P6-M4.
+  - The schema gap (no media fields on `Artist`, `Album`, `Track`) is recorded in ADR-002 and implemented during P6-M4.
 - **Open threads:**
   - M8 shipped through PR #25 plus one follow-up docs commit on `dev`. The completed rubric artifact set is `docs/erd.dbml`, `docs/erd.png`, `report/erd-explanation.md`, `report/sql-queries.md`, `report/final-report.md`, and `report/demo-script.md`.
   - `docs/erd.png` is a dbdiagram.io export generated from `docs/erd.dbml`.
@@ -61,11 +61,12 @@
   - Full authenticated end-to-end UI smoke against seeded data still needs to be repeated under Node 22 before the dev → main promotion. The API now starts locally and accepts browser login preflight; use admin and user seed accounts for the smoke.
   - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task (not in M8 scope).
   - P6-M4 verification: `pnpm --filter @statify/db prisma:migrate:dev` passes with root `.env` loaded after mirroring the existing pg_trgm GIN indexes in Prisma schema (`ops: raw("gin_trgm_ops")`). `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and `pnpm build` also pass.
+  - P6-M5 verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, and `pnpm --filter @statify/web test` pass. Local runtime smoke passed with `pnpm dev`: `/styleguide` returned 200 and rendered the "Layout primitives" section; login as `alex@statify.local` succeeded through the API; `/me` returned 200 with the new shell, header, sidebar, account link, and overview content. The in-app browser backend exposed no browser targets in this session, so the smoke used HTTP checks against the running local dev server instead of a visual browser pass.
 - **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until the unnumbered "Deployment and submission" items in `CHECKLIST.md` (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked, which will not happen until Phase 6 redesign completes.
   2. M5, M6, and M7 surfaces need an authed end-to-end smoke against a Node 22 API with seeded listening history, at least one seeded public user playlist, and at least one admin account before the dev → main promotion.
-- **Next concrete action:** commit and PR P6-M4, then start P6-M5 (layout primitives + app shell rewrite, rahila) after P6-M4 lands.
+- **Next concrete action:** commit and PR P6-M5, then start P6-M6 (navigation system, rahila) after P6-M5 lands.
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change, account deletion, admin ban/unban, admin role change, and admin ingest trigger already audit-log via their respective services.
   - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.
@@ -125,6 +126,7 @@
 | 2026-05-24 | Entity `image_url` columns added                        | ADR-002 | Aykhan |
 | 2026-05-24 | DB `src/scripts` path added (media backfill)            | ADR-002 | Aykhan |
 | 2026-05-24 | Web iTunes image remotePatterns allowlist added         | ADR-002 | Aykhan |
+| 2026-05-24 | Web `components/layout` primitives path added           | ADR-002 | Rahila |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

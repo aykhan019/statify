@@ -6,8 +6,8 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30). Token layer + primitives + `/styleguide` route merged. Next milestone P6-M4 (media schema + iTunes adapter persistence + backfill, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** none active; P6-M4 ready to start in the next session.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ locally (layout primitives + app shell rewrite, ready for PR). Next milestone P6-M6 (navigation system, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M5 complete locally; ready for commit and PR.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
@@ -18,7 +18,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** start P6-M2 next session: author `DESIGN.md` (full token spec from the Vivid Workshop direction) and `docs/adr/0002-design-system-and-token-layer.md` (records the §3.8 / §3.20 deviation and the `image_url` schema decision).
+- **Next concrete action:** commit and PR P6-M5, then start P6-M6 after P6-M5 lands.
 
 ---
 
@@ -174,7 +174,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `packages/db/prisma/schema.prisma`, `packages/db/prisma/migrations/<timestamp>_entity_media/`, `packages/db/src/scripts/backfill-media.ts` (new), `apps/api/src/integrations/itunes/itunes.adapter.ts`, `apps/api/src/integrations/itunes/itunes.cache.ts`, `apps/api/src/modules/catalog/**` (DTO surface), `packages/shared/src/dto/**`, `apps/web/next.config.mjs`, `docs/adr/0002-design-system-and-token-layer.md` (schema decision section).
   - Depends on: P6-M3.
 
-- [ ] **P6-M5: Layout primitives + app shell rewrite** - M - rahila
+- [x] **P6-M5: Layout primitives + app shell rewrite** - M - rahila
   - Goal: replace ad-hoc layout JSX with token-bound primitives (Container, Stack, Grid, Section, Surface, Divider, Spacer) and rebuild the authed shell on top.
   - Entry criteria: P6-M3 merged.
   - Exit criteria: primitives under `apps/web/src/components/layout/` consume only token classes (no hard-coded px, hex, or font-family); existing `(app)/layout.tsx` re-implemented in terms of the primitives; container widths, gutters, and grid steps documented in DESIGN.md update; `/styleguide` route gains a "Primitives" section showing every primitive at every documented variant; lint / typecheck / build pass; manual smoke confirms every existing authed route still renders without layout regressions.

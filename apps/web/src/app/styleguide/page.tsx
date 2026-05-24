@@ -36,6 +36,25 @@ import {
   Volume2,
   X,
 } from 'lucide-react';
+import {
+  Container as LayoutContainer,
+  Divider as LayoutDivider,
+  Grid as LayoutGrid,
+  Section as LayoutSection,
+  Spacer as LayoutSpacer,
+  Stack as LayoutStack,
+  Surface as LayoutSurface,
+  type ContainerSize,
+  type DividerTone,
+  type GridColumns,
+  type LayoutGap,
+  type SectionSpacing,
+  type SectionTone,
+  type SpacerSize,
+  type SurfaceRadius,
+  type SurfaceShadow,
+  type SurfaceTone,
+} from '@/components/layout';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
@@ -113,6 +132,37 @@ const SPACING_STEPS: Array<{ token: string; px: number }> = [
   { token: '16', px: 64 },
   { token: '20', px: 80 },
   { token: '24', px: 96 },
+];
+
+const CONTAINER_VARIANTS: ContainerSize[] = ['narrow', 'prose', 'wide', 'full', 'bleed'];
+const STACK_GAPS: LayoutGap[] = ['none', 'xs', 'sm', 'md', 'lg', 'xl', 'section'];
+const GRID_COLUMNS: GridColumns[] = ['one', 'two', 'three', 'four'];
+const SECTION_TONES: SectionTone[] = ['plain', 'tint', 'block', 'sunken'];
+const SECTION_SPACING: SectionSpacing[] = ['none', 'sm', 'md', 'lg', 'xl'];
+const SURFACE_TONES: SurfaceTone[] = ['page', 'work', 'raised', 'sunken', 'overlay', 'section'];
+const SURFACE_RADII: SurfaceRadius[] = ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'];
+const SURFACE_SHADOWS: SurfaceShadow[] = ['none', 'xs', 'sm', 'md', 'lg', 'xl'];
+const DIVIDER_TONES: DividerTone[] = ['default', 'strong', 'section'];
+const SPACER_SIZES: SpacerSize[] = [
+  '0',
+  'px',
+  '0.5',
+  '1',
+  '1.5',
+  '2',
+  '3',
+  '4',
+  '5',
+  '6',
+  '8',
+  '10',
+  '12',
+  '16',
+  '20',
+  '24',
+  '32',
+  '40',
+  '48',
 ];
 
 const RADII = ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'] as const;
@@ -252,7 +302,12 @@ export default function StyleguidePage() {
   const [pulseKey, setPulseKey] = useState(0);
 
   return (
-    <main className="bg-surface-page text-fg-default mx-auto max-w-[1280px] px-8 py-16">
+    <LayoutContainer
+      as="main"
+      size="wide"
+      gutter="page"
+      className="bg-surface-page py-16 text-fg-default"
+    >
       <header className="border-border-default border-b pb-12">
         <p className="text-fg-muted font-mono text-xs uppercase tracking-[0.04em]">
           /styleguide — Phase 6 token QA
@@ -260,7 +315,7 @@ export default function StyleguidePage() {
         <h1 className="text-fg-strong mt-2 text-4xl font-extrabold tracking-tight">
           Statify Design System
         </h1>
-        <p className="text-fg-muted mt-3 max-w-[600px] text-base">
+        <p className="text-fg-muted mt-3 max-w-(--container-narrow) text-base">
           Renders every token from <code className="font-mono">DESIGN.md</code> against the
           implementation in <code className="font-mono">apps/web/src/app/globals.css</code>. Use
           this route to confirm a token change propagated everywhere before merging.
@@ -452,7 +507,183 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="radius">9. Radius scale</H2>
+      <H2 id="primitives">9. Layout primitives</H2>
+      <Caption>
+        P6-M5 primitives consume the DESIGN.md spacing, container, surface, border, radius, and
+        shadow tokens.
+      </Caption>
+      <div className="space-y-8">
+        <LayoutSurface tone="work" padding="lg" radius="lg">
+          <p className="text-fg-muted mb-3 font-mono text-xs">Container variants</p>
+          <div className="space-y-3">
+            {CONTAINER_VARIANTS.map((size) => (
+              <LayoutContainer
+                key={size}
+                size={size}
+                gutter={size === 'bleed' ? 'none' : 'compact'}
+                className="border-border-default rounded-(--radius-sm) border bg-surface-raised py-3"
+              >
+                <span className="text-fg-muted font-mono text-xs">Container / {size}</span>
+              </LayoutContainer>
+            ))}
+          </div>
+        </LayoutSurface>
+
+        <LayoutGrid columns="two" gap="lg">
+          <LayoutSurface tone="raised" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Stack gaps</p>
+            <div className="space-y-4">
+              {STACK_GAPS.map((gap) => (
+                <div key={gap}>
+                  <p className="text-fg-muted mb-2 font-mono text-xs">{gap}</p>
+                  <LayoutStack gap={gap}>
+                    {[0, 1, 2].map((item) => (
+                      <div key={item} className="h-3 rounded-(--radius-xs) bg-section-accent" />
+                    ))}
+                  </LayoutStack>
+                </div>
+              ))}
+            </div>
+          </LayoutSurface>
+
+          <LayoutSurface tone="raised" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Grid column steps</p>
+            <div className="space-y-4">
+              {GRID_COLUMNS.map((columns) => (
+                <div key={columns}>
+                  <p className="text-fg-muted mb-2 font-mono text-xs">{columns}</p>
+                  <LayoutGrid columns={columns} gap="sm">
+                    {[0, 1, 2, 3].map((item) => (
+                      <div
+                        key={item}
+                        className="h-12 rounded-(--radius-sm) bg-section-tint ring-1 ring-border-default"
+                      />
+                    ))}
+                  </LayoutGrid>
+                </div>
+              ))}
+            </div>
+          </LayoutSurface>
+        </LayoutGrid>
+
+        <LayoutSurface tone="work" padding="lg" radius="lg">
+          <p className="text-fg-muted mb-3 font-mono text-xs">Section tones and spacing</p>
+          <LayoutGrid columns="four" gap="md">
+            {SECTION_TONES.map((tone) => (
+              <LayoutSection
+                key={tone}
+                tone={tone}
+                spacing="sm"
+                container="none"
+                className="rounded-(--radius-md) border border-border-default px-4"
+              >
+                <span className="font-mono text-xs">tone / {tone}</span>
+              </LayoutSection>
+            ))}
+          </LayoutGrid>
+          <div className="mt-4 grid gap-3">
+            {SECTION_SPACING.map((spacing) => (
+              <LayoutSection
+                key={spacing}
+                tone="tint"
+                spacing={spacing}
+                container="none"
+                className="rounded-(--radius-sm) border border-border-default px-4"
+              >
+                <span className="text-fg-muted font-mono text-xs">spacing / {spacing}</span>
+              </LayoutSection>
+            ))}
+          </div>
+        </LayoutSurface>
+
+        <LayoutSurface tone="work" padding="lg" radius="lg">
+          <p className="text-fg-muted mb-3 font-mono text-xs">Surface tones</p>
+          <LayoutGrid columns="three" gap="md">
+            {SURFACE_TONES.map((tone) => (
+              <LayoutSurface
+                key={tone}
+                tone={tone}
+                border={tone === 'overlay' ? 'none' : 'default'}
+                radius="md"
+                padding="md"
+              >
+                <span className="font-mono text-xs">tone / {tone}</span>
+              </LayoutSurface>
+            ))}
+          </LayoutGrid>
+          <p className="text-fg-muted mt-6 mb-3 font-mono text-xs">Surface radius</p>
+          <div className="flex flex-wrap items-end gap-3">
+            {SURFACE_RADII.map((radius) => (
+              <LayoutSurface
+                key={radius}
+                tone="raised"
+                radius={radius}
+                padding="none"
+                className="flex size-20 items-end justify-center p-2"
+              >
+                <span className="font-mono text-xs">{radius}</span>
+              </LayoutSurface>
+            ))}
+          </div>
+          <p className="text-fg-muted mt-6 mb-3 font-mono text-xs">Surface shadow</p>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-6">
+            {SURFACE_SHADOWS.map((shadow) => (
+              <LayoutSurface key={shadow} tone="raised" shadow={shadow} padding="md">
+                <span className="font-mono text-xs">{shadow}</span>
+              </LayoutSurface>
+            ))}
+          </div>
+        </LayoutSurface>
+
+        <LayoutGrid columns="two" gap="lg">
+          <LayoutSurface tone="raised" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Divider tones</p>
+            <LayoutStack gap="md">
+              {DIVIDER_TONES.map((tone) => (
+                <div key={tone}>
+                  <p className="text-fg-muted mb-2 font-mono text-xs">horizontal / {tone}</p>
+                  <LayoutDivider tone={tone} />
+                </div>
+              ))}
+              <div className="flex h-20 gap-6">
+                {DIVIDER_TONES.map((tone) => (
+                  <LayoutStack key={tone} direction="horizontal" gap="sm" align="stretch">
+                    <LayoutDivider orientation="vertical" tone={tone} />
+                    <span className="text-fg-muted font-mono text-xs">vertical / {tone}</span>
+                  </LayoutStack>
+                ))}
+              </div>
+            </LayoutStack>
+          </LayoutSurface>
+
+          <LayoutSurface tone="raised" padding="lg" radius="lg">
+            <p className="text-fg-muted mb-3 font-mono text-xs">Spacer sizes</p>
+            <div className="space-y-2">
+              {SPACER_SIZES.map((size) => (
+                <div key={size} className="flex items-center gap-3">
+                  <span className="text-fg-muted w-12 font-mono text-xs">{size}</span>
+                  <LayoutSpacer
+                    axis="horizontal"
+                    size={size}
+                    className="h-3 rounded-(--radius-xs) bg-section-accent"
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="mt-6 flex items-end gap-2 overflow-hidden rounded-(--radius-sm) border border-border-default p-3">
+              {SPACER_SIZES.map((size) => (
+                <LayoutSpacer
+                  key={size}
+                  size={size}
+                  className="w-2 rounded-(--radius-xs) bg-section-tint ring-1 ring-border-default"
+                />
+              ))}
+            </div>
+          </LayoutSurface>
+        </LayoutGrid>
+      </div>
+
+      <H2 id="radius">10. Radius scale</H2>
       <Caption>Album frames lock at radius-md.</Caption>
       <div className="flex flex-wrap items-end gap-4">
         {RADII.map((r) => (
@@ -466,7 +697,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="shadow">10. Shadow scale</H2>
+      <H2 id="shadow">11. Shadow scale</H2>
       <Caption>
         Cards default to none; depth comes from block fills. Shadows reserved for floating surfaces.
       </Caption>
@@ -482,7 +713,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="motion">11. Motion</H2>
+      <H2 id="motion">12. Motion</H2>
       <Caption>
         Fire any named animation. Durations and easings live in --duration-* / --ease-* tokens.
         Reduce-motion collapses every transition to 0ms globally.
@@ -509,7 +740,7 @@ export default function StyleguidePage() {
         </div>
       </div>
 
-      <H2 id="image">12. Image frames</H2>
+      <H2 id="image">13. Image frames</H2>
       <Caption>
         Cover at every size with a real iTunes URL (left) and the null-fallback variant (right).
         Frame thickness varies by context.
@@ -583,7 +814,7 @@ export default function StyleguidePage() {
         </div>
       </div>
 
-      <H2 id="icons">13. Icon set</H2>
+      <H2 id="icons">14. Icon set</H2>
       <Caption>
         Lucide React, stroke 2 locked by the &lt;Icon&gt; wrapper. Sizes from --icon-xs to
         --icon-xl.
@@ -604,7 +835,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="buttons">14. Button primitive</H2>
+      <H2 id="buttons">15. Button primitive</H2>
       <Caption>
         Public API unchanged from Phase 5 (variant + size). Internals re-keyed onto the new tokens.
       </Caption>
@@ -622,6 +853,6 @@ export default function StyleguidePage() {
       <footer className="text-fg-muted border-border-default mt-24 border-t pt-8 font-mono text-xs">
         Spec: DESIGN.md · Implementation: apps/web/src/app/globals.css · Route: /styleguide
       </footer>
-    </main>
+    </LayoutContainer>
   );
 }
