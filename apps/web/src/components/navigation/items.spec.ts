@@ -37,7 +37,7 @@ describe('navigation items', () => {
 
   it('resolves the section hue from the most specific route prefix', () => {
     expect(getSectionHue('/me/stats/top-tracks')).toBe('magenta');
-    expect(getSectionHue('/me/stats')).toBe('coral');
+    expect(getSectionHue('/me/stats')).toBe('indigo');
     expect(getSectionHue('/admin/users')).toBe('pink');
   });
 });

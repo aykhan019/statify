@@ -3,8 +3,6 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { EmptyState } from '@/components/states';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchHiddenGems } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -25,11 +23,7 @@ export default async function HiddenGemsPage() {
   );
 
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <PageHeader
-        title="Hidden gems"
-        description={`Tracks present in at least ${DEFAULT_MIN_PLAYLISTS} playlists but never previewed by any Statify user.`}
-      />
+    <>
       {entries.length === 0 ? (
         <EmptyState
           icon={Gem}
@@ -39,19 +33,22 @@ export default async function HiddenGemsPage() {
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry) => (
-            <Card key={entry.trackId} className="hover:bg-muted transition-colors">
+            <Card key={entry.trackId} className="transition-colors hover:bg-section-row-hover">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base">
-                  <Link href={`/catalog/tracks/${entry.trackId}`} className="hover:text-accent">
+                  <Link
+                    href={`/catalog/tracks/${entry.trackId}`}
+                    className="hover:text-section-accent"
+                  >
                     {entry.trackName}
                   </Link>
                 </CardTitle>
-                <p className="text-muted-foreground truncate text-sm">
+                <p className="truncate text-sm text-fg-muted">
                   {entry.primaryArtistName} · {entry.albumName}
                 </p>
               </CardHeader>
               <CardContent className="pt-2">
-                <span className="bg-accent/15 text-accent rounded-(--radius-sm) px-2 py-1 text-xs font-medium">
+                <span className="rounded-(--radius-sm) bg-section-tint px-2 py-1 text-xs font-medium text-section-accent">
                   In {entry.playlistCount} playlists
                 </span>
               </CardContent>
@@ -59,6 +56,6 @@ export default async function HiddenGemsPage() {
           ))}
         </div>
       )}
-    </Container>
+    </>
   );
 }

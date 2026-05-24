@@ -1,3 +1,4 @@
+import { SectionContent } from '@/components/section';
 import { NotFoundState } from '@/components/states';
 
 /**
@@ -7,8 +8,8 @@ import { NotFoundState } from '@/components/states';
  */
 export default function AppNotFound() {
   return (
-    <div className="py-10">
+    <SectionContent>
       <NotFoundState />
-    </div>
+    </SectionContent>
   );
 }

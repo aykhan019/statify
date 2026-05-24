@@ -81,7 +81,10 @@ export default async function AdminAuditLogPage({
                 </thead>
                 <tbody>
                   {response.data.map((entry) => (
-                    <tr key={entry.id} className="border-t align-top">
+                    <tr
+                      key={entry.id}
+                      className="border-t align-top transition-colors hover:bg-section-row-hover"
+                    >
                       <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">
                         {formatDate(entry.createdAt)}
                       </td>
@@ -110,7 +113,7 @@ export default async function AdminAuditLogPage({
         <div className="flex gap-2">
           {response.page > 1 && (
             <Link
-              className="text-accent font-medium"
+              className="font-medium text-section-accent"
               href={`/admin/audit-log?page=${response.page - 1}${filterQuery}`}
             >
               ← Prev
@@ -118,7 +121,7 @@ export default async function AdminAuditLogPage({
           )}
           {response.page < response.totalPages && (
             <Link
-              className="text-accent font-medium"
+              className="font-medium text-section-accent"
               href={`/admin/audit-log?page=${response.page + 1}${filterQuery}`}
             >
               Next →

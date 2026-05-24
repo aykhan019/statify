@@ -5,8 +5,6 @@ import { HeatmapGrid } from '@/components/stats/HeatmapGrid';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchHeatmap } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -22,36 +20,29 @@ export default async function HeatmapPage() {
 
   if (cells.length === 0) {
     return (
-      <Container size="lg" className="flex flex-col gap-6 py-2">
-        <PageHeader
-          title="Listening heatmap"
-          description="When you listen, broken out by day and hour."
-        />
-        <EmptyState
-          icon={CalendarClock}
-          title="Not enough plays yet"
-          description="Start a few previews from the catalog and the heatmap will fill in by day and hour."
-          action={
-            <Link
-              href="/catalog/tracks"
-              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
-            >
-              Open the catalog
-            </Link>
-          }
-        />
-      </Container>
+      <EmptyState
+        icon={CalendarClock}
+        title="Not enough plays yet"
+        description="Start a few previews from the catalog and the heatmap will fill in by day and hour."
+        action={
+          <Link
+            href="/catalog/tracks"
+            className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+          >
+            Open the catalog
+          </Link>
+        }
+      />
     );
   }
 
   const totalPlays = cells.reduce((sum, cell) => sum + cell.listenCount, 0);
 
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <PageHeader
-        title="Listening heatmap"
-        description={`Day of week × hour of day. Total plays: ${totalPlays.toLocaleString()}.`}
-      />
+    <>
+      <p className="text-sm text-fg-muted">
+        Total plays across the grid: {totalPlays.toLocaleString()}.
+      </p>
       <Card>
         <CardHeader>
           <CardTitle>Plays by day and hour</CardTitle>
@@ -60,6 +51,6 @@ export default async function HeatmapPage() {
           <HeatmapGrid cells={cells} />
         </CardContent>
       </Card>
-    </Container>
+    </>
   );
 }

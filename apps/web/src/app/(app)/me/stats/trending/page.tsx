@@ -4,8 +4,6 @@ import { cookies } from 'next/headers';
 import { TrendingArtistsChart } from '@/components/stats/TrendingArtistsChart';
 import { EmptyState } from '@/components/states';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { Container } from '@/components/ui/Container';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchTrending } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -35,26 +33,19 @@ export default async function TrendingPage() {
 
   if (entries.length === 0) {
     return (
-      <Container size="lg" className="flex flex-col gap-6 py-2">
-        <PageHeader
-          title="Trending artists"
-          description="Artists growing in your listens versus the previous week."
-        />
-        <EmptyState
-          icon={TrendingUp}
-          title="Nothing trending yet"
-          description="Once you have a couple of weeks of plays, artists growing in your listens show up here."
-        />
-      </Container>
+      <EmptyState
+        icon={TrendingUp}
+        title="Nothing trending yet"
+        description="Once you have a couple of weeks of plays, artists growing in your listens show up here."
+      />
     );
   }
 
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <PageHeader
-        title="Trending artists"
-        description={`Last 7 days vs prior 7 days. Threshold: +${Math.round(DEFAULT_GROWTH * 100)}%.`}
-      />
+    <>
+      <p className="text-sm text-fg-muted">
+        Last 7 days vs prior 7 days. Threshold: +{Math.round(DEFAULT_GROWTH * 100)}%.
+      </p>
       <Card>
         <CardHeader>
           <CardTitle>Recent plays</CardTitle>
@@ -70,24 +61,27 @@ export default async function TrendingPage() {
         <CardContent>
           <ol className="divide-y">
             {entries.map((entry) => (
-              <li key={entry.artistId} className="flex items-center justify-between gap-4 py-2">
+              <li
+                key={entry.artistId}
+                className="flex items-center justify-between gap-4 rounded-(--radius-sm) px-2 py-2 transition-colors hover:bg-section-row-hover"
+              >
                 <Link
                   href={`/catalog/artists/${entry.artistId}`}
-                  className="text-foreground hover:text-accent text-sm font-medium"
+                  className="text-sm font-medium text-fg-strong hover:text-section-accent"
                 >
                   {entry.artistName}
                 </Link>
-                <div className="text-muted-foreground flex shrink-0 items-center gap-4 text-xs sm:text-sm">
+                <div className="flex shrink-0 items-center gap-4 text-xs text-fg-muted sm:text-sm">
                   <span>
                     {entry.recentPlays} / {entry.priorPlays} prior
                   </span>
-                  <span className="text-accent font-medium">{formatGrowth(entry)}</span>
+                  <span className="font-medium text-section-accent">{formatGrowth(entry)}</span>
                 </div>
               </li>
             ))}
           </ol>
         </CardContent>
       </Card>
-    </Container>
+    </>
   );
 }

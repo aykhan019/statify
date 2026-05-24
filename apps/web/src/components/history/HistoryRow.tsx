@@ -9,12 +9,12 @@ interface HistoryRowProps {
 
 export function HistoryRow({ item }: HistoryRowProps) {
   return (
-    <Card className="hover:bg-muted transition-colors">
+    <Card className="transition-colors hover:bg-section-row-hover">
       <div className="flex flex-wrap items-center justify-between gap-4 p-4">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <Link
             href={`/catalog/tracks/${item.track.id}`}
-            className="hover:text-accent truncate text-base font-medium"
+            className="truncate text-base font-medium hover:text-section-accent"
           >
             {item.track.name}
           </Link>

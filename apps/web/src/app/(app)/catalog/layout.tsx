@@ -1,6 +1,7 @@
-import Link from 'next/link';
+import { Disc3 } from 'lucide-react';
 import type { ReactNode } from 'react';
-import { Container } from '@/components/ui/Container';
+import { SectionTabs } from '@/components/navigation';
+import { SectionBlockHeader, SectionContent } from '@/components/section';
 
 const TABS = [
   { href: '/catalog/tracks', label: 'Tracks' },
@@ -12,19 +13,17 @@ const TABS = [
 
 export default function CatalogLayout({ children }: { children: ReactNode }) {
   return (
-    <Container size="lg" className="flex flex-col gap-6 py-2">
-      <nav aria-label="Catalog sections" className="border-border flex gap-4 border-b pb-2">
-        {TABS.map((tab) => (
-          <Link
-            key={tab.href}
-            href={tab.href}
-            className="text-muted-foreground hover:text-foreground text-sm font-medium"
-          >
-            {tab.label}
-          </Link>
-        ))}
-      </nav>
-      {children}
-    </Container>
+    <>
+      <SectionBlockHeader
+        eyebrow="/catalog"
+        icon={Disc3}
+        title="Library"
+        description="Browse tracks, artists, albums, and playlist data from the catalog."
+      />
+      <SectionContent className="flex flex-col gap-6">
+        <SectionTabs ariaLabel="Catalog sections" items={TABS} />
+        {children}
+      </SectionContent>
+    </>
   );
 }

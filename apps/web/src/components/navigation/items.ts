@@ -10,20 +10,12 @@ import {
   User,
   Users,
 } from 'lucide-react';
+import { getSectionHue } from '@/components/section';
+import type { SectionHue } from '@/components/section';
 import type { IconProps } from '@/components/ui/Icon';
 
-export type SectionHue =
-  | 'amber'
-  | 'azure'
-  | 'coral'
-  | 'cyan'
-  | 'green'
-  | 'indigo'
-  | 'magenta'
-  | 'pink'
-  | 'teal'
-  | 'vermilion'
-  | 'violet';
+export { getSectionHue };
+export type { SectionHue };
 
 export interface NavigationItem {
   href: string;
@@ -81,23 +73,6 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   '/me/stats/trending': 'Trending',
 };
 
-const SECTION_HUES: Array<{ prefix: string; hue: SectionHue }> = [
-  { prefix: '/admin', hue: 'pink' },
-  { prefix: '/catalog', hue: 'indigo' },
-  { prefix: '/community/playlists', hue: 'cyan' },
-  { prefix: '/discover', hue: 'green' },
-  { prefix: '/explore/hidden-gems', hue: 'teal' },
-  { prefix: '/me/account', hue: 'indigo' },
-  { prefix: '/me/history', hue: 'vermilion' },
-  { prefix: '/me/playlists', hue: 'violet' },
-  { prefix: '/me/stats/heatmap', hue: 'azure' },
-  { prefix: '/me/stats/top-artists', hue: 'coral' },
-  { prefix: '/me/stats/top-tracks', hue: 'magenta' },
-  { prefix: '/me/stats/trending', hue: 'amber' },
-  { prefix: '/me/stats', hue: 'coral' },
-  { prefix: '/me', hue: 'indigo' },
-];
-
 export function getNavigationItems({ includeAdmin }: { includeAdmin: boolean }): NavigationItem[] {
   return NAVIGATION_ITEMS.filter((item) => includeAdmin || item.adminOnly !== true);
 }
@@ -149,15 +124,6 @@ export function getBreadcrumbItems(pathname: string): BreadcrumbItem[] {
       current,
     };
   });
-}
-
-export function getSectionHue(pathname: string): SectionHue {
-  const normalized = normalizePathname(pathname);
-  const match = SECTION_HUES.find(
-    ({ prefix }) => normalized === prefix || normalized.startsWith(`${prefix}/`),
-  );
-
-  return match?.hue ?? 'indigo';
 }
 
 function normalizePathname(pathname: string): string {

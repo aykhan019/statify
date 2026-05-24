@@ -62,7 +62,7 @@ export default async function AdminUsersPage({
         <div className="flex gap-2">
           {response.page > 1 && (
             <Link
-              className="text-accent font-medium"
+              className="font-medium text-section-accent"
               href={`/admin/users?page=${response.page - 1}${queryString}`}
             >
               ← Prev
@@ -70,7 +70,7 @@ export default async function AdminUsersPage({
           )}
           {response.page < response.totalPages && (
             <Link
-              className="text-accent font-medium"
+              className="font-medium text-section-accent"
               href={`/admin/users?page=${response.page + 1}${queryString}`}
             >
               Next →

@@ -2,11 +2,11 @@
 
 import type { AuthUser } from '@statify/shared';
 import { usePathname } from 'next/navigation';
-import type { CSSProperties, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { Container, Stack, Surface } from '@/components/layout';
 import { AudioPlayer, PlayHistoryReporter } from '@/components/player';
+import { SectionProvider } from '@/components/section';
 import { Breadcrumbs } from './Breadcrumbs';
-import { getSectionHue } from './items';
 import { SideNavigation } from './SideNavigation';
 import { TopNavigation } from './TopNavigation';
 
@@ -18,14 +18,11 @@ export interface AppShellProps {
 
 export function AppShell({ children, includeAdmin, user }: AppShellProps) {
   const pathname = usePathname();
-  const sectionStyle = getSectionStyle(getSectionHue(pathname));
 
   return (
-    <Stack
-      as="div"
-      gap="none"
-      className="min-h-screen bg-surface-page text-fg-default"
-      style={sectionStyle}
+    <SectionProvider
+      pathname={pathname}
+      className="flex min-h-screen flex-col bg-surface-page text-fg-default"
     >
       <TopNavigation activePath={pathname} includeAdmin={includeAdmin} user={user} />
       <Surface
@@ -47,10 +44,12 @@ export function AppShell({ children, includeAdmin, user }: AppShellProps) {
           padding="none"
           className="min-w-0 flex-1"
         >
-          <Container size="wide" gutter="page" className="py-6 sm:py-8 lg:py-10">
-            <Breadcrumbs activePath={pathname} />
+          <Stack as="div" gap="none" className="min-h-full">
+            <Container size="wide" gutter="page" className="py-4 sm:py-5">
+              <Breadcrumbs activePath={pathname} />
+            </Container>
             {children}
-          </Container>
+          </Stack>
         </Surface>
       </Surface>
       <PlayHistoryReporter />
@@ -59,18 +58,6 @@ export function AppShell({ children, includeAdmin, user }: AppShellProps) {
           <AudioPlayer />
         </Container>
       </div>
-    </Stack>
+    </SectionProvider>
   );
-}
-
-function getSectionStyle(hue: ReturnType<typeof getSectionHue>): CSSProperties {
-  return {
-    '--section-block': `var(--color-${hue}-500)`,
-    '--section-block-fg': 'var(--fg-on-block)',
-    '--section-tint': `var(--color-${hue}-50)`,
-    '--section-accent': `var(--color-${hue}-500)`,
-    '--section-accent-fg': 'var(--fg-on-block)',
-    '--section-row-hover': `var(--color-${hue}-50)`,
-    '--section-frame': `var(--color-${hue}-500)`,
-  } as CSSProperties;
 }

@@ -58,7 +58,7 @@ export default async function PlaylistsPage({
             <div className="flex gap-2">
               {response.page > 1 && (
                 <a
-                  className="text-accent font-medium"
+                  className="font-medium text-section-accent"
                   href={`/catalog/playlists?page=${response.page - 1}${
                     params.q ? `&q=${encodeURIComponent(params.q)}` : ''
                   }`}
@@ -68,7 +68,7 @@ export default async function PlaylistsPage({
               )}
               {response.page < response.totalPages && (
                 <a
-                  className="text-accent font-medium"
+                  className="font-medium text-section-accent"
                   href={`/catalog/playlists?page=${response.page + 1}${
                     params.q ? `&q=${encodeURIComponent(params.q)}` : ''
                   }`}
