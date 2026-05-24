@@ -60,6 +60,7 @@
   - API bootstrap now enables CORS from `ALLOWED_ORIGINS` with credentials, so browser preflight requests from the local web app can reach authenticated endpoints.
   - Verification after the local runtime and CORS fixes: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm --filter @statify/api test`, `pnpm build`, `GET /healthz` on the local API, `OPTIONS /api/v1/auth/login`, and `POST /api/v1/auth/login` with the seeded user all passed under Node 22.
   - Full authenticated end-to-end UI smoke against seeded data still needs to be repeated under Node 22 before the dev → main promotion. The API now starts locally and accepts browser login preflight; use admin and user seed accounts for the smoke.
+  - P6-M9 merged via PR #37 (rebase, 5 commits: 1 aykhan planning + 4 rahila). `pnpm lint` / `typecheck` / `build` and CI all passed, and `/styleguide` §19 renders the panels. Still pending: the interactive state smoke that needs an authenticated browser, namely skeletons via network throttle, `(app)/error.tsx` via a forced fetch failure, and `(app)/not-found.tsx` via a bad detail id while logged in. Fold this into the pre-promotion UI smoke above. M9 added no dependency, schema, config, or top-level folder; the only structural delta is the `components/states/` folder row logged in Section 3.
   - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task (not in M8 scope).
   - P6-M4 verification: `pnpm --filter @statify/db prisma:migrate:dev` passes with root `.env` loaded after mirroring the existing pg_trgm GIN indexes in Prisma schema (`ops: raw("gin_trgm_ops")`). `pnpm test`, `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, and `pnpm build` also pass.
   - P6-M5 verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, and `pnpm --filter @statify/web test` pass. Local runtime smoke passed with `pnpm dev`: `/styleguide` returned 200 and rendered the "Layout primitives" section; login as `alex@statify.local` succeeded through the API; `/me` returned 200 with the new shell, header, sidebar, account link, and overview content. The in-app browser backend exposed no browser targets in this session, so the smoke used HTTP checks against the running local dev server instead of a visual browser pass.
@@ -87,53 +88,54 @@
 
 ## 3. Structural Changes Log
 
-| Date       | Change                                                  | ADR     | By     |
-| ---------- | ------------------------------------------------------- | ------- | ------ |
-| 2026-05-22 | Initial repo layout defined                             | ADR-001 | Aykhan |
-| 2026-05-22 | Generated web type shim ignored for git and lint        | ADR-001 | Eljan  |
-| 2026-05-23 | API iTunes integration module path added                | ADR-001 | Elshad |
-| 2026-05-23 | API listening history module path added                 | ADR-001 | Aykhan |
-| 2026-05-23 | `listening_history.idempotency_key` column added        | ADR-001 | Aykhan |
-| 2026-05-23 | API analytics module path added                         | ADR-001 | Aykhan |
-| 2026-05-23 | Web `components/` and route-group folders added         | ADR-001 | Rahila |
-| 2026-05-23 | Web `zustand` dependency added (player store)           | ADR-001 | Rahila |
-| 2026-05-23 | `ingest_checkpoints` table added                        | ADR-001 | Eljan  |
-| 2026-05-23 | DB package `vitest` dependency added                    | ADR-001 | Eljan  |
-| 2026-05-23 | API admin module path added                             | ADR-001 | Aykhan |
-| 2026-05-23 | DB seed module path added                               | ADR-001 | Eljan  |
-| 2026-05-23 | DB package `argon2` dependency added                    | ADR-001 | Eljan  |
-| 2026-05-23 | `users.deleted_at` column added (soft delete)           | ADR-001 | Aykhan |
-| 2026-05-23 | Web `react-hook-form` dependency added                  | ADR-001 | Aykhan |
-| 2026-05-23 | Web `(auth)` route group + auth forms added             | ADR-001 | Aykhan |
-| 2026-05-23 | Web `catalog/` components + `(app)/catalog` route group | ADR-001 | Rahila |
-| 2026-05-23 | Catalog pg_trgm and partial preview indexes added       | ADR-001 | Aykhan |
-| 2026-05-23 | Web `recharts` dependency added (analytics charts)      | ADR-001 | Aykhan |
-| 2026-05-23 | API `mpd-playlists` module + `/playlists` browsing      | ADR-001 | Eljan  |
-| 2026-05-23 | API `user-playlists` module path added                  | ADR-001 | Elshad |
-| 2026-05-24 | Web `(app)/community` route group + community pages     | ADR-001 | Elshad |
-| 2026-05-24 | Web `(app)/admin` route group + admin shell             | ADR-001 | Aykhan |
-| 2026-05-24 | `users.banned_at` column added                          | ADR-001 | Aykhan |
-| 2026-05-24 | Workspace runtime entrypoints switched to `dist`        | ADR-001 | Aykhan |
-| 2026-05-24 | Root dev/test builds runtime workspace packages first   | ADR-001 | Aykhan |
-| 2026-05-24 | API config loads root `.env` from app workspace         | ADR-001 | Aykhan |
-| 2026-05-24 | API CORS wired to `ALLOWED_ORIGINS` config              | ADR-001 | Aykhan |
-| 2026-05-24 | `DESIGN.md` added at repo root (token specification)    | ADR-002 | Aykhan |
-| 2026-05-24 | ADR-002 added (design system, supersedes §3.8 / §3.20)  | ADR-002 | Aykhan |
-| 2026-05-24 | Web `lucide-react` dependency added (icon library)      | ADR-002 | Rahila |
-| 2026-05-24 | Web `tailwindcss-animate` dependency added              | ADR-002 | Rahila |
-| 2026-05-24 | Web `class-variance-authority` dependency added         | ADR-002 | Rahila |
-| 2026-05-24 | Web `clsx` + `tailwind-merge` dependencies added (cn)   | ADR-002 | Rahila |
-| 2026-05-24 | Web `@radix-ui/react-slot` dependency added             | ADR-002 | Rahila |
-| 2026-05-24 | Web fonts self-hosted via `next/font/google`            | ADR-002 | Rahila |
-| 2026-05-24 | Web `components.json` added (shadcn config)             | ADR-002 | Rahila |
-| 2026-05-24 | Web `lib/fonts.ts` added                                | ADR-002 | Rahila |
-| 2026-05-24 | Web `app/styleguide` route added                        | ADR-002 | Rahila |
-| 2026-05-24 | Entity `image_url` columns added                        | ADR-002 | Aykhan |
-| 2026-05-24 | DB `src/scripts` path added (media backfill)            | ADR-002 | Aykhan |
-| 2026-05-24 | Web iTunes image remotePatterns allowlist added         | ADR-002 | Aykhan |
-| 2026-05-24 | Web `components/layout` primitives path added           | ADR-002 | Rahila |
-| 2026-05-24 | Web `components/navigation` system path added           | ADR-002 | Rahila |
-| 2026-05-24 | Web `components/forms` system path added                | ADR-002 | Aykhan |
+| Date       | Change                                                   | ADR     | By     |
+| ---------- | -------------------------------------------------------- | ------- | ------ |
+| 2026-05-22 | Initial repo layout defined                              | ADR-001 | Aykhan |
+| 2026-05-22 | Generated web type shim ignored for git and lint         | ADR-001 | Eljan  |
+| 2026-05-23 | API iTunes integration module path added                 | ADR-001 | Elshad |
+| 2026-05-23 | API listening history module path added                  | ADR-001 | Aykhan |
+| 2026-05-23 | `listening_history.idempotency_key` column added         | ADR-001 | Aykhan |
+| 2026-05-23 | API analytics module path added                          | ADR-001 | Aykhan |
+| 2026-05-23 | Web `components/` and route-group folders added          | ADR-001 | Rahila |
+| 2026-05-23 | Web `zustand` dependency added (player store)            | ADR-001 | Rahila |
+| 2026-05-23 | `ingest_checkpoints` table added                         | ADR-001 | Eljan  |
+| 2026-05-23 | DB package `vitest` dependency added                     | ADR-001 | Eljan  |
+| 2026-05-23 | API admin module path added                              | ADR-001 | Aykhan |
+| 2026-05-23 | DB seed module path added                                | ADR-001 | Eljan  |
+| 2026-05-23 | DB package `argon2` dependency added                     | ADR-001 | Eljan  |
+| 2026-05-23 | `users.deleted_at` column added (soft delete)            | ADR-001 | Aykhan |
+| 2026-05-23 | Web `react-hook-form` dependency added                   | ADR-001 | Aykhan |
+| 2026-05-23 | Web `(auth)` route group + auth forms added              | ADR-001 | Aykhan |
+| 2026-05-23 | Web `catalog/` components + `(app)/catalog` route group  | ADR-001 | Rahila |
+| 2026-05-23 | Catalog pg_trgm and partial preview indexes added        | ADR-001 | Aykhan |
+| 2026-05-23 | Web `recharts` dependency added (analytics charts)       | ADR-001 | Aykhan |
+| 2026-05-23 | API `mpd-playlists` module + `/playlists` browsing       | ADR-001 | Eljan  |
+| 2026-05-23 | API `user-playlists` module path added                   | ADR-001 | Elshad |
+| 2026-05-24 | Web `(app)/community` route group + community pages      | ADR-001 | Elshad |
+| 2026-05-24 | Web `(app)/admin` route group + admin shell              | ADR-001 | Aykhan |
+| 2026-05-24 | `users.banned_at` column added                           | ADR-001 | Aykhan |
+| 2026-05-24 | Workspace runtime entrypoints switched to `dist`         | ADR-001 | Aykhan |
+| 2026-05-24 | Root dev/test builds runtime workspace packages first    | ADR-001 | Aykhan |
+| 2026-05-24 | API config loads root `.env` from app workspace          | ADR-001 | Aykhan |
+| 2026-05-24 | API CORS wired to `ALLOWED_ORIGINS` config               | ADR-001 | Aykhan |
+| 2026-05-24 | `DESIGN.md` added at repo root (token specification)     | ADR-002 | Aykhan |
+| 2026-05-24 | ADR-002 added (design system, supersedes §3.8 / §3.20)   | ADR-002 | Aykhan |
+| 2026-05-24 | Web `lucide-react` dependency added (icon library)       | ADR-002 | Rahila |
+| 2026-05-24 | Web `tailwindcss-animate` dependency added               | ADR-002 | Rahila |
+| 2026-05-24 | Web `class-variance-authority` dependency added          | ADR-002 | Rahila |
+| 2026-05-24 | Web `clsx` + `tailwind-merge` dependencies added (cn)    | ADR-002 | Rahila |
+| 2026-05-24 | Web `@radix-ui/react-slot` dependency added              | ADR-002 | Rahila |
+| 2026-05-24 | Web fonts self-hosted via `next/font/google`             | ADR-002 | Rahila |
+| 2026-05-25 | Web `components/states/` folder added (state primitives) | ADR-002 | Rahila |
+| 2026-05-24 | Web `components.json` added (shadcn config)              | ADR-002 | Rahila |
+| 2026-05-24 | Web `lib/fonts.ts` added                                 | ADR-002 | Rahila |
+| 2026-05-24 | Web `app/styleguide` route added                         | ADR-002 | Rahila |
+| 2026-05-24 | Entity `image_url` columns added                         | ADR-002 | Aykhan |
+| 2026-05-24 | DB `src/scripts` path added (media backfill)             | ADR-002 | Aykhan |
+| 2026-05-24 | Web iTunes image remotePatterns allowlist added          | ADR-002 | Aykhan |
+| 2026-05-24 | Web `components/layout` primitives path added            | ADR-002 | Rahila |
+| 2026-05-24 | Web `components/navigation` system path added            | ADR-002 | Rahila |
+| 2026-05-24 | Web `components/forms` system path added                 | ADR-002 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
