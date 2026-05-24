@@ -6,9 +6,9 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37). Next milestone P6-M10 (section identity headers + section-hue propagation, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M10 Section identity headers + section-hue propagation. Wait for explicit green light before starting.
-- **Last shipped:** P6-M9 Empty / loading / error states pass. State primitives under `apps/web/src/components/states/` (Skeleton plus ListSkeleton / CardGridSkeleton / DetailSkeleton / ChartSkeleton, EmptyState, ErrorState, NotFoundState, shared StatePanel); `loading.tsx` per list / detail / stats segment; `(app)/error.tsx` + `(app)/not-found.tsx`; EmptyState wired into InfiniteScroll and every primary route-level empty; DESIGN.md §10 added (Do / Do not → §11, Token summary → §12); `/styleguide` §19 panel. No new dependency. Interactive smoke (network throttle, forced 404 / 500 while authed) still to be eyeballed by the reviewer.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`). Next milestone P6-M11 (analytics surfaces re-skin, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M11 Analytics surfaces re-skin. Green light already given; branch from latest `dev`.
+- **Last shipped:** P6-M10 Section identity headers + section-hue propagation. Adds `apps/web/src/components/section/` with a route-aware section resolver, provider, block header, and content wrapper; moves the runtime section aliases to provider-driven `data-section-hue` CSS; adds full-width section block headers across top-level route surfaces while keeping `/me/account` neutral; wires active navigation/catalog tabs, row hover, cover frames, and chart series index 0 to the active section hue; documents block behavior in DESIGN.md §1.3.1 and renders all eleven section headers in `/styleguide`. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, and authenticated local HTTP smoke against the user/admin route set all passed.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Last merge (non-milestone):** PR #36 `chore: add pnpm setup one-shot bootstrap` rebase-merged into `dev` 2026-05-25 (HEAD `3ad5c16`). Adds `pnpm setup` + `scripts/setup.sh`; not a milestone task, so no Phase 6 milestone status changed this session.
 - **Open file/component:** none.
@@ -21,7 +21,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** start P6-M10 (section identity headers + section-hue propagation, rahila) on `feat/p6-m10-section-headers` off latest `dev` (`3ad5c16`) once green-lit; one PR into `dev`; rebase-merge.
+- **Next concrete action:** start P6-M11 (analytics surfaces re-skin, aykhan) on `feat/p6-m11-analytics-reskin` off latest `dev` (`f16bb46`); one PR into `dev`; rebase-merge.
 
 ---
 
@@ -212,7 +212,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/states/**` (new), every route file under `apps/web/src/app/(app)/**` that fetches, `DESIGN.md` (states addendum).
   - Depends on: P6-M7, P6-M8.
 
-- [ ] **P6-M10: Section identity headers + section-hue propagation** - L - rahila
+- [x] **P6-M10: Section identity headers + section-hue propagation** - L - rahila
   - Goal: apply the locked Vivid Workshop "section-as-color" identity (DESIGN.md §1.3) to every top-level route — a full-bleed section-hue block header on each route, with the section hue propagated to the active nav indicator, row hover, cover frames, and the default chart series. This closes the gap where the §1.3 tokens and per-route hue assignments exist but no route renders the block treatment.
   - Entry criteria: P6-M5 (shell) and P6-M6 (nav) merged; section identity hue assignments and the `--color-section-*` aliases locked in DESIGN.md §1.3.
   - Exit criteria: a section provider under `apps/web/src/components/section/` resolves the active section from the route prefix per DESIGN.md §1.3 and sets `--color-section-block`, `-block-fg`, `-tint`, `-accent`, `-accent-fg`, `-row-hover`, and `-frame` on the route subtree; every top-level route renders a full-bleed block header in `bg-section-block text-section-on-block` at `text-5xl` weight 800 per §2.2, with `/me/account` kept as neutral chrome (no block) per the §1.3 exception; the active section hue propagates to the active nav / tab indicator, list row hover tint (`--color-section-row-hover`), the cover frame on every card / list / detail cover inside the section (`--color-section-frame`), and the default chart series (section hue moved to series index 0 per §1.6); no-section routes (global search, sign-in, error / not-found) resolve to the indigo Library default per §1.3; DESIGN.md gains a section-header / block-treatment addendum (block dimensions, full-bleed behaviour, propagation rules); `/styleguide` gains a section rendering the block header for all eleven section hues; lint / typecheck / build pass; manual smoke confirms each top-level route shows its block header in the correct hue and the nav indicator / row hover / cover frame match.
