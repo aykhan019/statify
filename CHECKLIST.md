@@ -6,11 +6,11 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** roadmap committed; M1 complete in working tree, Vivid Workshop direction picked; commit + PR pending. (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** Phase 6 M1, Design Direction Exploration. Vivid Workshop picked. M1 work in tree, awaiting commit + PR.
+- **Phase 6 status:** M1 complete and merged via PR #28 (Vivid Workshop direction locked). Next milestone P6-M2: author DESIGN.md + ADR-002. (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** none active; P6-M2 ready to start in the next session.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
-- **Open file/component:** `docs/design/explorations.md` (Step C filled with Vivid Workshop pick + rationale).
+- **Open file/component:** none.
 - **Locked decisions feeding Phase 6:**
   - Design direction: Vivid Workshop (picked 2026-05-24).
   - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. Recorded in ADR-002 during P6-M4.
@@ -18,7 +18,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** commit the P6-M1 working tree changes on a `feat/p6-m1-design-direction-exploration` branch (one commit attributed to `aykhan` via `scripts/commit-as.sh aykhan`), open the PR into `dev`, merge with `gh pr merge <n> --rebase --delete-branch`, tick the P6-M1 row, then start P6-M2 in the next session.
+- **Next concrete action:** start P6-M2 next session: author `DESIGN.md` (full token spec from the Vivid Workshop direction) and `docs/adr/0002-design-system-and-token-layer.md` (records the §3.8 / §3.20 deviation and the `image_url` schema decision).
 
 ---
 
@@ -146,7 +146,7 @@ Milestones must ship in order. Each milestone is a single PR into `dev` on a `fe
 
 Existing `(app)/**` components are destructively replaced as each Phase 6 milestone lands; the `dev` branch will show visual inconsistency between merged and unmerged surfaces during Phase 6. This is accepted.
 
-- [ ] **P6-M1: Design Direction Exploration** - S - aykhan
+- [x] **P6-M1: Design Direction Exploration** - S - aykhan
   - Goal: produce reference notes for five apps and three Statify direction proposals; surface a single pick.
   - Entry criteria: HANDOFF + CHECKLIST + ADR-001 read; design intent confirmed; roadmap approved.
   - Exit criteria: `docs/design/explorations.md` committed containing Step A (Linear, Vercel dashboard, Stripe dashboard, PostHog, Resend reference notes, 2-3 lines each covering typography character, color treatment, spacing density, separation strategy, vibe phrase) and Step B (three distinct named directions, each with feel paragraph, closest reference, sharpest tradeoff, imagery treatment, iconography treatment); Aykhan has picked one direction and the pick is recorded in HANDOFF.md Section 2.
