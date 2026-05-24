@@ -75,6 +75,13 @@ import {
   Switch,
   Textarea,
 } from '@/components/forms';
+import {
+  CardGridSkeleton,
+  EmptyState,
+  ErrorState,
+  ListSkeleton,
+  NotFoundState,
+} from '@/components/states';
 import { PlaylistCard } from '@/components/playlists/PlaylistCard';
 import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { UserPlaylistCard } from '@/components/playlists/UserPlaylistCard';
@@ -1241,6 +1248,34 @@ export default function StyleguidePage() {
         rendered against the token layer so drift between spec and implementation is visible.
       </Caption>
       <FormsShowcase />
+
+      <H2 id="states">19. Empty, loading, error states</H2>
+      <Caption>
+        P6-M9 primitives live in apps/web/src/components/states. Empty and not-found use the neutral
+        tone; error uses the error tone. Spec: DESIGN.md §10.
+      </Caption>
+      <div className="space-y-8">
+        <div>
+          <p className="text-fg-muted mb-3 font-mono text-xs">
+            Empty / error / not-found panels (§10.1, §10.2)
+          </p>
+          <div className="grid gap-4 lg:grid-cols-3">
+            <EmptyState
+              title="No playlists yet"
+              description="You have not created any playlists yet."
+            />
+            <ErrorState onRetry={() => undefined} />
+            <NotFoundState />
+          </div>
+        </div>
+        <div>
+          <p className="text-fg-muted mb-3 font-mono text-xs">Skeleton templates (§10.3)</p>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <ListSkeleton rows={3} />
+            <CardGridSkeleton count={4} />
+          </div>
+        </div>
+      </div>
 
       <footer className="text-fg-muted border-border-default mt-24 border-t pt-8 font-mono text-xs">
         Spec: DESIGN.md · Implementation: apps/web/src/app/globals.css · Route: /styleguide

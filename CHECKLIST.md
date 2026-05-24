@@ -6,9 +6,9 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`). Next milestone P6-M9 (empty / loading / error states pass, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M9 Empty / loading / error states pass. Wait for explicit green light before starting.
-- **Last shipped:** P6-M8 Forms system. PR #35 rebase-merged into `dev` as three commits ending at `ae9309f`. Token-bound primitive set under `apps/web/src/components/forms/` (Field, Label, Input, Textarea, Select, Checkbox, Switch, FormError, FormHint, SubmitButton) on RHF + shared Zod schemas; every form route re-implemented; DESIGN.md §9 added; `/styleguide` §18 panel renders every state. No new dependency.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary; PR into `dev`). Next milestone P6-M10 (section identity headers + section-hue propagation, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M10 Section identity headers + section-hue propagation. Wait for explicit green light before starting.
+- **Last shipped:** P6-M9 Empty / loading / error states pass. State primitives under `apps/web/src/components/states/` (Skeleton plus ListSkeleton / CardGridSkeleton / DetailSkeleton / ChartSkeleton, EmptyState, ErrorState, NotFoundState, shared StatePanel); `loading.tsx` per list / detail / stats segment; `(app)/error.tsx` + `(app)/not-found.tsx`; EmptyState wired into InfiniteScroll and every primary route-level empty; DESIGN.md §10 added (Do / Do not → §11, Token summary → §12); `/styleguide` §19 panel. No new dependency. Interactive smoke (network throttle, forced 404 / 500 while authed) still to be eyeballed by the reviewer.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
 - **Locked decisions feeding Phase 6:**
@@ -20,7 +20,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** start P6-M9 (empty / loading / error states pass, rahila) on `feat/p6-m9-states-pass` off latest `dev` once green-lit; one PR into `dev`; rebase-merge.
+- **Next concrete action:** start P6-M10 (section identity headers + section-hue propagation, rahila) on `feat/p6-m10-section-headers` off latest `dev` once green-lit; one PR into `dev`; rebase-merge.
 
 ---
 
@@ -204,7 +204,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/forms/**` (new), `apps/web/src/components/auth/**`, `apps/web/src/components/playlists/**` (form-touching ones), `apps/web/src/components/admin/**` (form-touching ones), `DESIGN.md` (form states addendum), `apps/web/src/app/styleguide/page.tsx`.
   - Depends on: P6-M3.
 
-- [ ] **P6-M9: Empty, loading, and error states pass** - M - rahila
+- [x] **P6-M9: Empty, loading, and error states pass** - M - rahila
   - Goal: design and ship a shared vocabulary for empty states, skeleton loaders, error surfaces, and not-found pages on top of every list, detail, and form route built so far.
   - Entry criteria: P6-M7 and P6-M8 merged.
   - Exit criteria: state primitives under `apps/web/src/components/states/` (Skeleton, EmptyState, ErrorState, NotFoundState) consume tokens only; every list and detail route in `(app)/**` wired to a skeleton during suspense, an empty state when the response is zero-length, an error state when the fetch fails, and a not-found state when the entity is missing; copy and icon choices documented in DESIGN.md; lint / typecheck / build pass; manual smoke triggers each state (throttle network for skeletons, force 404, force 500).

@@ -627,7 +627,68 @@ Buttons in a form footer use `gap="sm"` with the primary submit first; destructi
 
 ---
 
-## 10. Do / Do not
+## 10. Empty, loading, and error states
+
+Every list and detail route resolves to one of four states when it is not showing data. The primitives live at `apps/web/src/components/states/` and consume only tokens from this file. Empty and not-found use the neutral tone; error uses the error tone. The skeleton mirrors the shape of the route it stands in for.
+
+### 10.1 Primitives
+
+| Primitive              | File                       | Role                                          | Tone                                                    |
+| ---------------------- | -------------------------- | --------------------------------------------- | ------------------------------------------------------- |
+| `Skeleton` + templates | `states/Skeleton.tsx`      | Loading placeholder while a server fetch runs | Neutral shimmer (`--surface-sunken`, motion-safe pulse) |
+| `EmptyState`           | `states/EmptyState.tsx`    | Fetch succeeded, zero rows                    | Neutral, dashed `--border-default` recess               |
+| `ErrorState`           | `states/ErrorState.tsx`    | Fetch threw                                   | Error, `--state-error-*` border and chip                |
+| `NotFoundState`        | `states/NotFoundState.tsx` | Entity missing (`notFound()`)                 | Neutral, with a link back to a known-good route         |
+
+All four share `states/StatePanel.tsx`: a centered column of icon chip, title (`text-lg`, `--fg-strong`), optional description (`text-sm`, `--fg-muted`), and optional action. The chip is a `--radius-full` circle at `size-12`; the icon is a Lucide glyph at `--icon-lg` (stroke 2 per §8.2).
+
+### 10.2 Tone tokens
+
+| Slot             | Neutral (empty / not-found)                   | Error                                         |
+| ---------------- | --------------------------------------------- | --------------------------------------------- |
+| Container border | `--border-default`, dashed                    | `--state-error-border`, solid                 |
+| Container fill   | `--surface-sunken`                            | `--state-error-bg`                            |
+| Icon chip        | `--section-tint` bg, `--section-accent` glyph | `--surface-work` bg, `--state-error-fg` glyph |
+| Title            | `--fg-strong`                                 | `--state-error-fg`                            |
+| ARIA role        | `status`                                      | `alert`                                       |
+
+The empty / not-found chip uses the active section hue, so the state reads as part of the section rather than a generic system surface. Until the section header pass (P6-M10) wires a per-route hue, the chip resolves to the indigo default.
+
+### 10.3 Skeleton templates
+
+`loading.tsx` at each route segment renders the template that matches the route's shape. Every template carries a header bar (title plus subtitle) over a body:
+
+| Template           | Body                                        | Routes                                            |
+| ------------------ | ------------------------------------------- | ------------------------------------------------- |
+| `ListSkeleton`     | Cover-square rows                           | tracks, history, admin tables                     |
+| `CardGridSkeleton` | Square-cover card grid                      | artists, albums, playlists, discover, hidden gems |
+| `DetailSkeleton`   | Hero cover and meta, then a two-column band | every `[id]` detail route                         |
+| `ChartSkeleton`    | Chart canvas band and summary tiles         | every `me/stats/*` route                          |
+
+Skeletons are decorative: the shimmer blocks are `aria-hidden`, and the App Router `loading.tsx` boundary owns the busy semantics. Under `prefers-reduced-motion: reduce` the pulse stops (global guard, §6.4).
+
+### 10.4 Route wiring
+
+| State     | Mechanism                                                                                                   |
+| --------- | ----------------------------------------------------------------------------------------------------------- |
+| Loading   | `loading.tsx` per route segment (list, detail, stats) renders the matching skeleton template                |
+| Empty     | `EmptyState` when a fetch returns zero rows; the shared `InfiniteScroll` falls back to it via `emptyText`   |
+| Error     | `(app)/error.tsx` (client boundary) renders `ErrorState` with the App Router `reset` as the retry handler   |
+| Not found | `(app)/not-found.tsx` renders `NotFoundState`; detail routes call `notFound()` on a missing or malformed id |
+
+Nested sub-section empties (a track list inside a playlist detail card, the admin checkpoint table) use a plain `text-sm` `--fg-muted` line rather than the full panel, so the panel stays reserved for a route's primary empty.
+
+### 10.5 Copy
+
+- Title: a short noun phrase naming what is absent (`No playlists yet`, `Not enough listens yet`). Sentence case, no trailing period.
+- Description: one sentence on why it is empty or what to do next. Ends with a period.
+- Action: present only when there is a clear next step (open the catalog, create a playlist). Rendered through `buttonVariants` so a `Link` matches the secondary button.
+- Error copy stays generic (`Something went wrong`) and never leaks the thrown message.
+- Not-found copy avoids blame and offers a route back.
+
+---
+
+## 11. Do / Do not
 
 **Do**
 
@@ -652,7 +713,7 @@ Buttons in a form footer use `gap="sm"` with the primary submit first; destructi
 
 ---
 
-## 11. Token surface summary (for P6-M3)
+## 12. Token surface summary (for P6-M3)
 
 P6-M3 emits the following families inside `apps/web/src/app/globals.css` `@theme`:
 
