@@ -5,12 +5,12 @@
 ## Current State (updated every session)
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** M7 Admin / data management. Wait for explicit green light before starting.
-- **Last shipped:** M6 Playlist creation and management 4/4, rebase-merged into `dev` via PR #23 (closeout commit `b2f7485`). All four rows attributed to `elshad`: create, add/remove + drag-drop reorder, public/private toggle, browse community public playlists. Two new web sections (`/me/playlists`, `/community/playlists`) and two new API surfaces (`/me/playlists`, `/user-playlists`).
+- **Current milestone:** M8 Rubric / quality demands. Wait for explicit green light before starting.
+- **Last shipped:** M7 Admin / data management 4/4, rebase-merged into `dev` via PR #24. Three rows attributed to `aykhan` (admin route shell + role gate, users list with ban/unban/role change, audit log viewer) and one to `eljan` (ingest run trigger). Adds `users.banned_at` plus four new admin pages (`/admin`, `/admin/users`, `/admin/ingest`, `/admin/audit-log`) and admin-only API surfaces under `/api/v1/admin/*`.
 - **Open file/component:** none.
 - **Open decisions:** none for the current milestone.
 - **Blocker:** none for milestone work.
-- **Next concrete action:** wait for green light to start M7. Branch from `dev` with `feat/admin-ui` and implement M7 rows in checklist order. Three rows are attributed to `aykhan` and one to `eljan`; admin module skeleton (F12) and audit-log writer are already in place.
+- **Next concrete action:** wait for green light to start M8. Five rows remain (all attributed to `aykhan`): ERD diagram + DBML, relational model write-up, advanced SQL queries doc, final report, demo script. The seed script row is already ticked. M8 is the academic submission bundle; the work is mostly authoring under `docs/` and `report/` plus exporting the DBML + ERD into `docs/`.
 
 ---
 
@@ -116,11 +116,11 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Public vs private toggle - S - elshad
   - [x] Browse other users' public playlists - M - elshad
 
-- [ ] **M7: Admin / data management** - 0/4
-  - [ ] Admin login route + role gate - S - aykhan (depends on F12)
-  - [ ] Users list with search, ban/unban, role change (audit logged) - M - aykhan
-  - [ ] Ingestion run trigger from admin UI - M - eljan
-  - [ ] Audit log viewer - M - aykhan
+- [x] **M7: Admin / data management** - 4/4
+  - [x] Admin login route + role gate - S - aykhan (depends on F12)
+  - [x] Users list with search, ban/unban, role change (audit logged) - M - aykhan
+  - [x] Ingestion run trigger from admin UI - M - eljan
+  - [x] Audit log viewer - M - aykhan
 
 - [ ] **M8: Rubric / quality demands** - 1/6
   - [ ] ERD diagram (dbdiagram.io DBML export + PNG in `docs/`) - S - aykhan
