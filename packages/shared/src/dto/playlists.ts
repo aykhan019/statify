@@ -15,6 +15,7 @@ export const MpdPlaylistTracksQuerySchema = OffsetPaginationQuerySchema;
 
 export const MpdPlaylistListItemSchema = z.object({
   collaborative: z.boolean(),
+  coverImages: z.array(z.string().url()).max(4),
   durationMs: z.number().int(),
   id: z.number().int(),
   mpdPid: z.number().int(),

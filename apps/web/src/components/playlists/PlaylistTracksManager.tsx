@@ -2,7 +2,10 @@
 
 import type { CatalogSearchTrackResult, UserPlaylistTrackEntry } from '@statify/shared';
 import { useEffect, useRef, useState, type DragEvent } from 'react';
+import { ArrowDown, ArrowUp, GripVertical, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Cover } from '@/components/ui/Cover';
+import { Icon } from '@/components/ui/Icon';
 import { Input } from '@/components/ui/Input';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchCatalogSearch } from '@/lib/catalog/api';
@@ -130,9 +133,10 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
     }
   };
 
-  const add = async (trackId: number, displayName: string) => {
+  const add = async (result: CatalogSearchTrackResult) => {
+    const trackId = result.id;
     if (tracks.some((entry) => entry.track.id === trackId)) {
-      setError(`"${displayName}" is already in this playlist.`);
+      setError(`"${result.name}" is already in this playlist.`);
       return;
     }
     setPendingTrackId(trackId);
@@ -146,15 +150,15 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
           album: {
             id: 0,
             imageUrl: null,
-            name: '',
+            name: result.albumName,
             primaryArtist: { id: 0, imageUrl: null, name: '', spotifyUri: '' },
             spotifyUri: '',
           },
           artists: [],
           durationMs: 0,
           id: trackId,
-          imageUrl: null,
-          name: displayName,
+          imageUrl: result.imageUrl,
+          name: result.name,
           previewUrl: null,
           spotifyUri: '',
         },
@@ -198,23 +202,24 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
               onDragEnd={handleDragEnd}
               onDrop={handleDragEnd}
               className={cn(
-                'border-border bg-surface flex items-center gap-3 rounded-(--radius) border p-3',
+                'flex items-center gap-3 rounded-(--radius-md) border border-border-default bg-surface-raised p-3 transition-colors hover:bg-section-row-hover',
                 draggedId === entry.track.id && 'opacity-50',
               )}
             >
-              <span
-                aria-hidden
-                className="text-muted-foreground cursor-grab select-none"
-                title="Drag to reorder"
-              >
-                ⋮⋮
-              </span>
-              <span className="text-muted-foreground w-8 shrink-0 text-right text-xs">
+              <Icon as={GripVertical} size="sm" className="cursor-grab text-fg-faint" />
+              <span className="w-8 shrink-0 text-right font-mono text-xs text-fg-muted tabular-nums">
                 {index + 1}
               </span>
+              <Cover
+                src={entry.track.imageUrl ?? entry.track.album.imageUrl}
+                name={entry.track.name}
+                entity="track"
+                size="xs"
+                context="list-dense"
+              />
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium">{entry.track.name}</p>
-                <p className="text-muted-foreground truncate text-xs">
+                <p className="truncate text-sm font-semibold text-fg-strong">{entry.track.name}</p>
+                <p className="truncate text-xs text-fg-muted">
                   {entry.track.artists.map((artist) => artist.name).join(', ')}
                   {entry.track.album.name.length > 0 ? ` · ${entry.track.album.name}` : ''}
                 </p>
@@ -227,7 +232,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                   disabled={index === 0 || committingOrder}
                   aria-label={`Move ${entry.track.name} up`}
                 >
-                  ↑
+                  <Icon as={ArrowUp} size="sm" />
                 </Button>
                 <Button
                   size="sm"
@@ -236,7 +241,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                   disabled={index === tracks.length - 1 || committingOrder}
                   aria-label={`Move ${entry.track.name} down`}
                 >
-                  ↓
+                  <Icon as={ArrowDown} size="sm" />
                 </Button>
                 <Button
                   size="sm"
@@ -245,6 +250,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                   disabled={pendingTrackId === entry.track.id}
                   aria-label={`Remove ${entry.track.name}`}
                 >
+                  <Icon as={Trash2} size="sm" />
                   Remove
                 </Button>
               </div>
@@ -258,7 +264,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
 
 interface AddTrackSectionProps {
   existingTrackIds: number[];
-  onAdd: (trackId: number, displayName: string) => Promise<void>;
+  onAdd: (result: CatalogSearchTrackResult) => Promise<void>;
   pendingTrackId: number | null;
 }
 
@@ -307,23 +313,31 @@ function AddTrackSection({ existingTrackIds, onAdd, pendingTrackId }: AddTrackSe
         onChange={(event) => setTerm(event.target.value)}
         aria-label="Search the catalog to add a track"
       />
-      {status === 'loading' && <p className="text-muted-foreground text-xs">Searching...</p>}
+      {status === 'loading' && <p className="text-xs text-fg-muted">Searching...</p>}
       {status === 'error' && <p className="text-destructive text-xs">Search failed.</p>}
       {status === 'ready' && results.length === 0 && (
-        <p className="text-muted-foreground text-xs">No matches.</p>
+        <p className="text-xs text-fg-muted">No matches.</p>
       )}
       {results.length > 0 && (
-        <ul className="border-border flex max-h-72 flex-col gap-1 overflow-y-auto rounded-(--radius) border p-1">
+        <ul className="flex max-h-72 flex-col gap-1 overflow-y-auto rounded-(--radius-md) border border-border-default p-1">
           {results.map((result) => {
             const isExisting = existing.has(result.id);
             return (
               <li
                 key={result.id}
-                className="hover:bg-muted flex items-center gap-3 rounded-(--radius-sm) px-3 py-2"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 hover:bg-section-row-hover"
               >
+                <Cover
+                  src={result.imageUrl}
+                  name={result.name}
+                  entity="track"
+                  size="xs"
+                  context="list-dense"
+                  inSection={false}
+                />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{result.name}</p>
-                  <p className="text-muted-foreground truncate text-xs">
+                  <p className="truncate text-sm font-medium text-fg-strong">{result.name}</p>
+                  <p className="truncate text-xs text-fg-muted">
                     {result.primaryArtistName} · {result.albumName}
                   </p>
                 </div>
@@ -331,7 +345,7 @@ function AddTrackSection({ existingTrackIds, onAdd, pendingTrackId }: AddTrackSe
                   size="sm"
                   variant={isExisting ? 'secondary' : 'primary'}
                   disabled={isExisting || pendingTrackId === result.id}
-                  onClick={() => void onAdd(result.id, result.name)}
+                  onClick={() => void onAdd(result)}
                 >
                   {isExisting ? 'Added' : pendingTrackId === result.id ? 'Adding…' : 'Add'}
                 </Button>

@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { TrackRow } from '@/components/catalog';
+import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { ApiClientError } from '@/lib/api-client';
 import {
   fetchPublicUserPlaylistDetail,
@@ -45,13 +46,17 @@ export default async function CommunityPlaylistDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={playlist.name}
-        description={`By ${playlist.owner.displayName} · ${playlist.trackCount.toLocaleString()} tracks`}
+      <PlaylistHero
+        coverImages={playlist.coverImages}
+        name={playlist.name}
+        eyebrow="Community playlist"
+        meta={`By ${playlist.owner.displayName} · ${playlist.trackCount.toLocaleString()} tracks`}
+        description={
+          playlist.description !== null && playlist.description.length > 0
+            ? playlist.description
+            : undefined
+        }
       />
-      {playlist.description !== null && playlist.description.length > 0 && (
-        <p className="text-muted-foreground text-sm">{playlist.description}</p>
-      )}
       <Card>
         <CardHeader>
           <CardTitle>Tracks</CardTitle>
@@ -62,19 +67,12 @@ export default async function CommunityPlaylistDetailPage({
           ) : (
             <ul className="flex flex-col gap-2">
               {tracks.data.map((entry) => (
-                <li
-                  key={`${entry.track.id}-${entry.pos}`}
-                  className="flex items-center gap-3 border-b py-2 last:border-b-0"
-                >
-                  <span className="text-muted-foreground w-8 shrink-0 text-right text-xs">
+                <li key={`${entry.track.id}-${entry.pos}`} className="flex items-center gap-3">
+                  <span className="w-8 shrink-0 text-right font-mono text-xs text-fg-muted tabular-nums">
                     {entry.pos + 1}
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium">{entry.track.name}</p>
-                    <p className="text-muted-foreground truncate text-xs">
-                      {entry.track.artists.map((artist) => artist.name).join(', ')}
-                      {entry.track.album.name.length > 0 ? ` · ${entry.track.album.name}` : ''}
-                    </p>
+                  <div className="flex-1">
+                    <TrackRow track={entry.track} />
                   </div>
                 </li>
               ))}

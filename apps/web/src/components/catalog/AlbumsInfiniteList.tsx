@@ -23,6 +23,7 @@ export function AlbumsInfiniteList({
       renderItem={(album) => <AlbumCard album={album} />}
       itemKey={(album) => album.id}
       emptyText={emptyText}
+      listClassName="grid sm:grid-cols-2 xl:grid-cols-3"
     />
   );
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { CatalogSearchResponse } from '@statify/shared';
 import { fetchCatalogSearch } from '@/lib/catalog/api';
+import { Cover, type EntityKind } from '@/components/ui/Cover';
 import { Input } from '@/components/ui/Input';
 
 type SearchStatus = 'idle' | 'loading' | 'ready' | 'error';
@@ -152,6 +153,8 @@ function SearchPanel({
               href={`/catalog/tracks/${track.id}`}
               title={track.name}
               subtitle={`${track.primaryArtistName} · ${track.albumName}`}
+              imageUrl={track.imageUrl}
+              entity="track"
               onNavigate={onNavigate}
             />
           )}
@@ -165,6 +168,8 @@ function SearchPanel({
               href={`/catalog/artists/${artist.id}`}
               title={artist.name}
               subtitle={`${artist.trackCount.toLocaleString()} tracks`}
+              imageUrl={artist.imageUrl}
+              entity="artist"
               onNavigate={onNavigate}
             />
           )}
@@ -178,6 +183,8 @@ function SearchPanel({
               href={`/catalog/albums/${album.id}`}
               title={album.name}
               subtitle={album.primaryArtistName}
+              imageUrl={album.imageUrl}
+              entity="album"
               onNavigate={onNavigate}
             />
           )}
@@ -251,12 +258,16 @@ function hasSearchResults(results: CatalogSearchResponse): boolean {
 }
 
 function ResultLink({
+  entity,
   href,
+  imageUrl,
   onNavigate,
   subtitle,
   title,
 }: {
+  entity: Extract<EntityKind, 'track' | 'artist' | 'album'>;
   href: string;
+  imageUrl: string | null;
   onNavigate: () => void;
   subtitle: string;
   title: string;
@@ -265,10 +276,20 @@ function ResultLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className="hover:bg-muted rounded-(--radius-sm) px-3 py-2"
+      className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 hover:bg-section-row-hover"
     >
-      <span className="text-foreground block truncate text-sm font-medium">{title}</span>
-      <span className="text-muted-foreground block truncate text-xs">{subtitle}</span>
+      <Cover
+        src={imageUrl}
+        name={title}
+        entity={entity}
+        size="xs"
+        context="list-dense"
+        inSection={false}
+      />
+      <span className="min-w-0">
+        <span className="block truncate text-sm font-medium text-fg-strong">{title}</span>
+        <span className="block truncate text-xs text-fg-muted">{subtitle}</span>
+      </span>
     </Link>
   );
 }

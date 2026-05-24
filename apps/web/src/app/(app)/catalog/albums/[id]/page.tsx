@@ -1,8 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { CatalogDetailHero, TracksInfiniteList } from '@/components/catalog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { TracksInfiniteList } from '@/components/catalog';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchAlbumById, fetchTracks } from '@/lib/catalog/api';
 
@@ -34,14 +33,17 @@ export default async function AlbumDetailPage({ params }: AlbumDetailPageProps) 
 
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader
+      <CatalogDetailHero
+        entity="album"
+        eyebrow="Album"
+        imageUrl={album.imageUrl}
         title={album.name}
-        description={
+        meta={
           <>
             by{' '}
             <Link
               href={`/catalog/artists/${album.primaryArtist.id}`}
-              className="text-accent hover:underline"
+              className="text-section-accent hover:underline"
             >
               {album.primaryArtist.name}
             </Link>{' '}

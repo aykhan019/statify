@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { TrackListItem } from '@statify/shared';
-import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { Cover } from '@/components/ui/Cover';
 import { formatDurationMs, formatTrackArtists } from './format';
 
 interface TrackRowProps {
@@ -8,42 +9,45 @@ interface TrackRowProps {
 }
 
 export function TrackRow({ track }: TrackRowProps) {
+  const coverImage = track.imageUrl ?? track.album.imageUrl;
+
   return (
-    <Card className="hover:bg-muted transition-colors">
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4">
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
+    <div className="group rounded-(--radius-md) border border-border-default bg-surface-raised transition-colors hover:bg-section-row-hover">
+      <div className="flex items-center gap-3 p-3 sm:gap-4 sm:p-4">
+        <Link href={`/catalog/tracks/${track.id}`} className="shrink-0">
+          <Cover src={coverImage} name={track.name} entity="track" size="sm" context="list-dense" />
+        </Link>
+        <div className="min-w-0 flex-1">
           <Link
             href={`/catalog/tracks/${track.id}`}
-            className="hover:text-accent truncate text-base font-medium"
+            className="block truncate text-base font-semibold text-fg-strong hover:text-section-accent"
           >
             {track.name}
           </Link>
-          <p className="text-muted-foreground truncate text-sm">
+          <p className="truncate text-sm text-fg-muted">
             <Link
               href={`/catalog/artists/${track.album.primaryArtist.id}`}
-              className="hover:text-foreground"
+              className="hover:text-fg-strong"
             >
               {formatTrackArtists(track.artists)}
             </Link>
             <span aria-hidden="true"> · </span>
-            <Link href={`/catalog/albums/${track.album.id}`} className="hover:text-foreground">
+            <Link href={`/catalog/albums/${track.album.id}`} className="hover:text-fg-strong">
               {track.album.name}
             </Link>
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="hidden shrink-0 items-center gap-3 sm:flex">
           {track.previewUrl !== null ? (
-            <span className="bg-accent/15 text-accent rounded-(--radius-sm) px-2 py-1 text-xs font-medium">
-              Preview
-            </span>
+            <Badge variant="active">Preview</Badge>
           ) : (
-            <span className="text-muted-foreground text-xs">No preview</span>
+            <span className="text-xs text-fg-faint">No preview</span>
           )}
-          <span className="text-muted-foreground tabular-nums text-sm">
+          <span className="font-mono text-sm text-fg-muted tabular-nums">
             {formatDurationMs(track.durationMs)}
           </span>
         </div>
       </div>
-    </Card>
+    </div>
   );
 }

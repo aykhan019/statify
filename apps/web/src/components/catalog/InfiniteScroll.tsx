@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Button } from '@/components/ui/Button';
+import { cn } from '@/lib/utils/cn';
 
 interface PageResult<T> {
   data: T[];
@@ -16,6 +17,7 @@ interface InfiniteScrollProps<T> {
   renderItem: (item: T) => ReactNode;
   itemKey: (item: T) => string | number;
   emptyText?: string;
+  listClassName?: string;
 }
 
 export function InfiniteScroll<T>({
@@ -24,6 +26,7 @@ export function InfiniteScroll<T>({
   renderItem,
   itemKey,
   emptyText = 'Nothing here yet.',
+  listClassName,
 }: InfiniteScrollProps<T>) {
   const [items, setItems] = useState<T[]>(initial.data);
   const [page, setPage] = useState(initial.page);
@@ -83,7 +86,7 @@ export function InfiniteScroll<T>({
 
   return (
     <div className="flex flex-col gap-3">
-      <ul className="flex flex-col gap-3">
+      <ul className={cn('flex flex-col gap-3', listClassName)}>
         {items.map((item) => (
           <li key={itemKey(item)}>{renderItem(item)}</li>
         ))}
