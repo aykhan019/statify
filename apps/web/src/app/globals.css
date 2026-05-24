@@ -1,66 +1,565 @@
 @import 'tailwindcss';
+@plugin 'tailwindcss-animate';
 
-@theme {
-  --color-background: oklch(1 0 0);
-  --color-foreground: oklch(0.145 0 0);
-  --color-surface: oklch(0.98 0 0);
-  --color-surface-foreground: oklch(0.145 0 0);
-  --color-muted: oklch(0.96 0 0);
-  --color-muted-foreground: oklch(0.45 0 0);
-  --color-border: oklch(0.9 0 0);
-  --color-input: oklch(0.94 0 0);
-  --color-ring: oklch(0.55 0.22 264);
-  --color-accent: oklch(0.55 0.22 264);
-  --color-accent-foreground: oklch(0.99 0 0);
-  --color-destructive: oklch(0.6 0.25 27);
-  --color-destructive-foreground: oklch(0.99 0 0);
+/*
+ * Statify token layer. Spec: ../../../../DESIGN.md
+ *
+ * Layering:
+ *   :root              — mode-dependent values (light defaults)
+ *   @media dark        — dark overrides on :root
+ *   @theme inline      — re-exports :root vars as Tailwind tokens (utilities)
+ *   @theme             — fixed tokens (raw palette, fonts, sizes, motion)
+ *   transitional       — aliases for Phase 5 component utility names, removed
+ *                        as P6-M5..M10 destructively replace those components.
+ */
 
-  --radius-xs: 0.25rem;
-  --radius-sm: 0.375rem;
-  --radius: 0.5rem;
-  --radius-lg: 0.75rem;
-  --radius-xl: 1rem;
+/* ============================================================
+ * Mode-dependent values (semantic surface, fg, border, ring)
+ * ============================================================ */
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, 'Menlo', monospace;
+:root {
+  /* Surfaces */
+  --surface-page: oklch(0.985 0 0);
+  --surface-work: oklch(1 0 0);
+  --surface-raised: oklch(0.99 0 0);
+  --surface-sunken: oklch(0.96 0.004 265);
+  --surface-overlay: oklch(0.1 0 0 / 0.55);
 
-  --shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 0.05);
-  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 0.08);
-  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 0.08);
+  /* Foreground */
+  --fg-strong: oklch(0.18 0.006 265);
+  --fg-default: oklch(0.26 0.006 265);
+  --fg-muted: oklch(0.48 0.008 265);
+  --fg-faint: oklch(0.66 0.008 265);
+  --fg-on-block: oklch(0.99 0 0);
+
+  /* Borders + rings */
+  --border-default: oklch(0.9 0.004 265);
+  --border-strong: oklch(0.78 0.006 265);
+  --ring-focus: oklch(0.62 0.18 265); /* default: indigo-500 */
+  --ring-focus-paper: oklch(0.99 0 0);
+
+  /* Section identity defaults (Library / indigo). Overridden per route. */
+  --section-block: oklch(0.62 0.18 265);
+  --section-block-fg: oklch(0.99 0 0);
+  --section-tint: oklch(0.97 0.02 265);
+  --section-accent: oklch(0.62 0.18 265);
+  --section-accent-fg: oklch(0.99 0 0);
+  --section-row-hover: oklch(0.97 0.02 265);
+  --section-frame: oklch(0.62 0.18 265);
 }
 
 @media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: oklch(0.145 0 0);
-    --color-foreground: oklch(0.985 0 0);
-    --color-surface: oklch(0.18 0 0);
-    --color-surface-foreground: oklch(0.985 0 0);
-    --color-muted: oklch(0.22 0 0);
-    --color-muted-foreground: oklch(0.7 0 0);
-    --color-border: oklch(0.28 0 0);
-    --color-input: oklch(0.25 0 0);
-    --color-ring: oklch(0.65 0.22 264);
-    --color-accent: oklch(0.65 0.22 264);
-    --color-accent-foreground: oklch(0.13 0 0);
-    --color-destructive: oklch(0.7 0.22 27);
-    --color-destructive-foreground: oklch(0.13 0 0);
+  :root {
+    --surface-page: oklch(0.16 0.004 265);
+    --surface-work: oklch(0.2 0.006 265);
+    --surface-raised: oklch(0.24 0.008 265);
+    --surface-sunken: oklch(0.13 0.004 265);
+    --surface-overlay: oklch(0 0 0 / 0.7);
+
+    --fg-strong: oklch(0.985 0 0);
+    --fg-default: oklch(0.94 0 0);
+    --fg-muted: oklch(0.7 0.006 265);
+    --fg-faint: oklch(0.55 0.006 265);
+
+    --border-default: oklch(0.3 0.006 265);
+    --border-strong: oklch(0.42 0.008 265);
+
+    --section-tint: oklch(0.22 0.08 265 / 0.4); /* dark tint */
+    --section-row-hover: oklch(0.22 0.08 265 / 0.4);
   }
 }
 
+/* ============================================================
+ * Tailwind 4 token surface
+ *
+ * @theme inline       — values reference CSS variables defined above so
+ *                       dark-mode swaps propagate through the utilities.
+ * @theme              — fixed values that do not swap.
+ * ============================================================ */
+
+@theme inline {
+  /* Surfaces */
+  --color-surface-page: var(--surface-page);
+  --color-surface-work: var(--surface-work);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-overlay: var(--surface-overlay);
+
+  /* Foreground */
+  --color-fg-strong: var(--fg-strong);
+  --color-fg-default: var(--fg-default);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+  --color-fg-on-block: var(--fg-on-block);
+
+  /* Borders + rings */
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-ring-focus: var(--ring-focus);
+  --color-ring-focus-paper: var(--ring-focus-paper);
+
+  /* Section semantic (runtime-overridable per route) */
+  --color-section-block: var(--section-block);
+  --color-section-block-fg: var(--section-block-fg);
+  --color-section-tint: var(--section-tint);
+  --color-section-accent: var(--section-accent);
+  --color-section-accent-fg: var(--section-accent-fg);
+  --color-section-row-hover: var(--section-row-hover);
+  --color-section-frame: var(--section-frame);
+}
+
+@theme {
+  /* ----- Raw palette: 12 hues × 8 luminance steps = 96 tokens ----- */
+
+  /* coral 25° */
+  --color-coral-50: oklch(0.97 0.02 25);
+  --color-coral-100: oklch(0.92 0.045 25);
+  --color-coral-200: oklch(0.84 0.08 25);
+  --color-coral-400: oklch(0.72 0.16 25);
+  --color-coral-500: oklch(0.66 0.19 25);
+  --color-coral-600: oklch(0.56 0.19 25);
+  --color-coral-700: oklch(0.46 0.16 25);
+  --color-coral-900: oklch(0.25 0.09 25);
+
+  /* amber 60° */
+  --color-amber-50: oklch(0.97 0.025 75);
+  --color-amber-100: oklch(0.93 0.06 75);
+  --color-amber-200: oklch(0.87 0.1 75);
+  --color-amber-400: oklch(0.79 0.16 70);
+  --color-amber-500: oklch(0.73 0.17 65);
+  --color-amber-600: oklch(0.62 0.16 60);
+  --color-amber-700: oklch(0.5 0.13 55);
+  --color-amber-900: oklch(0.28 0.07 55);
+
+  /* lime 95° */
+  --color-lime-50: oklch(0.97 0.025 110);
+  --color-lime-100: oklch(0.94 0.07 110);
+  --color-lime-200: oklch(0.88 0.12 105);
+  --color-lime-400: oklch(0.82 0.18 100);
+  --color-lime-500: oklch(0.74 0.18 95);
+  --color-lime-600: oklch(0.62 0.16 95);
+  --color-lime-700: oklch(0.5 0.13 95);
+  --color-lime-900: oklch(0.28 0.07 95);
+
+  /* green 140° */
+  --color-green-50: oklch(0.97 0.025 145);
+  --color-green-100: oklch(0.93 0.06 145);
+  --color-green-200: oklch(0.86 0.1 142);
+  --color-green-400: oklch(0.74 0.16 140);
+  --color-green-500: oklch(0.66 0.17 140);
+  --color-green-600: oklch(0.56 0.16 140);
+  --color-green-700: oklch(0.45 0.13 140);
+  --color-green-900: oklch(0.26 0.08 140);
+
+  /* teal 165° */
+  --color-teal-50: oklch(0.97 0.02 175);
+  --color-teal-100: oklch(0.92 0.045 175);
+  --color-teal-200: oklch(0.84 0.08 170);
+  --color-teal-400: oklch(0.72 0.13 167);
+  --color-teal-500: oklch(0.64 0.14 165);
+  --color-teal-600: oklch(0.54 0.13 165);
+  --color-teal-700: oklch(0.44 0.11 165);
+  --color-teal-900: oklch(0.25 0.06 165);
+
+  /* cyan 200° */
+  --color-cyan-50: oklch(0.97 0.02 210);
+  --color-cyan-100: oklch(0.92 0.045 210);
+  --color-cyan-200: oklch(0.84 0.08 205);
+  --color-cyan-400: oklch(0.72 0.14 202);
+  --color-cyan-500: oklch(0.64 0.16 200);
+  --color-cyan-600: oklch(0.54 0.15 200);
+  --color-cyan-700: oklch(0.44 0.12 200);
+  --color-cyan-900: oklch(0.25 0.07 200);
+
+  /* azure 230° */
+  --color-azure-50: oklch(0.97 0.02 235);
+  --color-azure-100: oklch(0.92 0.045 235);
+  --color-azure-200: oklch(0.84 0.08 232);
+  --color-azure-400: oklch(0.72 0.15 230);
+  --color-azure-500: oklch(0.62 0.18 230);
+  --color-azure-600: oklch(0.52 0.18 230);
+  --color-azure-700: oklch(0.42 0.15 230);
+  --color-azure-900: oklch(0.22 0.08 230);
+
+  /* indigo 265° */
+  --color-indigo-50: oklch(0.97 0.02 265);
+  --color-indigo-100: oklch(0.92 0.045 265);
+  --color-indigo-200: oklch(0.84 0.08 265);
+  --color-indigo-400: oklch(0.72 0.15 265);
+  --color-indigo-500: oklch(0.62 0.18 265);
+  --color-indigo-600: oklch(0.52 0.18 265);
+  --color-indigo-700: oklch(0.42 0.15 265);
+  --color-indigo-900: oklch(0.22 0.08 265);
+
+  /* violet 295° */
+  --color-violet-50: oklch(0.97 0.02 300);
+  --color-violet-100: oklch(0.92 0.045 300);
+  --color-violet-200: oklch(0.84 0.08 297);
+  --color-violet-400: oklch(0.72 0.15 295);
+  --color-violet-500: oklch(0.62 0.18 295);
+  --color-violet-600: oklch(0.52 0.18 295);
+  --color-violet-700: oklch(0.42 0.15 295);
+  --color-violet-900: oklch(0.22 0.08 295);
+
+  /* magenta 325° */
+  --color-magenta-50: oklch(0.97 0.02 330);
+  --color-magenta-100: oklch(0.92 0.045 330);
+  --color-magenta-200: oklch(0.84 0.08 327);
+  --color-magenta-400: oklch(0.72 0.16 325);
+  --color-magenta-500: oklch(0.65 0.2 325);
+  --color-magenta-600: oklch(0.55 0.19 325);
+  --color-magenta-700: oklch(0.45 0.15 325);
+  --color-magenta-900: oklch(0.25 0.08 325);
+
+  /* pink 355° */
+  --color-pink-50: oklch(0.97 0.02 0);
+  --color-pink-100: oklch(0.92 0.045 0);
+  --color-pink-200: oklch(0.84 0.08 358);
+  --color-pink-400: oklch(0.74 0.16 355);
+  --color-pink-500: oklch(0.66 0.2 355);
+  --color-pink-600: oklch(0.56 0.19 355);
+  --color-pink-700: oklch(0.46 0.16 355);
+  --color-pink-900: oklch(0.25 0.09 355);
+
+  /* vermilion 12° */
+  --color-vermilion-50: oklch(0.97 0.02 18);
+  --color-vermilion-100: oklch(0.92 0.045 18);
+  --color-vermilion-200: oklch(0.84 0.08 15);
+  --color-vermilion-400: oklch(0.7 0.17 12);
+  --color-vermilion-500: oklch(0.62 0.2 12);
+  --color-vermilion-600: oklch(0.52 0.19 12);
+  --color-vermilion-700: oklch(0.43 0.16 12);
+  --color-vermilion-900: oklch(0.24 0.09 12);
+
+  /* ----- Entity-type hues (aliases) ----- */
+  --color-entity-track: var(--color-magenta-500);
+  --color-entity-artist: var(--color-coral-500);
+  --color-entity-album: var(--color-indigo-500);
+  --color-entity-playlist: var(--color-violet-500);
+  --color-entity-genre: var(--color-green-500);
+  --color-entity-user: var(--color-cyan-500);
+
+  /* ----- State colors (semantic triple per state) ----- */
+  --color-state-success-bg: var(--color-green-100);
+  --color-state-success-border: var(--color-green-400);
+  --color-state-success-fg: var(--color-green-700);
+
+  --color-state-warning-bg: var(--color-amber-100);
+  --color-state-warning-border: var(--color-amber-400);
+  --color-state-warning-fg: var(--color-amber-700);
+
+  --color-state-error-bg: var(--color-vermilion-100);
+  --color-state-error-border: var(--color-vermilion-400);
+  --color-state-error-fg: var(--color-vermilion-700);
+
+  --color-state-info-bg: var(--color-cyan-100);
+  --color-state-info-border: var(--color-cyan-400);
+  --color-state-info-fg: var(--color-cyan-700);
+
+  --color-state-active-bg: var(--color-magenta-100);
+  --color-state-active-border: var(--color-magenta-400);
+  --color-state-active-fg: var(--color-magenta-700);
+
+  /* ----- Data-viz palette ----- */
+  --color-chart-series-0: var(--color-indigo-500);
+  --color-chart-series-1: var(--color-coral-500);
+  --color-chart-series-2: var(--color-green-500);
+  --color-chart-series-3: var(--color-magenta-500);
+  --color-chart-series-4: var(--color-amber-500);
+  --color-chart-series-5: var(--color-cyan-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
+
+  --color-chart-axis: var(--fg-muted);
+  --color-chart-grid: var(--border-default);
+  --color-chart-tooltip-bg: var(--surface-raised);
+  --color-chart-tooltip-fg: var(--fg-default);
+  --color-chart-tooltip-border: var(--border-default);
+
+  --color-chart-heatmap-0: var(--color-azure-100);
+  --color-chart-heatmap-1: var(--color-azure-200);
+  --color-chart-heatmap-2: var(--color-azure-400);
+  --color-chart-heatmap-3: var(--color-azure-500);
+  --color-chart-heatmap-4: var(--color-azure-700);
+
+  --color-chart-divergent-neg-2: var(--color-vermilion-500);
+  --color-chart-divergent-neg-1: var(--color-vermilion-200);
+  --color-chart-divergent-zero: var(--surface-work);
+  --color-chart-divergent-pos-1: var(--color-green-200);
+  --color-chart-divergent-pos-2: var(--color-green-500);
+
+  /* ----- Typography families (next/font wires --font-bricolage / --font-jetbrains) ----- */
+  --font-sans:
+    var(--font-bricolage), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* ----- Spacing scale ----- */
+  --spacing-0: 0;
+  --spacing-px: 1px;
+  --spacing-0\.5: 2px;
+  --spacing-1: 4px;
+  --spacing-1\.5: 6px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-32: 128px;
+  --spacing-40: 160px;
+  --spacing-48: 192px;
+
+  /* ----- Container max-widths ----- */
+  --container-narrow: 720px;
+  --container-prose: 880px;
+  --container-wide: 1280px;
+  --container-full: 1600px;
+
+  /* ----- Radius ----- */
+  --radius-none: 0;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-full: 9999px;
+
+  /* ----- Shadow ----- */
+  --shadow-xs: 0 1px 2px oklch(0 0 0 / 0.05);
+  --shadow-sm: 0 2px 4px oklch(0 0 0 / 0.06), 0 1px 2px oklch(0 0 0 / 0.04);
+  --shadow-md: 0 4px 8px oklch(0 0 0 / 0.08), 0 2px 4px oklch(0 0 0 / 0.04);
+  --shadow-lg: 0 8px 16px oklch(0 0 0 / 0.1), 0 4px 8px oklch(0 0 0 / 0.06);
+  --shadow-xl: 0 16px 32px oklch(0 0 0 / 0.12), 0 8px 16px oklch(0 0 0 / 0.06);
+
+  /* ----- Motion durations ----- */
+  --duration-instant: 0ms;
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --duration-slower: 500ms;
+
+  /* ----- Motion easings ----- */
+  --ease-linear: linear;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-standard: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ----- Named animations (consumed via animate-* utilities) ----- */
+  --animate-fade-in: fade-in var(--duration-base) var(--ease-out);
+  --animate-fade-out: fade-out var(--duration-base) var(--ease-in);
+  --animate-slide-in-top: slide-in-top var(--duration-base) var(--ease-out);
+  --animate-slide-in-bottom: slide-in-bottom var(--duration-base) var(--ease-out);
+  --animate-slide-in-left: slide-in-left var(--duration-base) var(--ease-out);
+  --animate-slide-in-right: slide-in-right var(--duration-base) var(--ease-out);
+  --animate-scale-in: scale-in var(--duration-fast) var(--ease-out);
+  --animate-scale-out: scale-out var(--duration-fast) var(--ease-in);
+  --animate-block-reveal: block-reveal var(--duration-slower) var(--ease-standard);
+  --animate-row-stagger: fade-in var(--duration-base) var(--ease-out);
+  --animate-pulse-eq: pulse-eq 1.2s var(--ease-linear) infinite;
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes slide-in-top {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-in-bottom {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slide-in-left {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes slide-in-right {
+    from {
+      opacity: 0;
+      transform: translateX(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes scale-out {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @keyframes block-reveal {
+    from {
+      clip-path: inset(0 0 100% 0);
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+  @keyframes pulse-eq {
+    0%,
+    100% {
+      transform: scaleY(0.4);
+    }
+    25% {
+      transform: scaleY(1);
+    }
+    50% {
+      transform: scaleY(0.6);
+    }
+    75% {
+      transform: scaleY(0.85);
+    }
+  }
+
+  /* ----- Image aspect ratios ----- */
+  --aspect-square: 1 / 1;
+  --aspect-wide: 16 / 9;
+  --aspect-cinema: 21 / 9;
+  --aspect-artist: 3 / 2;
+  --aspect-thumb: 4 / 3;
+
+  /* ----- Cover sizes ----- */
+  --cover-xs: 40px;
+  --cover-sm: 56px;
+  --cover-md: 80px;
+  --cover-lg: 128px;
+  --cover-xl: 200px;
+  --cover-hero: 320px;
+  --cover-display: 480px;
+
+  /* ----- Icon sizes ----- */
+  --icon-xs: 14px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+}
+
+/* ============================================================
+ * Transitional aliases for Phase 5 component utility names.
+ * These keep the existing app surfaces rendering during the
+ * P6 migration window. Removed by the corresponding milestone
+ * that replaces each component family (P6-M5 through P6-M10).
+ * ============================================================ */
+
+@theme inline {
+  --color-background: var(--surface-page);
+  --color-foreground: var(--fg-default);
+  --color-surface: var(--surface-raised);
+  --color-surface-foreground: var(--fg-default);
+  --color-muted: var(--surface-sunken);
+  --color-muted-foreground: var(--fg-muted);
+  --color-border: var(--border-default);
+  --color-input: var(--surface-sunken);
+  --color-ring: var(--ring-focus);
+  --color-accent: var(--color-indigo-500);
+  --color-accent-foreground: var(--fg-on-block);
+  --color-destructive: var(--color-vermilion-500);
+  --color-destructive-foreground: var(--fg-on-block);
+}
+
+@theme {
+  --radius: 12px; /* legacy --radius alias; new code should use --radius-md */
+}
+
+/* ============================================================
+ * Document defaults
+ * ============================================================ */
+
 html,
 body {
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--surface-page);
+  color: var(--fg-default);
   font-family: var(--font-sans);
+  font-feature-settings:
+    'ss01' on,
+    'cv11' on;
 }
 
 *,
 *::before,
 *::after {
-  border-color: var(--color-border);
+  border-color: var(--border-default);
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-ring);
+  outline: 2px solid var(--ring-focus);
   outline-offset: 2px;
+}
+
+/* Tabular numerics opt-in: mono utility plus the feature-setting */
+.font-mono,
+[class*='font-mono'] {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings:
+    'calt' on,
+    'tnum' on,
+    'zero' on;
+}
+
+/* ============================================================
+ * Reduce-motion guard. Single global rule per DESIGN.md §6.4.
+ * ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: var(--duration-instant) !important;
+    transition-duration: var(--duration-instant) !important;
+    animation-iteration-count: 1 !important;
+  }
 }

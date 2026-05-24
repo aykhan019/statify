@@ -31,14 +31,24 @@
 
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28, `e39bdeb`), M2 ✓ (PR #29, `e7e9053`). DESIGN.md + ADR-002 merged. Next milestone P6-M3 (token layer implementation + dependency install + `/styleguide` route, rahila). The Phase 5 frontend works against the API but was built against the prior visual posture (single-hue accent on grayscale, no semantic token layer, no real entity imagery, no shared icon vocabulary). Phase 6 replaces it. (Note: the original draft numbered redesign as Phase 7 with deployment as Phase 6; the canonical docs never actually numbered deployment, so Phase 6 is the redesign and the existing "Deployment and submission" section stays unnumbered.)
+- **Phase 6 status:** M1 ✓ (PR #28, `e39bdeb`), M2 ✓ (PR #29, `e7e9053`); M3 in progress: token layer, deps, `<Icon>`, `Equalizer`, `Badge`, `Cover`, `Button` re-key, and `/styleguide` route landed on `feat/p6-m3-token-layer`, commit + PR pending. The Phase 5 frontend works against the API but was built against the prior visual posture (single-hue accent on grayscale, no semantic token layer, no real entity imagery, no shared icon vocabulary). Phase 6 replaces it. (Note: the original draft numbered redesign as Phase 7 with deployment as Phase 6; the canonical docs never actually numbered deployment, so Phase 6 is the redesign and the existing "Deployment and submission" section stays unnumbered.)
 - **Deployment and submission status:** the unnumbered "Deployment and submission" section in `CHECKLIST.md` is paused behind Phase 6 frontend redesign per Aykhan's direction; resumes after P6-M12 merges.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 landed the DBML source, relational model write-up, advanced SQL queries documentation, final report, and demo script; the follow-up docs commit added `docs/erd.png` and ticked the ERD row. The seed script row was already ticked from F11.
 - **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → M8 ✓. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Phase 6 branches use `feat/p6-m<n>-<slug>`. Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
-- **Current milestone:** none active. P6-M3 ready to start in the next session.
-- **Currently in progress:** none.
-- **Open files/components:** none.
+- **Current milestone:** Phase 6 M3 (Token layer implementation + dependency install + `/styleguide` route).
+- **Currently in progress:** P6-M3 commit + PR. Branch `feat/p6-m3-token-layer`, attributed to `rahila`.
+- **Open files/components:** working tree changes:
+  - `apps/web/package.json` (+6 deps), root `pnpm-lock.yaml`
+  - `apps/web/src/app/globals.css` (full DESIGN.md token surface + transitional aliases)
+  - `apps/web/src/app/layout.tsx` (font className applied)
+  - `apps/web/src/app/styleguide/page.tsx` (new QA route)
+  - `apps/web/src/components/ui/Icon.tsx`, `Equalizer.tsx`, `Badge.tsx`, `Cover.tsx` (new)
+  - `apps/web/src/components/ui/Button.tsx` (cva-keyed onto new tokens, public API unchanged)
+  - `apps/web/src/lib/fonts.ts` (new), `apps/web/src/lib/utils/cn.ts` (clsx + tailwind-merge upgrade)
+  - `apps/web/components.json` (new, shadcn stub)
+  - `HANDOFF.md` (Structural Changes Log + this section).
+- **P6-M3 verification:** `pnpm --filter @statify/web typecheck` ✓, `pnpm --filter @statify/web lint` ✓, `pnpm --filter @statify/web build` ✓, `pnpm --filter @statify/web test` ✓ (48 tests). Manual smoke against `pnpm dev`: `/styleguide` HTTP 200 with 154 distinct token references rendered server-side; `/login`, `/healthz`, `/catalog/tracks` all responded (transitional aliases keep Phase 5 surfaces painting). iTunes remote pattern for `Cover` is deferred to P6-M4; styleguide demo uses `unoptimized` on `next/image`.
 - **Open decisions:** none for the current milestone. Locked decisions feeding Phase 6:
   - **Design direction:** Vivid Workshop. Picked 2026-05-24, recorded in `docs/design/explorations.md` Step C. P6-M2 authors DESIGN.md from this direction.
   - **Entity media field shape:** single nullable `image_url` column on `tracks`, `albums`, `artists`. iTunes returns one URL whose size segment (`100x100bb.jpg`) is render-time substitutable, so storing one canonical URL is sufficient. Artist `image_url` stays null on ingest because iTunes does not return reliable artist art; UI uses the DESIGN.md "no entity image" fallback. Full record lands in ADR-002 during P6-M4.
@@ -64,7 +74,7 @@
 - **Deployment gates:**
   1. **`dev` is ahead of `main`.** Per ADR-001 Section 3.15, `main` is only updated by PR from `dev`. Hold the dev → main promotion until the unnumbered "Deployment and submission" items in `CHECKLIST.md` (Render env vars, Vercel env vars, warm-up ping, smoke test) are unblocked, which will not happen until Phase 6 redesign completes.
   2. M5, M6, and M7 surfaces need an authed end-to-end smoke against a Node 22 API with seeded listening history, at least one seeded public user playlist, and at least one admin account before the dev → main promotion.
-- **Next concrete action:** start P6-M3 in the next session (rahila). Rewrite `apps/web/src/app/globals.css` against the `DESIGN.md` §10 token surface, install `lucide-react` + `@radix-ui/*` + `tailwindcss-animate` + Bricolage Grotesque / JetBrains Mono via `next/font/google`, add the `<Icon>` wrapper enforcing stroke 2, copy in initial shadcn primitives, and ship the `/styleguide` route rendering the full palette, type scale, spacing scale, radius scale, shadow scale, motion samples, image frames at every aspect ratio (with a NULL-media fallback example), and the entire in-use icon set at every locked size. Add Structural Changes Log rows for each new dep.
+- **Next concrete action:** commit P6-M3 working tree changes on `feat/p6-m3-token-layer` (one or two commits attributed to `rahila` via `scripts/commit-as.sh rahila`), push, open PR into `dev`, merge with `gh pr merge <n> --rebase --delete-branch`, tick P6-M3 in `CHECKLIST.md`. Next session opens P6-M4 (media schema, iTunes adapter persistence, backfill, aykhan).
 - **Follow-ups:**
   - Wire `AuditLogService.record(...)` into the login flow once additional privileged actions land. Password change, account deletion, admin ban/unban, admin role change, and admin ingest trigger already audit-log via their respective services.
   - Genre/year filters and the M2 genres list/detail row are blocked on later iTunes-derived data from `primaryGenreName`. That derivation has no current task row; if either row needs to fully tick, add a Phase 5 row for it first.
@@ -112,6 +122,15 @@
 | 2026-05-24 | API CORS wired to `ALLOWED_ORIGINS` config              | ADR-001 | Aykhan |
 | 2026-05-24 | `DESIGN.md` added at repo root (token specification)    | ADR-002 | Aykhan |
 | 2026-05-24 | ADR-002 added (design system, supersedes §3.8 / §3.20)  | ADR-002 | Aykhan |
+| 2026-05-24 | Web `lucide-react` dependency added (icon library)      | ADR-002 | Rahila |
+| 2026-05-24 | Web `tailwindcss-animate` dependency added              | ADR-002 | Rahila |
+| 2026-05-24 | Web `class-variance-authority` dependency added         | ADR-002 | Rahila |
+| 2026-05-24 | Web `clsx` + `tailwind-merge` dependencies added (cn)   | ADR-002 | Rahila |
+| 2026-05-24 | Web `@radix-ui/react-slot` dependency added             | ADR-002 | Rahila |
+| 2026-05-24 | Web fonts self-hosted via `next/font/google`            | ADR-002 | Rahila |
+| 2026-05-24 | Web `components.json` added (shadcn config)             | ADR-002 | Rahila |
+| 2026-05-24 | Web `lib/fonts.ts` added                                | ADR-002 | Rahila |
+| 2026-05-24 | Web `app/styleguide` route added                        | ADR-002 | Rahila |
 
 (Append a row whenever the folder structure or repo layout changes.)
 
