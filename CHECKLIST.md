@@ -6,8 +6,8 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29). DESIGN.md + ADR-002 merged. Next milestone P6-M3 (token layer implementation + dep install + `/styleguide` route, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** none active; P6-M3 ready to start in the next session.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30). Token layer + primitives + `/styleguide` route merged. Next milestone P6-M4 (media schema + iTunes adapter persistence + backfill, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** none active; P6-M4 ready to start in the next session.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
@@ -160,7 +160,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `DESIGN.md` (new), `docs/adr/0002-design-system-and-token-layer.md` (new), `HANDOFF.md` (Structural Changes Log row, Documents Map updated).
   - Depends on: P6-M1.
 
-- [ ] **P6-M3: Token layer implementation + dependency install + `/styleguide` route** - L - rahila
+- [x] **P6-M3: Token layer implementation + dependency install + `/styleguide` route** - L - rahila
   - Goal: encode every DESIGN.md token in CSS variables and the Tailwind 4 `@theme` block, install Lucide + shadcn/ui + Radix primitives + `tailwindcss-animate`, and ship a `/styleguide` route that renders every token visually for QA.
   - Entry criteria: P6-M2 merged; DESIGN.md tokens locked.
   - Exit criteria: `apps/web/src/app/globals.css` rewritten so every color, font, radius, spacing step, shadow, motion duration, easing, aspect ratio, and icon size exists as a CSS variable inside `@theme`; `lucide-react`, `@radix-ui/*`, shadcn/ui generator config, `tailwindcss-animate`, and the chosen self-hosted webfonts via `next/font` added to `apps/web/package.json` with the locked stroke weight enforced via a thin `<Icon>` wrapper; `/styleguide` route at `apps/web/src/app/styleguide/page.tsx` renders the color palette (raw + semantic), type scale (every role at every weight), spacing scale, radius scale, shadow scale, motion samples, image frame treatments at every aspect ratio (with a NULL-media fallback example wired to the real fallback), and the entire in-use icon set at all locked sizes; `pnpm lint`, `pnpm typecheck`, `pnpm build` pass; manual QA on `/styleguide` confirms every token is visible.
