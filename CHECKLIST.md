@@ -6,19 +6,20 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ locally (data display with real media, ready for PR). Next milestone P6-M8 (forms system, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M7 complete locally; ready for commit and PR.
-- **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`). Next milestone P6-M8 (forms system, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M8 Forms system. Wait for explicit green light before starting.
+- **Last shipped:** P6-M7 Data display with real media. PR #34 rebase-merged into `dev` as `871dd49`. Catalog cards / rows / detail heroes render real `next/image` artwork from `image_url`; MPD playlist DTOs expose `coverImages` and the UI renders a 2x2 collage with letter-fallback; `<Cover>` primitive shared across catalog, search, home, me, and community surfaces; `/styleguide` gained the "Data display media" section.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
 - **Locked decisions feeding Phase 6:**
   - Design direction: Vivid Workshop (picked 2026-05-24).
   - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. Recorded in ADR-002 during P6-M4.
+  - Playlist media shape: list/detail DTOs expose `coverImages: string[]` derived from the first four member tracks' `track.imageUrl ?? album.imageUrl`; UI repeats fewer than four to fill the 2x2 collage and falls back to the playlist letter when none exist. Landed in P6-M7.
   - Motion library: `tailwindcss-animate`; `framer-motion` opt-in at P6-M11 only if required.
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** commit and PR P6-M7, then start P6-M8 after P6-M7 lands.
+- **Next concrete action:** start P6-M8 (forms system, aykhan) on `feat/p6-m8-forms-system` off latest `dev` once green-lit; one PR into `dev`; rebase-merge.
 
 ---
 
