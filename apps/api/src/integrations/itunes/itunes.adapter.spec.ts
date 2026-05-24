@@ -13,6 +13,29 @@ describe('ItunesAdapter', () => {
             previewUrl: 'https://example.com/skip.m4a',
           },
           {
+            artworkUrl100:
+              'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/100x100bb.jpg',
+            previewUrl: 'https://example.com/preview.m4a',
+            trackId: 123,
+          },
+        ],
+      }),
+    ).toEqual({
+      imageUrl:
+        'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
+      itunesTrackId: 123,
+      previewUrl: 'https://example.com/preview.m4a',
+    });
+  });
+
+  it('preserves preview matches when artwork is absent', () => {
+    const adapter = new ItunesAdapter();
+
+    expect(
+      adapter.toPreviewMatch({
+        resultCount: 1,
+        results: [
+          {
             previewUrl: 'https://example.com/preview.m4a',
             trackId: 123,
           },

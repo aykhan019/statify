@@ -32,6 +32,7 @@ export class SearchRepository extends BaseRepository {
     return this.client.$queryRaw<SearchTrackRow[]>(Prisma.sql`
       SELECT
         t.id,
+        t.image_url,
         t.name,
         al.name AS album_name,
         pa.name AS primary_artist_name,
@@ -50,6 +51,7 @@ export class SearchRepository extends BaseRepository {
     return this.client.$queryRaw<SearchArtistRow[]>(Prisma.sql`
       SELECT
         a.id,
+        a.image_url,
         a.name,
         COUNT(ta.track_id)::int AS track_count,
         similarity(a.name, ${query.q})::float8 AS score
@@ -67,6 +69,7 @@ export class SearchRepository extends BaseRepository {
     return this.client.$queryRaw<SearchAlbumRow[]>(Prisma.sql`
       SELECT
         al.id,
+        al.image_url,
         al.name,
         pa.name AS primary_artist_name,
         similarity(al.name, ${query.q})::float8 AS score

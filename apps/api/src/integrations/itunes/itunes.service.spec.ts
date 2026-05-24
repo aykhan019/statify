@@ -77,6 +77,8 @@ describe('ItunesService', () => {
         resultCount: 1,
         results: [
           {
+            artworkUrl100:
+              'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/100x100bb.jpg',
             previewUrl: 'https://example.com/new-preview.m4a',
             trackId: 456,
           },
@@ -96,6 +98,8 @@ describe('ItunesService', () => {
     expect(cache.savePreview).toHaveBeenCalledWith(
       1,
       {
+        imageUrl:
+          'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
         itunesTrackId: 456,
         previewUrl: 'https://example.com/new-preview.m4a',
       },
@@ -165,6 +169,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
   const artist = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 2,
+    imageUrl: null,
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:2',
@@ -174,6 +179,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
     album: {
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
       id: 3,
+      imageUrl: null,
       name: 'Album',
       primaryArtist: artist,
       primaryArtistId: artist.id,
@@ -182,6 +188,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
     albumId: 3,
     durationMs: 180000,
     id: 1,
+    imageUrl: null,
     itunesTrackId: null,
     name: 'Track',
     previewFetchedAt: null,
@@ -202,6 +209,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
 function createCacheRecord(overrides: Partial<ItunesCacheRecord> = {}): ItunesCacheRecord {
   return {
     id: 1,
+    imageUrl: null,
     itunesTrackId: null,
     previewFetchedAt: new Date('2026-01-01T00:00:00.000Z'),
     previewUrl: null,

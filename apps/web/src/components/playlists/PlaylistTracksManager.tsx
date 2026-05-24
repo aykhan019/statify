@@ -145,13 +145,15 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
         track: {
           album: {
             id: 0,
+            imageUrl: null,
             name: '',
-            primaryArtist: { id: 0, name: '', spotifyUri: '' },
+            primaryArtist: { id: 0, imageUrl: null, name: '', spotifyUri: '' },
             spotifyUri: '',
           },
           artists: [],
           durationMs: 0,
           id: trackId,
+          imageUrl: null,
           name: displayName,
           previewUrl: null,
           spotifyUri: '',

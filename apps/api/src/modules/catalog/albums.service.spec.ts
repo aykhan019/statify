@@ -16,9 +16,11 @@ describe('AlbumsService', () => {
       data: [
         {
           id: 2,
+          imageUrl: 'https://example.com/album.jpg',
           name: 'Album',
           primaryArtist: {
             id: 1,
+            imageUrl: null,
             name: 'Artist',
             spotifyUri: 'spotify:artist:1',
           },
@@ -42,9 +44,11 @@ describe('AlbumsService', () => {
     await expect(service.getById(2)).resolves.toEqual({
       createdAt: '2026-01-01T00:00:00.000Z',
       id: 2,
+      imageUrl: 'https://example.com/album.jpg',
       name: 'Album',
       primaryArtist: {
         id: 1,
+        imageUrl: null,
         name: 'Artist',
         spotifyUri: 'spotify:artist:1',
       },
@@ -70,6 +74,7 @@ function createAlbumDetailRecord(): AlbumDetailRecord {
   const primaryArtist = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 1,
+    imageUrl: null,
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:1',
@@ -81,6 +86,7 @@ function createAlbumDetailRecord(): AlbumDetailRecord {
     },
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 2,
+    imageUrl: 'https://example.com/album.jpg',
     name: 'Album',
     primaryArtist,
     primaryArtistId: primaryArtist.id,

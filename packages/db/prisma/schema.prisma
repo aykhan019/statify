@@ -1,7 +1,7 @@
 // Statify schema. See docs/adr/0001-tech-stack-and-foundation.md Section 3.2.
 //
-// Advanced pg_trgm and partial indexes live in raw SQL migrations because
-// Prisma schema syntax does not cover this Postgres-specific index shape.
+// Partial indexes live in raw SQL migrations because Prisma schema syntax
+// does not cover that Postgres-specific index shape.
 
 generator client {
   provider = "prisma-client-js"
@@ -22,12 +22,14 @@ model Artist {
   spotifyUri     String   @unique @map("spotify_uri")
   name           String
   normalizedName String   @map("normalized_name")
+  imageUrl       String?  @map("image_url")
   createdAt      DateTime @default(now()) @map("created_at")
 
   albums       Album[]
   trackArtists TrackArtist[]
 
   @@index([normalizedName])
+  @@index([name(ops: raw("gin_trgm_ops"))], map: "artists_name_trgm_idx", type: Gin)
   @@map("artists")
 }
 
@@ -35,6 +37,7 @@ model Album {
   id              Int      @id @default(autoincrement())
   spotifyUri      String   @unique @map("spotify_uri")
   name            String
+  imageUrl        String?  @map("image_url")
   primaryArtistId Int      @map("primary_artist_id")
   createdAt       DateTime @default(now()) @map("created_at")
 
@@ -42,6 +45,7 @@ model Album {
   tracks        Track[]
 
   @@index([primaryArtistId])
+  @@index([name(ops: raw("gin_trgm_ops"))], map: "albums_name_trgm_idx", type: Gin)
   @@map("albums")
 }
 
@@ -51,6 +55,7 @@ model Track {
   name             String
   albumId          Int       @map("album_id")
   durationMs       Int       @map("duration_ms")
+  imageUrl         String?   @map("image_url")
   itunesTrackId    BigInt?   @map("itunes_track_id")
   previewUrl       String?   @map("preview_url")
   previewFetchedAt DateTime? @map("preview_fetched_at")
@@ -63,6 +68,7 @@ model Track {
 
   @@index([albumId])
   @@index([previewUrl])
+  @@index([name(ops: raw("gin_trgm_ops"))], map: "tracks_name_trgm_idx", type: Gin)
   @@map("tracks")
 }
 

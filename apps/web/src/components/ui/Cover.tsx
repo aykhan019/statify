@@ -108,7 +108,6 @@ export function Cover({
             fill
             sizes={`${px}px`}
             className="object-cover"
-            unoptimized
           />
         </div>
       </div>

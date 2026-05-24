@@ -28,6 +28,7 @@ function toTrackResult(row: SearchTrackRow): CatalogSearchTrackResult {
   return {
     albumName: row.album_name,
     id: row.id,
+    imageUrl: row.image_url,
     name: row.name,
     primaryArtistName: row.primary_artist_name,
     score: row.score,
@@ -37,6 +38,7 @@ function toTrackResult(row: SearchTrackRow): CatalogSearchTrackResult {
 function toArtistResult(row: SearchArtistRow): CatalogSearchArtistResult {
   return {
     id: row.id,
+    imageUrl: row.image_url,
     name: row.name,
     score: row.score,
     trackCount: row.track_count,
@@ -46,6 +48,7 @@ function toArtistResult(row: SearchArtistRow): CatalogSearchArtistResult {
 function toAlbumResult(row: SearchAlbumRow): CatalogSearchAlbumResult {
   return {
     id: row.id,
+    imageUrl: row.image_url,
     name: row.name,
     primaryArtistName: row.primary_artist_name,
     score: row.score,

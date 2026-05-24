@@ -19,9 +19,11 @@ describe('TracksService', () => {
         {
           album: {
             id: 2,
+            imageUrl: 'https://example.com/album.jpg',
             name: 'Album',
             primaryArtist: {
               id: 3,
+              imageUrl: null,
               name: 'Primary Artist',
               spotifyUri: 'spotify:artist:3',
             },
@@ -30,6 +32,7 @@ describe('TracksService', () => {
           artists: [
             {
               id: 3,
+              imageUrl: null,
               name: 'Primary Artist',
               role: 'primary',
               spotifyUri: 'spotify:artist:3',
@@ -37,6 +40,7 @@ describe('TracksService', () => {
           ],
           durationMs: 180000,
           id: 1,
+          imageUrl: 'https://example.com/track.jpg',
           name: 'Track',
           previewUrl: 'https://example.com/preview.m4a',
           spotifyUri: 'spotify:track:1',
@@ -75,6 +79,7 @@ function createTrackRecord(): TrackCatalogRecord {
   const artist = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 3,
+    imageUrl: null,
     name: 'Primary Artist',
     normalizedName: 'primary artist',
     spotifyUri: 'spotify:artist:3',
@@ -84,6 +89,7 @@ function createTrackRecord(): TrackCatalogRecord {
     album: {
       createdAt: new Date('2026-01-01T00:00:00.000Z'),
       id: 2,
+      imageUrl: 'https://example.com/album.jpg',
       name: 'Album',
       primaryArtist: artist,
       primaryArtistId: artist.id,
@@ -92,6 +98,7 @@ function createTrackRecord(): TrackCatalogRecord {
     albumId: 2,
     durationMs: 180000,
     id: 1,
+    imageUrl: 'https://example.com/track.jpg',
     itunesTrackId: null,
     name: 'Track',
     previewFetchedAt: null,

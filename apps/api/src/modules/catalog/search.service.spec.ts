@@ -11,6 +11,7 @@ describe('SearchService', () => {
         albums: [
           {
             id: 3,
+            image_url: 'https://example.com/album.jpg',
             name: 'Night Album',
             primary_artist_name: 'Album Artist',
             score: 0.4,
@@ -19,6 +20,7 @@ describe('SearchService', () => {
         artists: [
           {
             id: 2,
+            image_url: null,
             name: 'Night Artist',
             score: 0.5,
             track_count: 12,
@@ -28,6 +30,7 @@ describe('SearchService', () => {
           {
             album_name: 'Album',
             id: 1,
+            image_url: 'https://example.com/track.jpg',
             name: 'Night Track',
             primary_artist_name: 'Track Artist',
             score: 0.6,
@@ -41,6 +44,7 @@ describe('SearchService', () => {
       albums: [
         {
           id: 3,
+          imageUrl: 'https://example.com/album.jpg',
           name: 'Night Album',
           primaryArtistName: 'Album Artist',
           score: 0.4,
@@ -49,6 +53,7 @@ describe('SearchService', () => {
       artists: [
         {
           id: 2,
+          imageUrl: null,
           name: 'Night Artist',
           score: 0.5,
           trackCount: 12,
@@ -58,6 +63,7 @@ describe('SearchService', () => {
         {
           albumName: 'Album',
           id: 1,
+          imageUrl: 'https://example.com/track.jpg',
           name: 'Night Track',
           primaryArtistName: 'Track Artist',
           score: 0.6,

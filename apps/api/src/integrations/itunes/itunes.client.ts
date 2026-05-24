@@ -9,6 +9,7 @@ const RETRY_DELAY_MS = 100;
 
 const ItunesSearchResultSchema = z.object({
   artistName: z.string().optional(),
+  artworkUrl100: z.string().url().optional(),
   collectionName: z.string().optional(),
   kind: z.string().optional(),
   previewUrl: z.string().url().optional(),
