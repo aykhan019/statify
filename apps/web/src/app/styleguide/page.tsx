@@ -55,6 +55,13 @@ import {
   type SurfaceShadow,
   type SurfaceTone,
 } from '@/components/layout';
+import {
+  Breadcrumbs as NavigationBreadcrumbs,
+  NavigationLink,
+  SideNavigation,
+  getNavigationItems,
+  type NavigationLinkDemoState,
+} from '@/components/navigation';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
@@ -164,6 +171,15 @@ const SPACER_SIZES: SpacerSize[] = [
   '40',
   '48',
 ];
+const NAV_DEMO_ITEMS = getNavigationItems({ includeAdmin: true });
+const NAV_DEMO_STATES: NavigationLinkDemoState[] = [
+  'default',
+  'hover',
+  'focus',
+  'active',
+  'disabled',
+];
+const NAV_DEMO_PRIMARY_ITEM = NAV_DEMO_ITEMS[0]!;
 
 const RADII = ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'] as const;
 const SHADOWS = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -683,7 +699,83 @@ export default function StyleguidePage() {
         </LayoutGrid>
       </div>
 
-      <H2 id="radius">10. Radius scale</H2>
+      <H2 id="navigation">10. Navigation system</H2>
+      <Caption>
+        M6 navigation states use semantic surface, foreground, section, border, and focus tokens.
+        Navigation icons are locked to icon-md.
+      </Caption>
+      <SectionFrame hue="indigo">
+        <div className="space-y-8">
+          <LayoutGrid columns="two" gap="lg">
+            <LayoutSurface tone="work" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Navigation link states</p>
+              <LayoutStack gap="sm">
+                {NAV_DEMO_STATES.map((state) => (
+                  <div key={state}>
+                    <p className="text-fg-muted mb-2 font-mono text-xs">{state}</p>
+                    <NavigationLink item={NAV_DEMO_PRIMARY_ITEM} state={state} />
+                  </div>
+                ))}
+              </LayoutStack>
+            </LayoutSurface>
+
+            <LayoutSurface tone="work" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Top bar links</p>
+              <LayoutSurface
+                tone="page"
+                border="default"
+                radius="md"
+                padding="sm"
+                className="flex items-center justify-between gap-4"
+              >
+                <span className="text-fg-strong text-base font-semibold">Statify</span>
+                <nav aria-label="Styleguide top navigation" className="flex flex-wrap gap-1">
+                  {NAV_DEMO_ITEMS.filter((item) => item.topLevel === true)
+                    .slice(0, 4)
+                    .map((item) => (
+                      <NavigationLink
+                        key={item.href}
+                        item={item}
+                        active={item.href === '/discover'}
+                        variant="top"
+                      />
+                    ))}
+                </nav>
+              </LayoutSurface>
+            </LayoutSurface>
+          </LayoutGrid>
+
+          <LayoutGrid columns="two" gap="lg">
+            <LayoutSurface tone="raised" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Side navigation</p>
+              <SideNavigation
+                includeAdmin
+                activePath="/me/stats/top-artists"
+                forceVisible
+                className="rounded-(--radius-md) border border-border-default"
+              />
+            </LayoutSurface>
+
+            <LayoutSurface tone="raised" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Mobile panel list</p>
+              <LayoutStack gap="xs">
+                {NAV_DEMO_ITEMS.slice(0, 5).map((item) => (
+                  <NavigationLink
+                    key={item.href}
+                    item={item}
+                    active={item.href === '/me/playlists'}
+                    variant="mobile"
+                  />
+                ))}
+              </LayoutStack>
+              <p className="text-fg-muted mt-6 mb-3 font-mono text-xs">Breadcrumbs</p>
+              <NavigationBreadcrumbs activePath="/catalog/tracks/42" className="mb-0" />
+            </LayoutSurface>
+          </LayoutGrid>
+        </div>
+      </SectionFrame>
+
+      <H2 id="radius">11. Radius scale</H2>
       <Caption>Album frames lock at radius-md.</Caption>
       <div className="flex flex-wrap items-end gap-4">
         {RADII.map((r) => (
@@ -697,7 +789,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="shadow">11. Shadow scale</H2>
+      <H2 id="shadow">12. Shadow scale</H2>
       <Caption>
         Cards default to none; depth comes from block fills. Shadows reserved for floating surfaces.
       </Caption>
@@ -713,7 +805,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="motion">12. Motion</H2>
+      <H2 id="motion">13. Motion</H2>
       <Caption>
         Fire any named animation. Durations and easings live in --duration-* / --ease-* tokens.
         Reduce-motion collapses every transition to 0ms globally.
@@ -740,7 +832,7 @@ export default function StyleguidePage() {
         </div>
       </div>
 
-      <H2 id="image">13. Image frames</H2>
+      <H2 id="image">14. Image frames</H2>
       <Caption>
         Cover at every size with a real iTunes URL (left) and the null-fallback variant (right).
         Frame thickness varies by context.
@@ -814,7 +906,7 @@ export default function StyleguidePage() {
         </div>
       </div>
 
-      <H2 id="icons">14. Icon set</H2>
+      <H2 id="icons">15. Icon set</H2>
       <Caption>
         Lucide React, stroke 2 locked by the &lt;Icon&gt; wrapper. Sizes from --icon-xs to
         --icon-xl.
@@ -835,7 +927,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="buttons">15. Button primitive</H2>
+      <H2 id="buttons">16. Button primitive</H2>
       <Caption>
         Public API unchanged from Phase 5 (variant + size). Internals re-keyed onto the new tokens.
       </Caption>
