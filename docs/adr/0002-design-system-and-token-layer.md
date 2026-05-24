@@ -20,7 +20,7 @@ In Phase 6 (frontend redesign) the project commits to a visually energetic, mult
 
 3. **Lucide React is the single icon library.** Stroke weight locked at 2; enforced via a `<Icon>` wrapper at `apps/web/src/components/ui/icon.tsx` (P6-M3). One exception is allowed: a custom 3-bar equalizer SVG for the currently-playing affordance (Lucide ships no animated equalizer). Any future non-Lucide icon requires an ADR.
 
-4. **`tailwindcss-animate` is the motion engine.** All transitions, dropdown / popover / dialog enter-exit, and the named keyframes in `DESIGN.md` §6.3 are driven by `tailwindcss-animate` utilities. `framer-motion` is opt-in only at P6-M11 if a specific surface needs layout / exit animation that CSS cannot deliver.
+4. **`tailwindcss-animate` is the motion engine.** All transitions, dropdown / popover / dialog enter-exit, and the named keyframes in `DESIGN.md` §6.3 are driven by `tailwindcss-animate` utilities. `framer-motion` is opt-in only at P6-M12 if a specific surface needs layout / exit animation that CSS cannot deliver.
 
 5. **Webfonts self-hosted via `next/font/google`.** Bricolage Grotesque (variable) for all UI text. JetBrains Mono (variable) for tabular numerics and identifier-like strings. No remote font CDN. Loaded in `apps/web/src/lib/fonts.ts` (P6-M3) and applied via the `<html>` `className`.
 
@@ -62,6 +62,6 @@ In Phase 6 (frontend redesign) the project commits to a visually energetic, mult
 
 - `apps/web/src/app/globals.css` is rewritten in P6-M3 against the token surface summary in `DESIGN.md` §10. The existing 4-color + 5-radius + 2-font + 3-shadow set is replaced wholesale.
 - New deps in `apps/web/package.json` (P6-M3): `lucide-react`, `tailwindcss-animate`, `@radix-ui/*` (set determined by which shadcn primitives the milestone needs), `next/font` is built in. Each addition gets a row in `HANDOFF.md` §3 Structural Changes Log.
-- Existing components under `apps/web/src/components/{catalog,playlists,stats,player,admin,history,auth,ui}/` are destructively replaced milestone by milestone (P6-M5 through P6-M10). No backwards-compatibility shim.
+- Existing components under `apps/web/src/components/{catalog,playlists,stats,player,admin,history,auth,ui}/` are destructively replaced milestone by milestone (P6-M5 through P6-M11). No backwards-compatibility shim.
 - `packages/db/prisma/schema.prisma` gains `image_url String?` on `Artist`, `Album`, `Track` in P6-M4. Migration name: `entity_media`. Backfill script at `packages/db/src/scripts/backfill-media.ts` populates existing rows.
 - `apps/web/next.config.js` `images.remotePatterns` allowlists `is*-ssl.mzstatic.com` (iTunes/Apple artwork hosts) in P6-M4. Recorded in the Structural Changes Log.

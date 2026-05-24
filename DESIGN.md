@@ -354,7 +354,7 @@ In dark mode the y-offsets stay the same but opacities double (background is dar
 
 ## 6. Motion
 
-Driven through `tailwindcss-animate` utilities (P6-M3 install). All custom keyframes live in `globals.css` `@theme` so they appear as `animate-*` utilities. `framer-motion` is opt-in only at P6-M11 if a specific surface needs layout / exit animation that CSS cannot deliver.
+Driven through `tailwindcss-animate` utilities (P6-M3 install). All custom keyframes live in `globals.css` `@theme` so they appear as `animate-*` utilities. `framer-motion` is opt-in only at P6-M12 if a specific surface needs layout / exit animation that CSS cannot deliver.
 
 ### 6.1 Duration tokens
 
