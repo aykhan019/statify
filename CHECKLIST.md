@@ -6,8 +6,8 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ locally (layout primitives + app shell rewrite, ready for PR). Next milestone P6-M6 (navigation system, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M5 complete locally; ready for commit and PR.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, layout primitives + app shell rewrite). Next milestone P6-M6 (navigation system, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** none active; P6-M6 ready to start after P6-M5 lands.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
@@ -18,7 +18,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** commit and PR P6-M5, then start P6-M6 after P6-M5 lands.
+- **Next concrete action:** land P6-M5, then start P6-M6.
 
 ---
 
