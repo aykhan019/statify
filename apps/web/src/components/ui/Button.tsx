@@ -26,6 +26,8 @@ const button = cva(
   },
 );
 
+export const buttonVariants = button;
+
 export type ButtonVariant = NonNullable<VariantProps<typeof button>['variant']>;
 export type ButtonSize = NonNullable<VariantProps<typeof button>['size']>;
 
