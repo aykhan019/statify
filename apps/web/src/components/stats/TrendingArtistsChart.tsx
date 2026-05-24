@@ -3,12 +3,15 @@
 import type { TrendingArtistEntry } from '@statify/shared';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import {
-  CHART_AXIS_FILL,
-  CHART_BAR_FILL,
-  CHART_GRID_STROKE,
-  CHART_TOOLTIP_STYLE,
   ChartContainer,
-} from './ChartContainer';
+  chartAxisColor,
+  chartAxisTick,
+  chartBarRadius,
+  chartGridColor,
+  chartTooltipCursor,
+  chartTooltipStyle,
+  getChartSeriesColor,
+} from '@/components/charts';
 
 interface TrendingArtistsChartProps {
   entries: TrendingArtistEntry[];
@@ -34,23 +37,18 @@ export function TrendingArtistsChart({ entries }: TrendingArtistsChartProps) {
   return (
     <ChartContainer height={chartHeight} ariaLabel="Trending artists in the last 7 days">
       <BarChart data={data} layout="vertical" margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
-        <CartesianGrid horizontal={false} stroke={CHART_GRID_STROKE} />
-        <XAxis
-          type="number"
-          allowDecimals={false}
-          stroke={CHART_AXIS_FILL}
-          tick={{ fill: CHART_AXIS_FILL, fontSize: 12 }}
-        />
+        <CartesianGrid horizontal={false} stroke={chartGridColor} />
+        <XAxis type="number" allowDecimals={false} stroke={chartAxisColor} tick={chartAxisTick} />
         <YAxis
           dataKey="artistName"
           type="category"
           width={140}
-          stroke={CHART_AXIS_FILL}
-          tick={{ fill: CHART_AXIS_FILL, fontSize: 12 }}
+          stroke={chartAxisColor}
+          tick={chartAxisTick}
         />
         <Tooltip
-          cursor={{ fill: 'var(--color-section-row-hover)' }}
-          contentStyle={CHART_TOOLTIP_STYLE}
+          cursor={chartTooltipCursor}
+          contentStyle={chartTooltipStyle}
           formatter={(value, _name, item) => {
             const datum = item.payload as TrendingDatum;
             const growthLabel =
@@ -60,7 +58,7 @@ export function TrendingArtistsChart({ entries }: TrendingArtistsChartProps) {
             return [`${value} plays`, growthLabel];
           }}
         />
-        <Bar dataKey="recentPlays" fill={CHART_BAR_FILL} radius={[0, 4, 4, 0]} />
+        <Bar dataKey="recentPlays" fill={getChartSeriesColor(0)} radius={chartBarRadius} />
       </BarChart>
     </ChartContainer>
   );

@@ -1,9 +1,11 @@
+export type NumericValue = number | string | { toString(): string };
+
 export interface TopArtistRow {
   rank: number | bigint;
   artist_id: number;
   artist_name: string;
   listen_count: number | bigint;
-  total_minutes: number | string;
+  total_minutes: NumericValue;
 }
 
 export interface TopTrackRow {
@@ -13,7 +15,7 @@ export interface TopTrackRow {
   primary_artist_name: string;
   album_name: string;
   listen_count: number | bigint;
-  total_minutes: number | string;
+  total_minutes: NumericValue;
 }
 
 export interface DiscoverRow {
@@ -35,13 +37,13 @@ export interface TrendingArtistRow {
   artist_name: string;
   recent_plays: number | bigint;
   prior_plays: number | bigint;
-  growth: number | string;
+  growth: NumericValue;
 }
 
 export interface SimilarPlaylistRow {
   playlist_id: number;
   name: string;
-  jaccard: number | string;
+  jaccard: NumericValue;
   shared_tracks: number | bigint;
 }
 

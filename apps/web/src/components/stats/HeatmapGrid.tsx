@@ -1,5 +1,6 @@
 import type { HeatmapCell } from '@statify/shared';
 import { HEATMAP_DAYS, HEATMAP_HOURS } from '@statify/shared';
+import { CHART_HEATMAP_STOPS, getChartHeatmapColor } from '@/components/charts/theme';
 import { cn } from '@/lib/utils/cn';
 
 interface HeatmapGridProps {
@@ -43,6 +44,10 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
             {Array.from({ length: HEATMAP_HOURS }, (_, hour) => {
               const count = counts.get(day * HEATMAP_HOURS + hour) ?? 0;
               const intensity = max === 0 ? 0 : count / max;
+              const heatmapStop = Math.min(
+                CHART_HEATMAP_STOPS - 1,
+                Math.floor(intensity * (CHART_HEATMAP_STOPS - 1)),
+              );
               return (
                 <div
                   key={hour}
@@ -55,7 +60,7 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
                     count === 0
                       ? undefined
                       : {
-                          backgroundColor: `color-mix(in oklch, var(--color-chart-series-0) ${Math.round(15 + intensity * 85)}%, transparent)`,
+                          backgroundColor: getChartHeatmapColor(heatmapStop),
                         }
                   }
                 />

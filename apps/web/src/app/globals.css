@@ -93,13 +93,28 @@
   --color-section-row-hover: var(--section-row-hover);
   --color-section-frame: var(--section-frame);
   --color-ring-focus: var(--ring-focus);
+
   --color-chart-series-0: var(--section-hue-500);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-green-500);
+  --color-chart-series-4: var(--color-magenta-500);
+  --color-chart-series-5: var(--color-amber-500);
+  --color-chart-series-6: var(--color-cyan-500);
+  --color-chart-series-7: var(--color-violet-500);
 }
 
 [data-section-hue='amber'] {
   --section-hue-50: var(--color-amber-50);
   --section-hue-500: var(--color-amber-500);
   --section-hue-900: var(--color-amber-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-green-500);
+  --color-chart-series-4: var(--color-magenta-500);
+  --color-chart-series-5: var(--color-cyan-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 [data-section-hue='azure'] {
@@ -112,30 +127,65 @@
   --section-hue-50: var(--color-coral-50);
   --section-hue-500: var(--color-coral-500);
   --section-hue-900: var(--color-coral-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-green-500);
+  --color-chart-series-3: var(--color-magenta-500);
+  --color-chart-series-4: var(--color-amber-500);
+  --color-chart-series-5: var(--color-cyan-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 [data-section-hue='cyan'] {
   --section-hue-50: var(--color-cyan-50);
   --section-hue-500: var(--color-cyan-500);
   --section-hue-900: var(--color-cyan-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-green-500);
+  --color-chart-series-4: var(--color-magenta-500);
+  --color-chart-series-5: var(--color-amber-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 [data-section-hue='green'] {
   --section-hue-50: var(--color-green-50);
   --section-hue-500: var(--color-green-500);
   --section-hue-900: var(--color-green-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-magenta-500);
+  --color-chart-series-4: var(--color-amber-500);
+  --color-chart-series-5: var(--color-cyan-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 [data-section-hue='indigo'] {
   --section-hue-50: var(--color-indigo-50);
   --section-hue-500: var(--color-indigo-500);
   --section-hue-900: var(--color-indigo-900);
+  --color-chart-series-1: var(--color-coral-500);
+  --color-chart-series-2: var(--color-green-500);
+  --color-chart-series-3: var(--color-magenta-500);
+  --color-chart-series-4: var(--color-amber-500);
+  --color-chart-series-5: var(--color-cyan-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 [data-section-hue='magenta'] {
   --section-hue-50: var(--color-magenta-50);
   --section-hue-500: var(--color-magenta-500);
   --section-hue-900: var(--color-magenta-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-green-500);
+  --color-chart-series-4: var(--color-amber-500);
+  --color-chart-series-5: var(--color-cyan-500);
+  --color-chart-series-6: var(--color-violet-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 [data-section-hue='pink'] {
@@ -154,12 +204,26 @@
   --section-hue-50: var(--color-vermilion-50);
   --section-hue-500: var(--color-vermilion-500);
   --section-hue-900: var(--color-vermilion-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-green-500);
+  --color-chart-series-4: var(--color-magenta-500);
+  --color-chart-series-5: var(--color-amber-500);
+  --color-chart-series-6: var(--color-cyan-500);
+  --color-chart-series-7: var(--color-violet-500);
 }
 
 [data-section-hue='violet'] {
   --section-hue-50: var(--color-violet-50);
   --section-hue-500: var(--color-violet-500);
   --section-hue-900: var(--color-violet-900);
+  --color-chart-series-1: var(--color-indigo-500);
+  --color-chart-series-2: var(--color-coral-500);
+  --color-chart-series-3: var(--color-green-500);
+  --color-chart-series-4: var(--color-magenta-500);
+  --color-chart-series-5: var(--color-amber-500);
+  --color-chart-series-6: var(--color-cyan-500);
+  --color-chart-series-7: var(--color-vermilion-500);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -586,6 +650,16 @@
   --icon-md: 20px;
   --icon-lg: 24px;
   --icon-xl: 32px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-chart-heatmap-0: color-mix(in oklch, var(--color-azure-900) 70%, transparent);
+    --color-chart-heatmap-1: var(--color-azure-900);
+    --color-chart-heatmap-2: var(--color-azure-700);
+    --color-chart-heatmap-3: var(--color-azure-600);
+    --color-chart-heatmap-4: var(--color-azure-400);
+  }
 }
 
 /* ============================================================

@@ -90,6 +90,6 @@ function toNumber(value: number | bigint): number {
   return typeof value === 'bigint' ? Number(value) : value;
 }
 
-function toFloat(value: number | string): number {
-  return typeof value === 'string' ? Number.parseFloat(value) : value;
+function toFloat(value: number | string | { toString(): string }): number {
+  return typeof value === 'number' ? value : Number.parseFloat(value.toString());
 }

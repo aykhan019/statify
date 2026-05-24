@@ -8,7 +8,10 @@ export const Card = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement>>(f
   return (
     <div
       ref={ref}
-      className={cn('bg-surface text-surface-foreground rounded-lg border shadow-xs', className)}
+      className={cn(
+        'bg-surface text-surface-foreground min-w-0 rounded-lg border shadow-xs',
+        className,
+      )}
       {...rest}
     />
   );

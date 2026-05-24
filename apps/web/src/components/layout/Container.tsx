@@ -5,10 +5,10 @@ export type ContainerSize = 'narrow' | 'prose' | 'wide' | 'full' | 'bleed';
 export type ContainerGutter = 'none' | 'compact' | 'page';
 
 const containerSize: Record<ContainerSize, string> = {
-  narrow: 'max-w-(--container-narrow)',
-  prose: 'max-w-(--container-prose)',
-  wide: 'max-w-(--container-wide)',
-  full: 'max-w-(--container-full)',
+  narrow: 'max-w-[min(100%,var(--container-narrow))]',
+  prose: 'max-w-[min(100%,var(--container-prose))]',
+  wide: 'max-w-[min(100%,var(--container-wide))]',
+  full: 'max-w-[min(100%,var(--container-full))]',
   bleed: 'max-w-none',
 };
 
@@ -37,7 +37,7 @@ export function Container({
   return (
     <Component
       className={cn(
-        'w-full',
+        'min-w-0 w-full',
         centered && 'mx-auto',
         containerSize[size],
         containerGutter[gutter],
