@@ -544,7 +544,90 @@ No emoji as UI icons. Anywhere.
 
 ---
 
-## 9. Do / Do not
+## 9. Forms
+
+Form primitives live at `apps/web/src/components/forms/`. The primitives in this section are the only allowed building blocks for form routes (signup, login, password change, account deletion confirmation, playlist create / edit, admin trigger / filters / search). The Phase 5 `ui/Input` and `ui/Label` were token-thin shims; they are kept only for non-form catalog and search bars and are slated for removal once the catalog surfaces are themselves rebuilt.
+
+Validation is owned by Zod schemas in `@statify/shared`. The primitives stay schema-agnostic; the wiring layer is React Hook Form's `register`.
+
+### 9.1 Field anatomy
+
+A field is composed of: label → control → either error or hint, in that order, on a vertical stack at `--space-1.5`. The wrapper `<Field>` generates a stable `id`, manages `aria-describedby` between the control, hint, and error, and sets `aria-invalid` when an error is present.
+
+| Slot     | Token / treatment                                                |
+| -------- | ---------------------------------------------------------------- |
+| Wrapper  | `flex flex-col gap-1.5`                                          |
+| Label    | `text-sm font-medium`, color `--fg-strong`                       |
+| Required | Trailing `*` glyph in `--state-error-fg`, `aria-hidden`          |
+| Optional | Trailing `optional` mono micro-label in `--fg-faint`             |
+| Hint     | `text-xs` in `--fg-muted` (hidden when an error is present)      |
+| Error    | `text-xs` in `--state-error-fg`, `role="alert"` for live updates |
+
+Hint and error are mutually exclusive: when both are provided, the error wins and the hint is suppressed. Both are exposed as `aria-describedby` ids on the control so screen readers announce them as the control's description.
+
+### 9.2 Control sizes
+
+Controls share one size axis. The default is `md`.
+
+| Token | Height | Padding-x | Type token  | Use                                                 |
+| ----- | ------ | --------- | ----------- | --------------------------------------------------- |
+| `sm`  | 32px   | 10px      | `text-xs`   | Dense filter rows, inline search bars               |
+| `md`  | 40px   | 12px      | `text-sm`   | Default body forms (login, signup, playlist create) |
+| `lg`  | 48px   | 16px      | `text-base` | Hero CTAs, account creation step 1 (when reserved)  |
+
+`<Textarea>` is unsized in height (caller-controlled via `rows`) but reuses the same padding scale via the `paddingSize` prop. `<Select>` mirrors `<Input>` exactly with a chevron sentinel in `--icon-sm` (or `--icon-xs` at `size="sm"`).
+
+### 9.3 Control states
+
+All text controls (`<Input>`, `<Textarea>`, `<Select>`) share one state table. Tokens are pulled live from CSS variables; nothing is hard-coded.
+
+| State    | Background         | Border                 | Foreground         | Notes                                                                                   |
+| -------- | ------------------ | ---------------------- | ------------------ | --------------------------------------------------------------------------------------- |
+| Default  | `--surface-work`   | `--border-strong`      | `--fg-default`     | Placeholder is `--fg-faint`.                                                            |
+| Hover    | `--surface-work`   | `--fg-faint`           | `--fg-default`     | Border deepens; no fill change.                                                         |
+| Focus    | `--surface-work`   | `--border-strong`      | `--fg-default`     | 2px `--ring-focus` ring + 2px offset on `--surface-page`. Global rule in `globals.css`. |
+| Invalid  | `--state-error-bg` | `--state-error-border` | `--state-error-fg` | `aria-invalid="true"`. Focus ring switches to `--state-error-border`. Placeholder dims. |
+| Disabled | `--surface-sunken` | `--border-strong`      | `--fg-faint`       | `cursor-not-allowed`, opacity 70.                                                       |
+| Loading  | `--surface-work`   | `--border-strong`      | `--fg-default`     | `aria-busy="true"`, `cursor-progress`, opacity 70. Caller usually disables alongside.   |
+
+Transitions on background, border, and box-shadow use `--duration-fast` with the default browser easing (semantic transitions are intentionally subtle on inputs to avoid lag).
+
+### 9.4 Checkbox and switch
+
+Both render selection state in the active section accent. They consume the same `Field` context so they inherit `aria-describedby` and `aria-invalid` without manual wiring.
+
+| Token                   | Unchecked                                           | Checked                                                                            |
+| ----------------------- | --------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| Checkbox box            | 16px, `--radius-xs`, border `--border-strong`       | Fill `--section-accent`, border `--section-accent`, glyph in `--section-accent-fg` |
+| Checkbox glyph          | Hidden                                              | Lucide `Check`, stroke width 3, size `12px`                                        |
+| Switch track            | 40 × 24, `--radius-full`, bg `--surface-sunken`     | Bg `--section-accent`                                                              |
+| Switch thumb            | 16px circle, bg `--surface-work`, `--shadow-xs`     | Translated `20px` along the track                                                  |
+| Invalid border (either) | `--state-error-border` instead of `--border-strong` | same                                                                               |
+| Focus ring              | 2px `--ring-focus` with offset on `--surface-page`  | same                                                                               |
+
+Side label and description (when provided) sit to the right of the control in a small vertical stack: label `text-sm font-medium`, description `text-xs --fg-muted`.
+
+### 9.5 Submit button
+
+`<SubmitButton>` is a thin wrapper over the base `Button`. It defaults `type="submit"`, forwards `loading` to `disabled` + `aria-busy`, and renders a leading `Loader2` glyph with `motion-safe:animate-spin` while inflight. Label can be swapped via `loadingLabel`; if omitted it shows the same children (so callers can pass `Sign in` as children and `Signing in...` as `loadingLabel`).
+
+Reduce-motion: the spinner inherits the global reduce-motion guard from `globals.css §6.4`, so under `prefers-reduced-motion: reduce` the glyph stops rotating.
+
+### 9.6 Form-level error summary
+
+Server-side and submit-level errors that don't belong to a single field render through `<FormError variant="summary">`. The summary surface is a 1px state-error bordered card on `--state-error-bg` with a leading `AlertCircle` glyph at `--icon-sm`, the message in `text-sm` `--state-error-fg`, and `role="alert"` for live announcement.
+
+Field-level errors continue to render through `<FormError variant="field">` (the default), which is what `<Field error={...}>` uses internally.
+
+### 9.7 Layout
+
+Single-column forms use `Container size="narrow"` (720px) with a `Stack gap="md"` between fields and `gap="lg"` between fieldset groups. Inline filter forms (audit log filters, admin user search) use `Grid` for the inputs and a trailing button row.
+
+Buttons in a form footer use `gap="sm"` with the primary submit first; destructive flows (account deletion confirmation) put the destructive submit first and the cancel `variant="ghost"` second.
+
+---
+
+## 10. Do / Do not
 
 **Do**
 
@@ -569,7 +652,7 @@ No emoji as UI icons. Anywhere.
 
 ---
 
-## 10. Token surface summary (for P6-M3)
+## 11. Token surface summary (for P6-M3)
 
 P6-M3 emits the following families inside `apps/web/src/app/globals.css` `@theme`:
 
