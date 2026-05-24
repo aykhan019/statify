@@ -14,6 +14,7 @@ describe('ArtistsService', () => {
           {
             createdAt: new Date('2026-01-01T00:00:00.000Z'),
             id: 1,
+            imageUrl: null,
             name: 'Artist',
             normalizedName: 'artist',
             spotifyUri: 'spotify:artist:1',
@@ -28,6 +29,7 @@ describe('ArtistsService', () => {
       data: [
         {
           id: 1,
+          imageUrl: null,
           name: 'Artist',
           spotifyUri: 'spotify:artist:1',
         },
@@ -50,6 +52,7 @@ describe('ArtistsService', () => {
       albumCount: 2,
       createdAt: '2026-01-01T00:00:00.000Z',
       id: 1,
+      imageUrl: null,
       name: 'Artist',
       spotifyUri: 'spotify:artist:1',
       trackCount: 5,
@@ -77,6 +80,7 @@ function createArtistDetailRecord(): ArtistDetailRecord {
     },
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 1,
+    imageUrl: null,
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:1',

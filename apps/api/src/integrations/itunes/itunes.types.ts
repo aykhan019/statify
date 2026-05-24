@@ -10,6 +10,7 @@ export interface ItunesSearchResponse {
 
 export interface ItunesSearchResult {
   artistName?: string;
+  artworkUrl100?: string;
   collectionName?: string;
   kind?: string;
   previewUrl?: string;
@@ -20,6 +21,7 @@ export interface ItunesSearchResult {
 }
 
 export interface ItunesPreviewMatch {
+  imageUrl?: string;
   itunesTrackId: number;
   previewUrl: string;
 }

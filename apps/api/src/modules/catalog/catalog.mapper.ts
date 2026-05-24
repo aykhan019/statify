@@ -46,6 +46,7 @@ export function toTrackListItem(track: TrackCatalogRecord): TrackListItem {
     })),
     durationMs: track.durationMs,
     id: track.id,
+    imageUrl: track.imageUrl,
     name: track.name,
     previewUrl: track.previewUrl,
     spotifyUri: track.spotifyUri,
@@ -62,15 +63,19 @@ export function toTrackDetail(track: TrackCatalogRecord): TrackDetail {
 function toAlbumSummary(album: AlbumCatalogRecord): CatalogAlbumSummary {
   return {
     id: album.id,
+    imageUrl: album.imageUrl,
     name: album.name,
     primaryArtist: toArtistSummary(album.primaryArtist),
     spotifyUri: album.spotifyUri,
   };
 }
 
-function toArtistSummary(artist: Pick<Artist, 'id' | 'name' | 'spotifyUri'>): CatalogArtistSummary {
+function toArtistSummary(
+  artist: Pick<Artist, 'id' | 'imageUrl' | 'name' | 'spotifyUri'>,
+): CatalogArtistSummary {
   return {
     id: artist.id,
+    imageUrl: artist.imageUrl,
     name: artist.name,
     spotifyUri: artist.spotifyUri,
   };

@@ -81,19 +81,31 @@ describe('ListeningHistoryService', () => {
             idempotencyKey: null,
             track: {
               id: 10,
+              imageUrl: 'https://example.com/track.jpg',
               name: 'Track A',
               durationMs: 180_000,
               previewUrl: null,
               album: {
                 id: 5,
+                imageUrl: 'https://example.com/album.jpg',
                 name: 'Album',
                 spotifyUri: 'spotify:album:5',
-                primaryArtist: { id: 3, name: 'Artist', spotifyUri: 'spotify:artist:3' },
+                primaryArtist: {
+                  id: 3,
+                  imageUrl: null,
+                  name: 'Artist',
+                  spotifyUri: 'spotify:artist:3',
+                },
               },
               trackArtists: [
                 {
                   role: 'primary',
-                  artist: { id: 3, name: 'Artist', spotifyUri: 'spotify:artist:3' },
+                  artist: {
+                    id: 3,
+                    imageUrl: null,
+                    name: 'Artist',
+                    spotifyUri: 'spotify:artist:3',
+                  },
                 },
               ],
             },

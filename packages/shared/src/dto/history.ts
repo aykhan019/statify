@@ -38,6 +38,7 @@ export const ListeningHistoryListQuerySchema = OffsetPaginationQuerySchema;
 export const ListeningHistoryListItemSchema = ListeningHistoryEntrySchema.extend({
   track: z.object({
     id: z.number().int(),
+    imageUrl: z.string().url().nullable(),
     name: z.string(),
     durationMs: z.number().int(),
     previewUrl: z.string().url().nullable(),

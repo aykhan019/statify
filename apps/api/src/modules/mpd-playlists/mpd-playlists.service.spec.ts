@@ -112,6 +112,7 @@ function createTrackRecord(): MpdPlaylistTrackRecord {
   const artist = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 7,
+    imageUrl: null,
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:7',
@@ -119,6 +120,7 @@ function createTrackRecord(): MpdPlaylistTrackRecord {
   const album = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
     id: 9,
+    imageUrl: 'https://example.com/album.jpg',
     name: 'Album',
     primaryArtist: artist,
     primaryArtistId: artist.id,
@@ -133,6 +135,7 @@ function createTrackRecord(): MpdPlaylistTrackRecord {
       albumId: album.id,
       durationMs: 200000,
       id: 100,
+      imageUrl: 'https://example.com/track.jpg',
       itunesTrackId: null,
       name: 'Track A',
       previewFetchedAt: null,

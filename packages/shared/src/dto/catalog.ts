@@ -68,12 +68,14 @@ export const CatalogSearchQuerySchema = z.object({
 
 export const CatalogArtistSummarySchema = z.object({
   id: z.number().int(),
+  imageUrl: z.string().url().nullable(),
   name: z.string(),
   spotifyUri: z.string(),
 });
 
 export const CatalogAlbumSummarySchema = z.object({
   id: z.number().int(),
+  imageUrl: z.string().url().nullable(),
   name: z.string(),
   primaryArtist: CatalogArtistSummarySchema,
   spotifyUri: z.string(),
@@ -88,6 +90,7 @@ export const TrackListItemSchema = z.object({
   artists: z.array(TrackArtistSummarySchema),
   durationMs: z.number().int(),
   id: z.number().int(),
+  imageUrl: z.string().url().nullable(),
   name: z.string(),
   previewUrl: z.string().url().nullable(),
   spotifyUri: z.string(),
@@ -115,6 +118,7 @@ export const AlbumDetailSchema = CatalogAlbumSummarySchema.extend({
 export const CatalogSearchTrackResultSchema = z.object({
   albumName: z.string(),
   id: z.number().int(),
+  imageUrl: z.string().url().nullable(),
   name: z.string(),
   primaryArtistName: z.string(),
   score: z.number(),
@@ -122,6 +126,7 @@ export const CatalogSearchTrackResultSchema = z.object({
 
 export const CatalogSearchArtistResultSchema = z.object({
   id: z.number().int(),
+  imageUrl: z.string().url().nullable(),
   name: z.string(),
   score: z.number(),
   trackCount: z.number().int(),
@@ -129,6 +134,7 @@ export const CatalogSearchArtistResultSchema = z.object({
 
 export const CatalogSearchAlbumResultSchema = z.object({
   id: z.number().int(),
+  imageUrl: z.string().url().nullable(),
   name: z.string(),
   primaryArtistName: z.string(),
   score: z.number(),

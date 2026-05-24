@@ -22,6 +22,7 @@ const TRACK_FOR_PREVIEW_INCLUDE = {
 
 const ITUNES_CACHE_SELECT = {
   id: true,
+  imageUrl: true,
   itunesTrackId: true,
   previewFetchedAt: true,
   previewUrl: true,
@@ -55,6 +56,7 @@ export class ItunesCache extends BaseRepository {
   ): Promise<ItunesCacheRecord> {
     return this.client.track.update({
       data: {
+        ...(match.imageUrl === undefined ? {} : { imageUrl: match.imageUrl }),
         itunesTrackId: BigInt(match.itunesTrackId),
         previewFetchedAt: fetchedAt,
         previewUrl: match.previewUrl,
