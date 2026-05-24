@@ -16,7 +16,7 @@
   - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. Recorded in ADR-002 during P6-M4.
   - Playlist media shape: list/detail DTOs expose `coverImages: string[]` derived from the first four member tracks' `track.imageUrl ?? album.imageUrl`; UI repeats fewer than four to fill the 2x2 collage and falls back to the playlist letter when none exist. Landed in P6-M7.
   - Form primitives: built on RHF + native control elements (no @radix-ui/react-switch / -select), styled through CSS-variable + state-color tokens; spec lives in DESIGN.md §9. Landed in P6-M8.
-  - Motion library: `tailwindcss-animate`; `framer-motion` opt-in at P6-M11 only if required.
+  - Motion library: `tailwindcss-animate`; `framer-motion` opt-in at P6-M12 only if required.
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
@@ -211,26 +211,33 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/states/**` (new), every route file under `apps/web/src/app/(app)/**` that fetches, `DESIGN.md` (states addendum).
   - Depends on: P6-M7, P6-M8.
 
-- [ ] **P6-M10: Analytics surfaces re-skin (Recharts against tokens)** - M - aykhan
+- [ ] **P6-M10: Section identity headers + section-hue propagation** - L - rahila
+  - Goal: apply the locked Vivid Workshop "section-as-color" identity (DESIGN.md §1.3) to every top-level route — a full-bleed section-hue block header on each route, with the section hue propagated to the active nav indicator, row hover, cover frames, and the default chart series. This closes the gap where the §1.3 tokens and per-route hue assignments exist but no route renders the block treatment.
+  - Entry criteria: P6-M5 (shell) and P6-M6 (nav) merged; section identity hue assignments and the `--color-section-*` aliases locked in DESIGN.md §1.3.
+  - Exit criteria: a section provider under `apps/web/src/components/section/` resolves the active section from the route prefix per DESIGN.md §1.3 and sets `--color-section-block`, `-block-fg`, `-tint`, `-accent`, `-accent-fg`, `-row-hover`, and `-frame` on the route subtree; every top-level route renders a full-bleed block header in `bg-section-block text-section-on-block` at `text-5xl` weight 800 per §2.2, with `/me/account` kept as neutral chrome (no block) per the §1.3 exception; the active section hue propagates to the active nav / tab indicator, list row hover tint (`--color-section-row-hover`), the cover frame on every card / list / detail cover inside the section (`--color-section-frame`), and the default chart series (section hue moved to series index 0 per §1.6); no-section routes (global search, sign-in, error / not-found) resolve to the indigo Library default per §1.3; DESIGN.md gains a section-header / block-treatment addendum (block dimensions, full-bleed behaviour, propagation rules); `/styleguide` gains a section rendering the block header for all eleven section hues; lint / typecheck / build pass; manual smoke confirms each top-level route shows its block header in the correct hue and the nav indicator / row hover / cover frame match.
+  - Files and folders touched: `apps/web/src/components/section/**` (new section provider + block header), `apps/web/src/app/(app)/**` (per-route headers / layouts), `apps/web/src/components/navigation/**` (active indicator reads section hue), `apps/web/src/components/{catalog,playlists}/**` (cover frame reads `--color-section-frame`), `DESIGN.md` (section-header addendum), `apps/web/src/app/styleguide/page.tsx`.
+  - Depends on: P6-M5, P6-M6.
+
+- [ ] **P6-M11: Analytics surfaces re-skin (Recharts against tokens)** - M - aykhan
   - Goal: re-skin every Recharts surface (top artists, top tracks, discover, heatmap, trending, hidden gems) against the locked token palette and motion tokens, including a shared chart wrapper that pulls axis / grid / tooltip / palette from CSS variables.
-  - Entry criteria: P6-M3 merged; data-viz palette (at least eight hues) defined in DESIGN.md.
+  - Entry criteria: P6-M3 merged; data-viz palette (at least eight hues) defined in DESIGN.md; P6-M10 merged (active section hue available for the series index-0 swap).
   - Exit criteria: a single chart theme module at `apps/web/src/components/charts/` reads axis, grid, tooltip, and series colors from CSS variables; every existing `stats/**` page wired through it with no inline hex; heatmap uses a documented multi-stop scale from the DESIGN.md data-viz palette; tooltip and legend treatments documented; lint / typecheck / build pass; manual smoke confirms charts render with the new palette and reflow on resize.
   - Files and folders touched: `apps/web/src/components/charts/**`, `apps/web/src/components/stats/**`, `apps/web/src/app/(app)/me/stats/**`, `DESIGN.md` (data-viz palette addendum).
-  - Depends on: P6-M3.
+  - Depends on: P6-M3, P6-M10.
 
-- [ ] **P6-M11: Motion pass** - M - rahila
+- [ ] **P6-M12: Motion pass** - M - rahila
   - Goal: apply the DESIGN.md motion tokens across navigation, list mounts, modal / dialog open / close, hover and focus transitions, and player state changes; honour `prefers-reduced-motion`. `framer-motion` may be introduced here only if a specific surface needs layout / exit animation that `tailwindcss-animate` cannot deliver; recorded in HANDOFF Structural Changes Log if added.
-  - Entry criteria: P6-M7, P6-M8, P6-M9, P6-M10 merged.
+  - Entry criteria: P6-M7, P6-M8, P6-M9, P6-M10, P6-M11 merged.
   - Exit criteria: every transition in the app references a named motion token (no inline durations, no inline easings); `prefers-reduced-motion: reduce` swaps to a no-motion variant globally; motion tokens visible on `/styleguide` with side-by-side reduce-motion preview; lint / typecheck / build pass; manual smoke of every authed route confirms transitions feel coherent and no surface flashes.
   - Files and folders touched: `apps/web/src/components/**` (transition wiring), `apps/web/src/app/globals.css` (reduce-motion override), `apps/web/src/app/styleguide/page.tsx`.
-  - Depends on: P6-M7, P6-M8, P6-M9, P6-M10.
+  - Depends on: P6-M7, P6-M8, P6-M9, P6-M10, P6-M11.
 
-- [ ] **P6-M12: Accessibility pass** - M - aykhan
+- [ ] **P6-M13: Accessibility pass** - M - aykhan
   - Goal: end-to-end a11y audit and fix pass against WCAG 2.2 AA on the redesigned surfaces.
-  - Entry criteria: P6-M11 merged.
+  - Entry criteria: P6-M12 merged.
   - Exit criteria: `eslint-plugin-jsx-a11y` clean; semantic landmarks (`header`, `nav`, `main`, `aside`, `footer`) verified on every layout; focus order keyboard-walked through every authed route; visible focus ring (from tokens) confirmed on every interactive element; color contrast checked for every semantic foreground / background pair documented in DESIGN.md and recorded in a contrast table at the bottom of DESIGN.md; screen-reader smoke (VoiceOver) on signup, login, search, track detail with preview play, playlist create, admin user edit; results recorded in `docs/design/a11y-audit.md`; lint / typecheck / build pass.
   - Files and folders touched: `apps/web/src/components/**` (fixes), `apps/web/src/app/**` (fixes), `DESIGN.md` (contrast table), `docs/design/a11y-audit.md` (new).
-  - Depends on: P6-M11.
+  - Depends on: P6-M12.
 
 ## Stretch features (post-rubric)
 

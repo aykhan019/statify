@@ -32,7 +32,7 @@
 - **Phase 4 status:** complete. All twelve foundation pieces (F1-F12) are shipped on `dev`. The deterministic dev seed script (Phase 5 rubric task) is also merged and runs via `pnpm --filter @statify/db db:seed`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
 - **Phase 6 status:** M1 ✓ (PR #28, `e39bdeb`), M2 ✓ (PR #29, `e7e9053`), M3 ✓ (PR #30, `a543cc2`), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`). Next milestone P6-M9 (empty / loading / error states pass, rahila). The Phase 5 frontend works against the API but was built against the prior visual posture (single-hue accent on grayscale, no semantic token layer, no real entity imagery, no shared icon vocabulary). Phase 6 replaces it. (Note: the original draft numbered redesign as Phase 7 with deployment as Phase 6; the canonical docs never actually numbered deployment, so Phase 6 is the redesign and the existing "Deployment and submission" section stays unnumbered.)
-- **Deployment and submission status:** the unnumbered "Deployment and submission" section in `CHECKLIST.md` is paused behind Phase 6 frontend redesign per Aykhan's direction; resumes after P6-M12 merges.
+- **Deployment and submission status:** the unnumbered "Deployment and submission" section in `CHECKLIST.md` is paused behind Phase 6 frontend redesign per Aykhan's direction; resumes after P6-M13 merges.
 - **Last shipped:** P6-M8 Forms system. PR #35 rebase-merged into `dev` as three commits ending at `ae9309f`. Adds a token-bound primitive set under `apps/web/src/components/forms/` (Field, Label, Input, Textarea, Select, Checkbox, Switch, FormError, FormHint, SubmitButton) on top of React Hook Form and the existing shared Zod schemas; re-implements every form route (signup, login, password change, account deletion confirmation, playlist create, playlist visibility toggle, playlist tracks-manager search, admin ingest trigger, admin users search, admin audit log filters); documents states in `DESIGN.md` §9 (and renumbers §10 / §11); adds a `/styleguide` §18 "Form system" panel rendering every primitive in every state. No new dependency; the legacy `ui/Input` and `ui/Label` shims stay only for the catalog and global search bars and are slated for removal as those surfaces are rebuilt.
 - **Phase 5 roadmap:** M1 ✓ → M2 (4/5) → M3 ✓ → M4 ✓ → M5 ✓ → M6 ✓ → M7 ✓ → M8 ✓. See `CHECKLIST.md` Phase 5 for the per-task breakdown and the milestone checkboxes.
 - **Milestone cadence:** each milestone ships as one PR into `dev` (`feat/<milestone-slug>` branch, per-task commits with the correct author from `CHECKLIST.md`). Phase 6 branches use `feat/p6-m<n>-<slug>`. Merge with `gh pr merge <n> --rebase --delete-branch` so the per-task commits are preserved on `dev`. Do not start the next milestone until the previous one is merged.
@@ -43,7 +43,7 @@
   - **Design direction:** Vivid Workshop. Picked 2026-05-24, recorded in `docs/design/explorations.md` Step C. P6-M2 authors DESIGN.md from this direction.
   - **Entity media field shape:** single nullable `image_url` column on `tracks`, `albums`, `artists`. iTunes returns one URL whose size segment (`100x100bb.jpg`) is render-time substitutable, so storing one canonical URL is sufficient. Artist `image_url` stays null on ingest because iTunes does not return reliable artist art; UI uses the DESIGN.md "no entity image" fallback. Full record lands in ADR-002 during P6-M4.
   - **Playlist media shape:** playlist list/detail DTOs expose `coverImages: string[]` derived from the first four member tracks' `track.imageUrl ?? album.imageUrl`; UI repeats fewer than four images to fill the 2x2 collage and falls back to the playlist letter when none exist. Landed locally during P6-M7.
-  - **Motion library:** `tailwindcss-animate` (shadcn / Radix default, CSS-only, near-zero bundle). `framer-motion` stays opt-in for a specific surface in P6-M11 only if layout / exit animation is required.
+  - **Motion library:** `tailwindcss-animate` (shadcn / Radix default, CSS-only, near-zero bundle). `framer-motion` stays opt-in for a specific surface in P6-M12 only if layout / exit animation is required.
   - **Webfonts:** self-hosted via `next/font`. Specific families locked in P6-M2 DESIGN.md.
   - **Existing UI during Phase 6:** destructively replaced as each P6 milestone lands; `dev` will show visual inconsistency between merged and unmerged surfaces during Phase 6.
 - **ADR-001 deviations recorded for Phase 6:**
@@ -176,7 +176,7 @@ The canonical inventory. If a doc is not here, it should not exist.
 **Design exploration (Phase 6):**
 
 - `docs/design/explorations.md`, five-app reference notes and three direction proposals from P6-M1.
-- `docs/design/a11y-audit.md`, accessibility audit results from P6-M12.
+- `docs/design/a11y-audit.md`, accessibility audit results from P6-M13.
 
 **Submission artifacts (built over the project):**
 
