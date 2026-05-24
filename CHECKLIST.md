@@ -4,14 +4,21 @@
 
 ## Current State (updated every session)
 
-- **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`. Hold the dev → main promotion until Phase 6 deployment items are unblocked.
-- **Current milestone:** Deployment and submission. Wait for explicit approval before starting.
-- **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 landed the DBML source, relational model write-up, advanced SQL queries doc, final report, and demo script; the follow-up docs commit added `docs/erd.png` and ticked the ERD row. The seed script row was already ticked from F11.
+- **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
+- **Phase 5 status:** complete (M1-M8 all on `dev`).
+- **Phase 6 status:** roadmap committed; M1 complete in working tree, Vivid Workshop direction picked; commit + PR pending. (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** Phase 6 M1, Design Direction Exploration. Vivid Workshop picked. M1 work in tree, awaiting commit + PR.
+- **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
-- **Open file/component:** none.
-- **Open decisions:** none for the current milestone.
-- **Blocker:** none for milestone work.
-- **Next concrete action:** wait for approval to start deployment and submission. First deployment row is production env vars set in Vercel and Render.
+- **Open file/component:** `docs/design/explorations.md` (Step C filled with Vivid Workshop pick + rationale).
+- **Locked decisions feeding Phase 6:**
+  - Design direction: Vivid Workshop (picked 2026-05-24).
+  - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. Recorded in ADR-002 during P6-M4.
+  - Motion library: `tailwindcss-animate`; `framer-motion` opt-in at P6-M11 only if required.
+  - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
+  - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
+- **Blocker:** none.
+- **Next concrete action:** commit the P6-M1 working tree changes on a `feat/p6-m1-design-direction-exploration` branch (one commit attributed to `aykhan` via `scripts/commit-as.sh aykhan`), open the PR into `dev`, merge with `gh pr merge <n> --rebase --delete-branch`, tick the P6-M1 row, then start P6-M2 in the next session.
 
 ---
 
@@ -130,6 +137,98 @@ Each milestone is one PR into `dev`. Per-task commits are attributed via the "Co
   - [x] Seed script that produces meaningful number of tuples reliably - M - eljan
   - [x] Final report - L - aykhan
   - [x] Demo script - M - aykhan
+
+## Phase 6, Frontend redesign (one PR per milestone into `dev`; sized for one focused session each)
+
+The Phase 5 frontend works against the API but was built against the prior visual posture: single-hue accent on grayscale, no semantic token layer, no real entity imagery, no shared icon vocabulary. Phase 6 replaces that posture wholesale against a fully tokenized, multi-hue, identity-bearing system. Component-level work does not begin until M3 has shipped the token layer.
+
+Milestones must ship in order. Each milestone is a single PR into `dev` on a `feat/p6-m<n>-<slug>` branch, per-task commits attributed via the "Commit author" column, merged with `gh pr merge <n> --rebase --delete-branch`.
+
+Existing `(app)/**` components are destructively replaced as each Phase 6 milestone lands; the `dev` branch will show visual inconsistency between merged and unmerged surfaces during Phase 6. This is accepted.
+
+- [ ] **P6-M1: Design Direction Exploration** - S - aykhan
+  - Goal: produce reference notes for five apps and three Statify direction proposals; surface a single pick.
+  - Entry criteria: HANDOFF + CHECKLIST + ADR-001 read; design intent confirmed; roadmap approved.
+  - Exit criteria: `docs/design/explorations.md` committed containing Step A (Linear, Vercel dashboard, Stripe dashboard, PostHog, Resend reference notes, 2-3 lines each covering typography character, color treatment, spacing density, separation strategy, vibe phrase) and Step B (three distinct named directions, each with feel paragraph, closest reference, sharpest tradeoff, imagery treatment, iconography treatment); Aykhan has picked one direction and the pick is recorded in HANDOFF.md Section 2.
+  - Files and folders touched: `docs/design/explorations.md` (new), `HANDOFF.md` (decision recorded), `CHECKLIST.md` (this row ticked).
+  - Depends on: none.
+
+- [ ] **P6-M2: Author DESIGN.md from locked direction** - M - aykhan
+  - Goal: turn the locked direction into a complete token specification document at repo root.
+  - Entry criteria: P6-M1 merged; direction picked.
+  - Exit criteria: `DESIGN.md` committed at repo root specifying full color token set in oklch (semantic naming layer over raw palette, including data-viz palette of at least eight hues), type scale (font families with weight axis, size scale, line-height pairs, letter-spacing per role), spacing scale, radius scale, shadow scale, motion tokens (durations, easings, named transitions, all driven through `tailwindcss-animate` utilities), image aspect ratio scale with frame and overlay treatments and explicit fallback strategy when media fields are NULL, icon size scale with locked stroke weight and role mapping (inline / navigation / feature), and a one-screen "do / do not" section calling out the hard constraints from the design intent. ADR-002 drafted to record the deviation from ADR-001 §3.8 / §3.20 and the locked `image_url` schema decision.
+  - Files and folders touched: `DESIGN.md` (new), `docs/adr/0002-design-system-and-token-layer.md` (new), `HANDOFF.md` (Structural Changes Log row, Documents Map updated).
+  - Depends on: P6-M1.
+
+- [ ] **P6-M3: Token layer implementation + dependency install + `/styleguide` route** - L - rahila
+  - Goal: encode every DESIGN.md token in CSS variables and the Tailwind 4 `@theme` block, install Lucide + shadcn/ui + Radix primitives + `tailwindcss-animate`, and ship a `/styleguide` route that renders every token visually for QA.
+  - Entry criteria: P6-M2 merged; DESIGN.md tokens locked.
+  - Exit criteria: `apps/web/src/app/globals.css` rewritten so every color, font, radius, spacing step, shadow, motion duration, easing, aspect ratio, and icon size exists as a CSS variable inside `@theme`; `lucide-react`, `@radix-ui/*`, shadcn/ui generator config, `tailwindcss-animate`, and the chosen self-hosted webfonts via `next/font` added to `apps/web/package.json` with the locked stroke weight enforced via a thin `<Icon>` wrapper; `/styleguide` route at `apps/web/src/app/styleguide/page.tsx` renders the color palette (raw + semantic), type scale (every role at every weight), spacing scale, radius scale, shadow scale, motion samples, image frame treatments at every aspect ratio (with a NULL-media fallback example wired to the real fallback), and the entire in-use icon set at all locked sizes; `pnpm lint`, `pnpm typecheck`, `pnpm build` pass; manual QA on `/styleguide` confirms every token is visible.
+  - Files and folders touched: `apps/web/src/app/globals.css`, `apps/web/src/app/styleguide/page.tsx` (new), `apps/web/src/components/ui/` (Icon wrapper, base shadcn primitives copied in), `apps/web/src/lib/fonts.ts` (new), `apps/web/package.json`, `apps/web/components.json` (shadcn config, new), `HANDOFF.md` (Structural Changes Log rows for each dep).
+  - Depends on: P6-M2.
+
+- [ ] **P6-M4: Media foundation (schema, adapter persistence, backfill)** - L - aykhan
+  - Goal: make real entity imagery available from the Prisma layer so later surfaces can render `<Image>` against live URLs per the design intent.
+  - Entry criteria: P6-M3 merged; DESIGN.md aspect ratio scale locked; ADR-002 records the `image_url`-column decision.
+  - Exit criteria: Prisma migration adds `image_url` (text, nullable) to `tracks`, `albums`, `artists`; iTunes adapter at `apps/api/src/integrations/itunes/` persists the artwork URL on resolve alongside the existing `preview_url` write (using the `100x100bb.jpg` → `600x600bb.jpg` substitution at write time); backfill script at `packages/db/src/scripts/backfill-media.ts` populates existing rows by replaying iTunes lookups for tracks lacking `image_url`; albums inherit from the first ingested track's image; artist `image_url` stays null and the UI uses the DESIGN.md null-fallback; DTOs in `packages/shared` exposing `imageUrl` on the relevant entities; `apps/web/next.config.js` image domain allowlist updated for `is*-ssl.mzstatic.com`; unit tests for adapter persistence and backfill idempotency; `pnpm --filter @statify/db prisma migrate dev`, `pnpm --filter @statify/api test`, `pnpm typecheck`, `pnpm build` pass; HANDOFF Structural Changes Log row added.
+  - Files and folders touched: `packages/db/prisma/schema.prisma`, `packages/db/prisma/migrations/<timestamp>_entity_media/`, `packages/db/src/scripts/backfill-media.ts` (new), `apps/api/src/integrations/itunes/itunes.adapter.ts`, `apps/api/src/integrations/itunes/itunes.cache.ts`, `apps/api/src/modules/catalog/**` (DTO surface), `packages/shared/src/dto/**`, `apps/web/next.config.js`, `docs/adr/0002-design-system-and-token-layer.md` (schema decision section).
+  - Depends on: P6-M3.
+
+- [ ] **P6-M5: Layout primitives + app shell rewrite** - M - rahila
+  - Goal: replace ad-hoc layout JSX with token-bound primitives (Container, Stack, Grid, Section, Surface, Divider, Spacer) and rebuild the authed shell on top.
+  - Entry criteria: P6-M3 merged.
+  - Exit criteria: primitives under `apps/web/src/components/layout/` consume only token classes (no hard-coded px, hex, or font-family); existing `(app)/layout.tsx` re-implemented in terms of the primitives; container widths, gutters, and grid steps documented in DESIGN.md update; `/styleguide` route gains a "Primitives" section showing every primitive at every documented variant; lint / typecheck / build pass; manual smoke confirms every existing authed route still renders without layout regressions.
+  - Files and folders touched: `apps/web/src/components/layout/**` (new), `apps/web/src/app/(app)/layout.tsx`, `apps/web/src/app/styleguide/page.tsx`, `DESIGN.md` (primitives addendum).
+  - Depends on: P6-M3.
+
+- [ ] **P6-M6: Navigation system** - L - rahila
+  - Goal: rebuild top bar, side navigation, mobile navigation, breadcrumbs, and the user menu against the new token layer and the layout primitives.
+  - Entry criteria: P6-M5 merged.
+  - Exit criteria: nav components under `apps/web/src/components/navigation/` use only Lucide icons at the locked nav size and the semantic color tokens; active / hover / focus / disabled states defined in DESIGN.md and visible at `/styleguide`; mobile breakpoint behaviour documented; keyboard navigation through every nav surface verified manually; lint / typecheck / build pass.
+  - Files and folders touched: `apps/web/src/components/navigation/**` (new), `apps/web/src/app/(app)/layout.tsx` (consumes nav), `DESIGN.md` (nav states addendum), `apps/web/src/app/styleguide/page.tsx`.
+  - Depends on: P6-M5.
+
+- [ ] **P6-M7: Data display with real media (cards, lists, detail pages)** - L - rahila
+  - Goal: rebuild Track, Artist, Album, and Playlist cards / list rows / detail headers to render `<Image>` from the Prisma `image_url` fields with the DESIGN.md aspect ratio and frame treatments.
+  - Entry criteria: P6-M4 merged (media in DB) and P6-M6 merged (shell exists).
+  - Exit criteria: components under `apps/web/src/components/{catalog,playlists}/` use `next/image` against live `imageUrl` fields from the API; aspect ratio, frame, and overlay match the DESIGN.md scale; explicit fallback variant renders when the field is NULL (the DESIGN.md null-fallback, no generic gradients, no placeholders); detail page hero treatments updated for Track / Artist / Album / Playlist; lint / typecheck / build pass; manual smoke on each list and detail route against seeded data confirms real artwork loads.
+  - Files and folders touched: `apps/web/src/components/catalog/**`, `apps/web/src/components/playlists/**`, `apps/web/src/app/(app)/catalog/**`, `apps/web/src/app/(app)/playlists/**`, DESIGN.md (any media decisions discovered during build).
+  - Depends on: P6-M4, P6-M6.
+
+- [ ] **P6-M8: Forms system** - M - aykhan
+  - Goal: rebuild every form (signup, login, password change, account deletion confirmation, playlist create / edit, admin user edit) on a token-bound RHF + Zod primitive set.
+  - Entry criteria: P6-M3 merged.
+  - Exit criteria: form primitives under `apps/web/src/components/forms/` (Field, Label, Input, Textarea, Select, Checkbox, Switch, FormError, FormHint, SubmitButton) wired to existing shared Zod schemas; error, focus, disabled, and loading states defined in DESIGN.md and visible at `/styleguide`; each existing form route re-implemented against the primitives; lint / typecheck / build pass; manual smoke of every form route confirms submission and validation paths still work.
+  - Files and folders touched: `apps/web/src/components/forms/**` (new), `apps/web/src/components/auth/**`, `apps/web/src/components/playlists/**` (form-touching ones), `apps/web/src/components/admin/**` (form-touching ones), `DESIGN.md` (form states addendum), `apps/web/src/app/styleguide/page.tsx`.
+  - Depends on: P6-M3.
+
+- [ ] **P6-M9: Empty, loading, and error states pass** - M - rahila
+  - Goal: design and ship a shared vocabulary for empty states, skeleton loaders, error surfaces, and not-found pages on top of every list, detail, and form route built so far.
+  - Entry criteria: P6-M7 and P6-M8 merged.
+  - Exit criteria: state primitives under `apps/web/src/components/states/` (Skeleton, EmptyState, ErrorState, NotFoundState) consume tokens only; every list and detail route in `(app)/**` wired to a skeleton during suspense, an empty state when the response is zero-length, an error state when the fetch fails, and a not-found state when the entity is missing; copy and icon choices documented in DESIGN.md; lint / typecheck / build pass; manual smoke triggers each state (throttle network for skeletons, force 404, force 500).
+  - Files and folders touched: `apps/web/src/components/states/**` (new), every route file under `apps/web/src/app/(app)/**` that fetches, `DESIGN.md` (states addendum).
+  - Depends on: P6-M7, P6-M8.
+
+- [ ] **P6-M10: Analytics surfaces re-skin (Recharts against tokens)** - M - aykhan
+  - Goal: re-skin every Recharts surface (top artists, top tracks, discover, heatmap, trending, hidden gems) against the locked token palette and motion tokens, including a shared chart wrapper that pulls axis / grid / tooltip / palette from CSS variables.
+  - Entry criteria: P6-M3 merged; data-viz palette (at least eight hues) defined in DESIGN.md.
+  - Exit criteria: a single chart theme module at `apps/web/src/components/charts/` reads axis, grid, tooltip, and series colors from CSS variables; every existing `stats/**` page wired through it with no inline hex; heatmap uses a documented multi-stop scale from the DESIGN.md data-viz palette; tooltip and legend treatments documented; lint / typecheck / build pass; manual smoke confirms charts render with the new palette and reflow on resize.
+  - Files and folders touched: `apps/web/src/components/charts/**`, `apps/web/src/components/stats/**`, `apps/web/src/app/(app)/me/stats/**`, `DESIGN.md` (data-viz palette addendum).
+  - Depends on: P6-M3.
+
+- [ ] **P6-M11: Motion pass** - M - rahila
+  - Goal: apply the DESIGN.md motion tokens across navigation, list mounts, modal / dialog open / close, hover and focus transitions, and player state changes; honour `prefers-reduced-motion`. `framer-motion` may be introduced here only if a specific surface needs layout / exit animation that `tailwindcss-animate` cannot deliver; recorded in HANDOFF Structural Changes Log if added.
+  - Entry criteria: P6-M7, P6-M8, P6-M9, P6-M10 merged.
+  - Exit criteria: every transition in the app references a named motion token (no inline durations, no inline easings); `prefers-reduced-motion: reduce` swaps to a no-motion variant globally; motion tokens visible on `/styleguide` with side-by-side reduce-motion preview; lint / typecheck / build pass; manual smoke of every authed route confirms transitions feel coherent and no surface flashes.
+  - Files and folders touched: `apps/web/src/components/**` (transition wiring), `apps/web/src/app/globals.css` (reduce-motion override), `apps/web/src/app/styleguide/page.tsx`.
+  - Depends on: P6-M7, P6-M8, P6-M9, P6-M10.
+
+- [ ] **P6-M12: Accessibility pass** - M - aykhan
+  - Goal: end-to-end a11y audit and fix pass against WCAG 2.2 AA on the redesigned surfaces.
+  - Entry criteria: P6-M11 merged.
+  - Exit criteria: `eslint-plugin-jsx-a11y` clean; semantic landmarks (`header`, `nav`, `main`, `aside`, `footer`) verified on every layout; focus order keyboard-walked through every authed route; visible focus ring (from tokens) confirmed on every interactive element; color contrast checked for every semantic foreground / background pair documented in DESIGN.md and recorded in a contrast table at the bottom of DESIGN.md; screen-reader smoke (VoiceOver) on signup, login, search, track detail with preview play, playlist create, admin user edit; results recorded in `docs/design/a11y-audit.md`; lint / typecheck / build pass.
+  - Files and folders touched: `apps/web/src/components/**` (fixes), `apps/web/src/app/**` (fixes), `DESIGN.md` (contrast table), `docs/design/a11y-audit.md` (new).
+  - Depends on: P6-M11.
 
 ## Stretch features (post-rubric)
 
