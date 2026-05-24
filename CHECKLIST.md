@@ -6,8 +6,8 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, layout primitives + app shell rewrite). Next milestone P6-M6 (navigation system, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** none active; P6-M6 ready to start after P6-M5 lands.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ locally (navigation system, ready for PR). Next milestone P6-M7 (data display with real media, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M6 complete locally; ready for commit and PR.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
@@ -18,7 +18,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** land P6-M5, then start P6-M6.
+- **Next concrete action:** commit and PR P6-M6, then start P6-M7 after P6-M6 lands.
 
 ---
 
@@ -181,7 +181,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/layout/**` (new), `apps/web/src/app/(app)/layout.tsx`, `apps/web/src/app/styleguide/page.tsx`, `DESIGN.md` (primitives addendum).
   - Depends on: P6-M3.
 
-- [ ] **P6-M6: Navigation system** - L - rahila
+- [x] **P6-M6: Navigation system** - L - rahila
   - Goal: rebuild top bar, side navigation, mobile navigation, breadcrumbs, and the user menu against the new token layer and the layout primitives.
   - Entry criteria: P6-M5 merged.
   - Exit criteria: nav components under `apps/web/src/components/navigation/` use only Lucide icons at the locked nav size and the semantic color tokens; active / hover / focus / disabled states defined in DESIGN.md and visible at `/styleguide`; mobile breakpoint behaviour documented; keyboard navigation through every nav surface verified manually; lint / typecheck / build pass.

@@ -509,7 +509,32 @@ No gradient backgrounds, no placeholder line-art, no stock SVG, no generic music
 
 The only filled-variant usage is active nav state. Each nav-bound Lucide icon has a paired filled glyph (Lucide ships filled variants for most nav-relevant icons; where it does not, fall back to the same stroked icon with `fill="currentColor"`).
 
-### 8.6 Single allowed exception
+### 8.6 Navigation states and breakpoints
+
+P6-M6 navigation components live in `apps/web/src/components/navigation/`. They consume the layout primitives and semantic tokens only. Every navigation link uses `icon-md`; no navigation surface may downshift icons to `icon-sm` to solve density.
+
+| State      | Treatment                                                                                 |
+| ---------- | ----------------------------------------------------------------------------------------- |
+| Default    | `--fg-muted` text and icon on transparent surface.                                        |
+| Hover      | `--section-row-hover` fill with `--fg-strong` text and icon.                              |
+| Active     | `--section-accent` fill with `--section-accent-fg` text; icon uses `fill="currentColor"`. |
+| Focus      | 2px `--ring-focus` ring with 2px offset on `--surface-page`; do not remove the outline.   |
+| Disabled   | `--fg-faint` at 50% opacity; pointer and keyboard activation disabled.                    |
+| User menu  | Raised `--surface-raised` popover with `--border-default`, `--radius-md`, `--shadow-md`.  |
+| Breadcrumb | Links use `--fg-muted`; current page uses `--fg-strong`; separators use `--fg-faint`.     |
+
+Breakpoint behavior:
+
+| Range       | Behavior                                                                                                          |
+| ----------- | ----------------------------------------------------------------------------------------------------------------- |
+| `< md`      | Side navigation is hidden. A top-left icon button opens a fixed mobile panel below the top bar. Escape closes it. |
+| `md`-`lg`   | Side navigation is visible. Mobile trigger is hidden. Top primary links remain hidden to avoid crowding search.   |
+| `lg` and up | Side navigation remains visible; top primary links also render for high-frequency route jumps.                    |
+| `sm` and up | Global search appears in the top bar. Below `sm`, search appears inside the mobile panel.                         |
+
+Keyboard order is mobile trigger (when present), brand, top links, search, user menu, side navigation, breadcrumbs, then page content. All interactive navigation controls use visible token focus rings and remain reachable by Tab.
+
+### 8.7 Single allowed exception
 
 The currently-playing equalizer is **not** a Lucide icon (Lucide ships no animated equalizer). A custom 3-bar SVG lives at `apps/web/src/components/ui/equalizer.tsx`. It is the only non-Lucide icon allowed in the system. Any future request to add a non-Lucide icon requires an ADR.
 
@@ -533,7 +558,7 @@ No emoji as UI icons. Anywhere.
 - Hard-code a hex, a font family, a px outside the spacing scale, a stroke weight, or a duration anywhere.
 - Tint album art with the section hue outside artist heroes (§7.4).
 - Add drop shadows to section blocks. Depth is the flat block fill, not elevation.
-- Replace Lucide with another icon set for any single icon. Use the custom equalizer (§8.6) as the only exception.
+- Replace Lucide with another icon set for any single icon. Use the custom equalizer (§8.7) as the only exception.
 - Use stroke widths other than 2 for Lucide icons.
 - Introduce a "quieter" single-accent variant as a fallback. The system is multi-hue or it is not Statify.
 - Use emoji as UI icons.
