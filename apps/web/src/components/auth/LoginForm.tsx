@@ -5,9 +5,7 @@ import { LoginRequestSchema, type LoginRequest } from '@statify/shared';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
+import { Field, FormError, Input, SubmitButton } from '@/components/forms';
 import { ApiClientError } from '@/lib/api-client';
 import { loginUser } from '@/lib/auth/api';
 
@@ -41,57 +39,20 @@ export function LoginForm({ redirectTo = '/me' }: LoginFormProps) {
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <Field id="login-email" label="Email" error={errors.email?.message}>
-        <Input
-          id="login-email"
-          type="email"
-          autoComplete="email"
-          aria-invalid={errors.email !== undefined}
-          {...register('email')}
-        />
+      <Field id="login-email" label="Email" error={errors.email?.message} required>
+        <Input type="email" autoComplete="email" {...register('email')} />
       </Field>
 
-      <Field id="login-password" label="Password" error={errors.password?.message}>
-        <Input
-          id="login-password"
-          type="password"
-          autoComplete="current-password"
-          aria-invalid={errors.password !== undefined}
-          {...register('password')}
-        />
+      <Field id="login-password" label="Password" error={errors.password?.message} required>
+        <Input type="password" autoComplete="current-password" {...register('password')} />
       </Field>
 
-      {formError !== null && (
-        <p role="alert" className="text-destructive text-sm">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <FormError variant="summary">{formError}</FormError>}
 
-      <Button type="submit" disabled={isSubmitting} className="mt-2">
-        {isSubmitting ? 'Signing in…' : 'Sign in'}
-      </Button>
+      <SubmitButton loading={isSubmitting} loadingLabel="Signing in…" className="mt-2">
+        Sign in
+      </SubmitButton>
     </form>
-  );
-}
-
-interface FieldProps {
-  id: string;
-  label: string;
-  error?: string;
-  children: React.ReactNode;
-}
-
-function Field({ id, label, error, children }: FieldProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      {children}
-      {error !== undefined && (
-        <p className="text-destructive text-xs" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
   );
 }
 

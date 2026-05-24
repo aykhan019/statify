@@ -5,9 +5,8 @@ import { AccountDeleteRequestSchema, type AccountDeleteRequest } from '@statify/
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { Field, FormError, Input, SubmitButton } from '@/components/forms';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
 import { ApiClientError } from '@/lib/api-client';
 import { deleteAccount } from '@/lib/auth/api';
 
@@ -40,7 +39,7 @@ export function DeleteAccountForm() {
   if (!isConfirming) {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-muted-foreground text-sm">
+        <p className="text-sm text-fg-muted">
           Deleting your account is permanent. Your listening history and playlists become
           inaccessible.
         </p>
@@ -58,32 +57,21 @@ export function DeleteAccountForm() {
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="delete-password">Confirm with your current password</Label>
-        <Input
-          id="delete-password"
-          type="password"
-          autoComplete="current-password"
-          aria-invalid={errors.currentPassword !== undefined}
-          {...register('currentPassword')}
-        />
-        {errors.currentPassword?.message !== undefined && (
-          <p className="text-destructive text-xs" role="alert">
-            {errors.currentPassword.message}
-          </p>
-        )}
-      </div>
+      <Field
+        id="delete-password"
+        label="Confirm with your current password"
+        error={errors.currentPassword?.message}
+        required
+      >
+        <Input type="password" autoComplete="current-password" {...register('currentPassword')} />
+      </Field>
 
-      {formError !== null && (
-        <p role="alert" className="text-destructive text-sm">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <FormError variant="summary">{formError}</FormError>}
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" variant="destructive" disabled={isSubmitting}>
-          {isSubmitting ? 'Deleting…' : 'Permanently delete'}
-        </Button>
+        <SubmitButton loading={isSubmitting} loadingLabel="Deleting…" variant="destructive">
+          Permanently delete
+        </SubmitButton>
         <Button
           type="button"
           variant="ghost"

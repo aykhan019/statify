@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
+import { FormError, Switch } from '@/components/forms';
 import { ApiClientError } from '@/lib/api-client';
 import { setPlaylistVisibility } from '@/lib/user-playlists/api';
 
@@ -34,21 +34,17 @@ export function VisibilityToggle({ playlistId, isPublic }: VisibilityToggleProps
   };
 
   return (
-    <div className="flex flex-col items-end gap-1">
-      <Button
-        size="sm"
-        variant={optimistic ? 'primary' : 'secondary'}
-        onClick={() => void toggle()}
+    <div className="flex flex-col items-end gap-1.5">
+      <Switch
+        checked={optimistic}
+        onCheckedChange={() => void toggle()}
         disabled={pending}
-        aria-pressed={optimistic}
-      >
-        {pending ? 'Saving…' : optimistic ? 'Public · Make private' : 'Private · Make public'}
-      </Button>
-      {error !== null && (
-        <p role="alert" className="text-destructive text-xs">
-          {error}
-        </p>
-      )}
+        label={optimistic ? 'Public' : 'Private'}
+        description={
+          optimistic ? 'Anyone can browse this playlist.' : 'Only you can see this playlist.'
+        }
+      />
+      {error !== null && <FormError className="self-end">{error}</FormError>}
     </div>
   );
 }

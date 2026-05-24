@@ -2,9 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
+import { Field, Input, SubmitButton } from '@/components/forms';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
 
 export function AuditLogFilters() {
   const router = useRouter();
@@ -38,40 +37,35 @@ export function AuditLogFilters() {
   return (
     <form
       onSubmit={submit}
+      noValidate
       className="grid gap-3 sm:grid-cols-3 sm:items-end"
       aria-label="Audit log filters"
     >
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="filter-action">Action</Label>
+      <Field id="filter-action" label="Action" optional>
         <Input
-          id="filter-action"
           value={action}
           onChange={(event) => setAction(event.target.value)}
           placeholder="admin.user.banned"
         />
-      </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="filter-actor">Actor user id</Label>
+      </Field>
+      <Field id="filter-actor" label="Actor user id" optional>
         <Input
-          id="filter-actor"
           type="number"
           min="1"
           value={actorUserId}
           onChange={(event) => setActorUserId(event.target.value)}
           placeholder="1"
         />
-      </div>
-      <div className="flex flex-col gap-1">
-        <Label htmlFor="filter-target">Target table</Label>
+      </Field>
+      <Field id="filter-target" label="Target table" optional>
         <Input
-          id="filter-target"
           value={targetTable}
           onChange={(event) => setTargetTable(event.target.value)}
           placeholder="users"
         />
-      </div>
-      <div className="flex gap-2 sm:col-span-3">
-        <Button type="submit">Apply filters</Button>
+      </Field>
+      <div className="flex flex-wrap gap-2 sm:col-span-3">
+        <SubmitButton>Apply filters</SubmitButton>
         {hasFilters && (
           <Button type="button" variant="ghost" onClick={clear}>
             Clear
