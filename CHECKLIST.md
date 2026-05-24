@@ -10,6 +10,7 @@
 - **Current milestone:** P6-M10 Section identity headers + section-hue propagation. Wait for explicit green light before starting.
 - **Last shipped:** P6-M9 Empty / loading / error states pass. State primitives under `apps/web/src/components/states/` (Skeleton plus ListSkeleton / CardGridSkeleton / DetailSkeleton / ChartSkeleton, EmptyState, ErrorState, NotFoundState, shared StatePanel); `loading.tsx` per list / detail / stats segment; `(app)/error.tsx` + `(app)/not-found.tsx`; EmptyState wired into InfiniteScroll and every primary route-level empty; DESIGN.md §10 added (Do / Do not → §11, Token summary → §12); `/styleguide` §19 panel. No new dependency. Interactive smoke (network throttle, forced 404 / 500 while authed) still to be eyeballed by the reviewer.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
+- **Last merge (non-milestone):** PR #36 `chore: add pnpm setup one-shot bootstrap` rebase-merged into `dev` 2026-05-25 (HEAD `3ad5c16`). Adds `pnpm setup` + `scripts/setup.sh`; not a milestone task, so no Phase 6 milestone status changed this session.
 - **Open file/component:** none.
 - **Locked decisions feeding Phase 6:**
   - Design direction: Vivid Workshop (picked 2026-05-24).
@@ -20,7 +21,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** start P6-M10 (section identity headers + section-hue propagation, rahila) on `feat/p6-m10-section-headers` off latest `dev` once green-lit; one PR into `dev`; rebase-merge.
+- **Next concrete action:** start P6-M10 (section identity headers + section-hue propagation, rahila) on `feat/p6-m10-section-headers` off latest `dev` (`3ad5c16`) once green-lit; one PR into `dev`; rebase-merge.
 
 ---
 
