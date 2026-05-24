@@ -2,9 +2,7 @@
 
 import { useState, useTransition, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
+import { Checkbox, Field, FormError, Input, SubmitButton } from '@/components/forms';
 import { ApiClientError } from '@/lib/api-client';
 import { triggerIngestRun } from '@/lib/admin/api';
 
@@ -52,22 +50,18 @@ export function IngestTriggerForm({ running }: IngestTriggerFormProps) {
   }
 
   return (
-    <form onSubmit={submit} className="flex flex-col gap-4">
+    <form onSubmit={submit} noValidate className="flex flex-col gap-4">
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="ingest-data-dir">Data directory (optional)</Label>
+        <Field id="ingest-data-dir" label="Data directory" optional>
           <Input
-            id="ingest-data-dir"
             value={dataDir}
             onChange={(event) => setDataDir(event.target.value)}
             placeholder="./data/mpd"
             autoComplete="off"
           />
-        </div>
-        <div className="flex flex-col gap-1">
-          <Label htmlFor="ingest-slices">Slice limit (optional)</Label>
+        </Field>
+        <Field id="ingest-slices" label="Slice limit" optional>
           <Input
-            id="ingest-slices"
             type="number"
             min="1"
             max="50"
@@ -75,28 +69,29 @@ export function IngestTriggerForm({ running }: IngestTriggerFormProps) {
             onChange={(event) => setSlices(event.target.value)}
             placeholder="all slices in the directory"
           />
-        </div>
+        </Field>
       </div>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          checked={resume}
-          onChange={(event) => setResume(event.target.checked)}
-        />
-        Skip slices that already completed (resume mode)
-      </label>
-      <div className="flex items-center gap-3">
-        <Button type="submit" disabled={running || busy}>
-          {running ? 'Run in progress' : busy ? 'Starting...' : 'Trigger ingest run'}
-        </Button>
-        {message !== null && (
-          <span
-            role={message.kind === 'error' ? 'alert' : 'status'}
-            className={message.kind === 'error' ? 'text-destructive text-sm' : 'text-sm'}
-          >
-            {message.text}
-          </span>
-        )}
+
+      <Checkbox
+        id="ingest-resume"
+        checked={resume}
+        onChange={(event) => setResume(event.target.checked)}
+        label="Skip slices that already completed"
+        description="Resume mode reads the ingest_checkpoints table and only processes new slices."
+      />
+
+      <div className="flex flex-wrap items-center gap-3">
+        <SubmitButton loading={busy} loadingLabel="Starting…" disabled={running}>
+          {running ? 'Run in progress' : 'Trigger ingest run'}
+        </SubmitButton>
+        {message !== null &&
+          (message.kind === 'error' ? (
+            <FormError className="text-sm">{message.text}</FormError>
+          ) : (
+            <span role="status" className="text-sm text-fg-muted">
+              {message.text}
+            </span>
+          ))}
       </div>
     </form>
   );

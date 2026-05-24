@@ -5,9 +5,7 @@ import { PasswordChangeRequestSchema, type PasswordChangeRequest } from '@statif
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { Label } from '@/components/ui/Label';
+import { Field, FormError, Input, SubmitButton } from '@/components/forms';
 import { ApiClientError } from '@/lib/api-client';
 import { changePassword } from '@/lib/auth/api';
 
@@ -39,14 +37,13 @@ export function PasswordChangeForm() {
 
   return (
     <form noValidate onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-      <Field id="current-password" label="Current password" error={errors.currentPassword?.message}>
-        <Input
-          id="current-password"
-          type="password"
-          autoComplete="current-password"
-          aria-invalid={errors.currentPassword !== undefined}
-          {...register('currentPassword')}
-        />
+      <Field
+        id="current-password"
+        label="Current password"
+        error={errors.currentPassword?.message}
+        required
+      >
+        <Input type="password" autoComplete="current-password" {...register('currentPassword')} />
       </Field>
 
       <Field
@@ -54,56 +51,22 @@ export function PasswordChangeForm() {
         label="New password"
         error={errors.newPassword?.message}
         hint="At least 8 characters."
+        required
       >
-        <Input
-          id="new-password"
-          type="password"
-          autoComplete="new-password"
-          aria-invalid={errors.newPassword !== undefined}
-          {...register('newPassword')}
-        />
+        <Input type="password" autoComplete="new-password" {...register('newPassword')} />
       </Field>
 
-      {formError !== null && (
-        <p role="alert" className="text-destructive text-sm">
-          {formError}
-        </p>
-      )}
+      {formError !== null && <FormError variant="summary">{formError}</FormError>}
       {isSubmitSuccessful && formError === null && (
-        <p role="status" className="text-muted-foreground text-sm">
+        <p role="status" className="text-sm text-fg-muted">
           Password updated. Redirecting to sign in…
         </p>
       )}
 
-      <Button type="submit" disabled={isSubmitting} className="self-start">
-        {isSubmitting ? 'Updating…' : 'Update password'}
-      </Button>
+      <SubmitButton loading={isSubmitting} loadingLabel="Updating…" className="self-start">
+        Update password
+      </SubmitButton>
     </form>
-  );
-}
-
-interface FieldProps {
-  id: string;
-  label: string;
-  error?: string;
-  hint?: string;
-  children: React.ReactNode;
-}
-
-function Field({ id, label, error, hint, children }: FieldProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={id}>{label}</Label>
-      {children}
-      {hint !== undefined && error === undefined && (
-        <p className="text-muted-foreground text-xs">{hint}</p>
-      )}
-      {error !== undefined && (
-        <p className="text-destructive text-xs" role="alert">
-          {error}
-        </p>
-      )}
-    </div>
   );
 }
 

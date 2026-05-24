@@ -1,9 +1,11 @@
 'use client';
 
+import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState, type FormEvent } from 'react';
+import { Field, Input, SubmitButton } from '@/components/forms';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
+import { Icon } from '@/components/ui/Icon';
 
 export function AdminUsersSearch() {
   const router = useRouter();
@@ -27,16 +29,23 @@ export function AdminUsersSearch() {
   }
 
   return (
-    <form onSubmit={submit} className="flex gap-2" role="search">
-      <Input
-        type="search"
-        name="q"
-        placeholder="Search by email or display name"
-        value={value}
-        onChange={(event) => setValue(event.target.value)}
-        aria-label="Search users"
-      />
-      <Button type="submit">Search</Button>
+    <form onSubmit={submit} className="flex flex-wrap items-end gap-2" role="search" noValidate>
+      <Field
+        id="admin-users-search"
+        label="Search users"
+        hideLabel
+        className="flex-1 min-w-[16rem]"
+      >
+        <Input
+          type="search"
+          name="q"
+          placeholder="Search by email or display name"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          startSlot={<Icon as={Search} size="sm" />}
+        />
+      </Field>
+      <SubmitButton>Search</SubmitButton>
       {searchParams.has('q') && (
         <Button type="button" variant="ghost" onClick={clear}>
           Clear

@@ -3,10 +3,10 @@
 import type { CatalogSearchTrackResult, UserPlaylistTrackEntry } from '@statify/shared';
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import { ArrowDown, ArrowUp, GripVertical, Trash2 } from 'lucide-react';
+import { Input } from '@/components/forms';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
 import { Icon } from '@/components/ui/Icon';
-import { Input } from '@/components/ui/Input';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchCatalogSearch } from '@/lib/catalog/api';
 import {
@@ -307,14 +307,16 @@ function AddTrackSection({ existingTrackIds, onAdd, pendingTrackId }: AddTrackSe
   return (
     <div className="flex flex-col gap-2">
       <Input
+        id="playlist-track-search"
         type="search"
         placeholder="Search the catalog to add a track"
         value={term}
         onChange={(event) => setTerm(event.target.value)}
+        loading={status === 'loading'}
         aria-label="Search the catalog to add a track"
       />
       {status === 'loading' && <p className="text-xs text-fg-muted">Searching...</p>}
-      {status === 'error' && <p className="text-destructive text-xs">Search failed.</p>}
+      {status === 'error' && <p className="text-xs text-state-error-fg">Search failed.</p>}
       {status === 'ready' && results.length === 0 && (
         <p className="text-xs text-fg-muted">No matches.</p>
       )}
