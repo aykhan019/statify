@@ -21,6 +21,7 @@ describe('MpdPlaylistsService', () => {
       data: [
         {
           collaborative: false,
+          coverImages: ['https://example.com/track-cover.jpg'],
           durationMs: 360000,
           id: 1,
           mpdPid: 42,
@@ -105,6 +106,17 @@ function createPlaylistRecord(): MpdPlaylistListRecord {
     name: 'Road Trip',
     numEdits: 3,
     numFollowers: 250,
+    tracks: [
+      {
+        playlistId: 1,
+        pos: 0,
+        track: {
+          album: { imageUrl: 'https://example.com/album-cover.jpg' },
+          imageUrl: 'https://example.com/track-cover.jpg',
+        },
+        trackId: 100,
+      },
+    ],
   };
 }
 

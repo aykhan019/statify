@@ -24,6 +24,7 @@ export function ArtistsInfiniteList({
         renderItem={(artist) => <ArtistCard artist={artist} />}
         itemKey={(artist) => artist.id}
         emptyText={emptyText}
+        listClassName="grid sm:grid-cols-2 xl:grid-cols-3"
       />
     </div>
   );

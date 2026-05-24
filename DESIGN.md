@@ -438,6 +438,8 @@ The `animate-pulse-eq` (currently-playing equalizer) collapses to a solid filled
 
 iTunes returns one URL string per resolved track (`...100x100bb.jpg`). The render-time helper `coverSrc(url, size)` substitutes the size segment (`600x600bb.jpg`, `1000x1000bb.jpg`) to fetch the right resolution per cover size token. P6-M4 documents the helper alongside the schema change.
 
+Playlist DTOs do not store a playlist-level image. P6-M7 exposes `coverImages` from API list/detail responses, derived from the first four member tracks with `track.imageUrl ?? album.imageUrl`, so playlist cards and heroes can render the same 2 × 2 collage treatment without adding another schema column.
+
 ### 7.3 Frame treatment
 
 Every cover wears a frame in the active section hue (`--color-section-frame`). Frame thickness varies by context:

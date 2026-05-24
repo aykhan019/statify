@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
+import { CatalogDetailHero, TracksInfiniteList } from '@/components/catalog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { TracksInfiniteList } from '@/components/catalog';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchArtistById, fetchTracks } from '@/lib/catalog/api';
 
@@ -33,9 +32,12 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
 
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader
+      <CatalogDetailHero
+        entity="artist"
+        eyebrow="Artist"
+        imageUrl={artist.imageUrl}
         title={artist.name}
-        description={`${artist.trackCount.toLocaleString()} tracks across ${artist.albumCount.toLocaleString()} albums.`}
+        meta={`${artist.trackCount.toLocaleString()} tracks across ${artist.albumCount.toLocaleString()} albums`}
       />
 
       <Card>

@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import type { CSSProperties } from 'react';
 import { cn } from '@/lib/utils/cn';
 
 export type CoverSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'hero' | 'display';
@@ -64,6 +65,8 @@ export interface CoverProps {
    * global search results and other section-less surfaces.
    */
   inSection?: boolean;
+  /** Allows hero-sized covers to shrink to the available inline size. */
+  responsive?: boolean;
   className?: string;
 }
 
@@ -74,29 +77,14 @@ export function Cover({
   size = 'md',
   context = 'card',
   inSection = true,
+  responsive = false,
   className,
 }: CoverProps) {
   const px = SIZE_PX[size];
   const thickness = FRAME_THICKNESS_PX[context];
-  const frameColor = inSection ? 'var(--color-section-frame)' : ENTITY_FRAME_COLOR[entity];
-  const fallbackBg = inSection ? 'var(--color-section-frame)' : ENTITY_FRAME_COLOR[entity];
-
-  const wrapStyle = {
-    width: `${px}px`,
-    height: `${px}px`,
-    padding: `${thickness}px`,
-    backgroundColor: frameColor,
-    borderRadius: 'var(--radius-md)',
-    ...(context === 'currently-playing'
-      ? {
-          boxShadow: `0 0 0 ${thickness}px ${frameColor}, 0 0 12px 0 color-mix(in oklch, ${frameColor} 25%, transparent)`,
-        }
-      : {}),
-  } as const;
-
-  const innerStyle = {
-    borderRadius: `calc(var(--radius-md) - ${thickness}px)`,
-  } as const;
+  const frameColor = getFrameColor(entity, inSection);
+  const wrapStyle = getWrapStyle({ context, frameColor, px, responsive, thickness });
+  const innerStyle = getInnerStyle(thickness);
 
   if (src) {
     return (
@@ -106,7 +94,7 @@ export function Cover({
             src={coverSrc(src, px * 2)}
             alt={name}
             fill
-            sizes={`${px}px`}
+            sizes={responsive ? `(min-width: ${px}px) ${px}px, 100vw` : `${px}px`}
             className="object-cover"
           />
         </div>
@@ -125,7 +113,7 @@ export function Cover({
         className="grid size-full place-items-center text-fg-on-block font-semibold"
         style={{
           ...innerStyle,
-          backgroundColor: fallbackBg,
+          backgroundColor: frameColor,
           fontSize: `${Math.max(px * 0.45, 16)}px`,
         }}
       >
@@ -133,4 +121,47 @@ export function Cover({
       </div>
     </div>
   );
+}
+
+function getFrameColor(entity: EntityKind, inSection: boolean): string {
+  return inSection ? 'var(--color-section-frame)' : ENTITY_FRAME_COLOR[entity];
+}
+
+function getWrapStyle({
+  context,
+  frameColor,
+  px,
+  responsive,
+  thickness,
+}: {
+  context: CoverContext;
+  frameColor: string;
+  px: number;
+  responsive: boolean;
+  thickness: number;
+}): CSSProperties {
+  return {
+    width: responsive ? `min(${px}px, 100%)` : `${px}px`,
+    ...(responsive ? { aspectRatio: 'var(--aspect-square)' } : { height: `${px}px` }),
+    padding: `${thickness}px`,
+    backgroundColor: frameColor,
+    borderRadius: 'var(--radius-md)',
+    ...getGlowStyle(context, thickness, frameColor),
+  };
+}
+
+function getGlowStyle(context: CoverContext, thickness: number, frameColor: string): CSSProperties {
+  if (context !== 'currently-playing') {
+    return {};
+  }
+
+  return {
+    boxShadow: `0 0 0 ${thickness}px ${frameColor}, 0 0 12px 0 color-mix(in oklch, ${frameColor} 25%, transparent)`,
+  };
+}
+
+function getInnerStyle(thickness: number): CSSProperties {
+  return {
+    borderRadius: `calc(var(--radius-md) - ${thickness}px)`,
+  };
 }

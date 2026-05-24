@@ -6,8 +6,8 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ locally (navigation system, ready for PR). Next milestone P6-M7 (data display with real media, rahila). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M6 complete locally; ready for commit and PR.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ locally (data display with real media, ready for PR). Next milestone P6-M8 (forms system, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
+- **Current milestone:** P6-M7 complete locally; ready for commit and PR.
 - **Last shipped:** M8 Rubric / quality demands 6/6. PR #25 + ERD docs follow-up.
 - **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
 - **Open file/component:** none.
@@ -18,7 +18,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** commit and PR P6-M6, then start P6-M7 after P6-M6 lands.
+- **Next concrete action:** commit and PR P6-M7, then start P6-M8 after P6-M7 lands.
 
 ---
 
@@ -188,7 +188,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/navigation/**` (new), `apps/web/src/app/(app)/layout.tsx` (consumes nav), `DESIGN.md` (nav states addendum), `apps/web/src/app/styleguide/page.tsx`.
   - Depends on: P6-M5.
 
-- [ ] **P6-M7: Data display with real media (cards, lists, detail pages)** - L - rahila
+- [x] **P6-M7: Data display with real media (cards, lists, detail pages)** - L - rahila
   - Goal: rebuild Track, Artist, Album, and Playlist cards / list rows / detail headers to render `<Image>` from the Prisma `image_url` fields with the DESIGN.md aspect ratio and frame treatments.
   - Entry criteria: P6-M4 merged (media in DB) and P6-M6 merged (shell exists).
   - Exit criteria: components under `apps/web/src/components/{catalog,playlists}/` use `next/image` against live `imageUrl` fields from the API; aspect ratio, frame, and overlay match the DESIGN.md scale; explicit fallback variant renders when the field is NULL (the DESIGN.md null-fallback, no generic gradients, no placeholders); detail page hero treatments updated for Track / Artist / Album / Playlist; lint / typecheck / build pass; manual smoke on each list and detail route against seeded data confirms real artwork loads.

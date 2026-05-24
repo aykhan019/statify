@@ -23,6 +23,7 @@ export const UserPlaylistOwnerSchema = z.object({
 });
 
 export const UserPlaylistListItemSchema = z.object({
+  coverImages: z.array(z.string().url()).max(4),
   id: z.number().int(),
   name: z.string(),
   description: z.string().nullable(),

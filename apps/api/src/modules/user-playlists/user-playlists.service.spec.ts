@@ -190,6 +190,7 @@ function createRecord(overrides: Partial<UserPlaylistRecord> = {}): UserPlaylist
     createdAt: new Date('2026-05-01T00:00:00.000Z'),
     updatedAt: new Date('2026-05-01T00:00:00.000Z'),
     _count: { tracks: 0 },
+    tracks: [],
     user: { id: 42, displayName: 'Tester' },
     ...overrides,
   };

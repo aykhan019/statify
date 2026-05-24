@@ -7,6 +7,7 @@ export {
 export { AlbumsInfiniteList } from './AlbumsInfiniteList';
 export { ArtistCard } from './ArtistCard';
 export { ArtistsInfiniteList } from './ArtistsInfiniteList';
+export { CatalogDetailHero } from './CatalogDetailHero';
 export { formatDurationMs, formatTrackArtists } from './format';
 export { GlobalSearch } from './GlobalSearch';
 export { InfiniteScroll } from './InfiniteScroll';

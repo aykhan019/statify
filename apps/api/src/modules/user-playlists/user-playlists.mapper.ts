@@ -8,6 +8,7 @@ import type { UserPlaylistRecord, UserPlaylistTrackRecord } from './user-playlis
 
 export function toUserPlaylistListItem(record: UserPlaylistRecord): UserPlaylistListItem {
   return {
+    coverImages: coverImagesFromTracks(record.tracks),
     id: record.id,
     name: record.name,
     description: record.description,
@@ -32,4 +33,10 @@ export function toUserPlaylistTrackEntry(record: UserPlaylistTrackRecord): UserP
     addedAt: record.addedAt.toISOString(),
     track: toTrackListItem(record.track),
   };
+}
+
+function coverImagesFromTracks(recordTracks: UserPlaylistRecord['tracks']): string[] {
+  return recordTracks
+    .map(({ track }) => track.imageUrl ?? track.album.imageUrl)
+    .filter((imageUrl): imageUrl is string => imageUrl !== null);
 }

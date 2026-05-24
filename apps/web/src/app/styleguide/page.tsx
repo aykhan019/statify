@@ -62,6 +62,10 @@ import {
   getNavigationItems,
   type NavigationLinkDemoState,
 } from '@/components/navigation';
+import { AlbumCard, ArtistCard, CatalogDetailHero, TrackRow } from '@/components/catalog';
+import { PlaylistCard } from '@/components/playlists/PlaylistCard';
+import { PlaylistHero } from '@/components/playlists/PlaylistHero';
+import { UserPlaylistCard } from '@/components/playlists/UserPlaylistCard';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
@@ -256,6 +260,59 @@ const ICON_SIZES: IconSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 // arrive in P6-M4; this URL is a single iTunes-shaped string used only here.
 const SAMPLE_COVER_URL =
   'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/52/4d/65/524d6582-d2fb-04ad-3b3c-0bd1f8b86d35/074646793725.jpg/600x600bb.jpg';
+
+const SAMPLE_COVER_URL_ALT =
+  'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/83/8f/0c/838f0cc3-b3d5-6f3f-2a9d-1ea653a9ce48/886446689968.jpg/600x600bb.jpg';
+
+const SAMPLE_ARTIST = {
+  id: 1,
+  imageUrl: null,
+  name: 'The Midnight',
+  spotifyUri: 'spotify:artist:1',
+};
+
+const SAMPLE_ALBUM = {
+  id: 2,
+  imageUrl: SAMPLE_COVER_URL,
+  name: 'Endless Summer',
+  primaryArtist: SAMPLE_ARTIST,
+  spotifyUri: 'spotify:album:2',
+};
+
+const SAMPLE_TRACK = {
+  album: SAMPLE_ALBUM,
+  artists: [{ ...SAMPLE_ARTIST, role: 'primary' as const }],
+  durationMs: 248000,
+  id: 3,
+  imageUrl: SAMPLE_COVER_URL,
+  name: 'Sunset',
+  previewUrl: 'https://example.com/preview.m4a',
+  spotifyUri: 'spotify:track:3',
+};
+
+const SAMPLE_PLAYLIST = {
+  collaborative: false,
+  coverImages: [SAMPLE_COVER_URL, SAMPLE_COVER_URL_ALT],
+  durationMs: 3_680_000,
+  id: 4,
+  mpdPid: 42,
+  name: 'Late Night Drive',
+  numEdits: 3,
+  numFollowers: 12847,
+  trackCount: 18,
+};
+
+const SAMPLE_USER_PLAYLIST = {
+  coverImages: [SAMPLE_COVER_URL_ALT, SAMPLE_COVER_URL],
+  createdAt: '2026-05-24T00:00:00.000Z',
+  description: 'Synth-heavy tracks for long stretches of open road.',
+  id: 5,
+  isPublic: true,
+  name: 'Neon Route',
+  owner: { id: 1, displayName: 'Alex Rivera' },
+  trackCount: 12,
+  updatedAt: '2026-05-24T00:00:00.000Z',
+};
 
 function HuesGrid() {
   return (
@@ -775,7 +832,57 @@ export default function StyleguidePage() {
         </div>
       </SectionFrame>
 
-      <H2 id="radius">11. Radius scale</H2>
+      <H2 id="data-display">11. Data display media</H2>
+      <Caption>
+        P6-M7 cards, rows, playlist collage, and detail heroes consume live imageUrl fields and the
+        null fallback.
+      </Caption>
+      <SectionFrame hue="violet">
+        <div className="space-y-8">
+          <LayoutGrid columns="two" gap="lg">
+            <LayoutSurface tone="work" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Track row</p>
+              <TrackRow track={SAMPLE_TRACK} />
+            </LayoutSurface>
+            <LayoutSurface tone="work" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Catalog cards</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <AlbumCard album={SAMPLE_ALBUM} />
+                <ArtistCard artist={SAMPLE_ARTIST} />
+              </div>
+            </LayoutSurface>
+          </LayoutGrid>
+
+          <LayoutGrid columns="two" gap="lg">
+            <LayoutSurface tone="work" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Playlist cards</p>
+              <LayoutStack gap="md">
+                <PlaylistCard playlist={SAMPLE_PLAYLIST} />
+                <UserPlaylistCard playlist={SAMPLE_USER_PLAYLIST} href="/me/playlists/5" />
+              </LayoutStack>
+            </LayoutSurface>
+            <LayoutSurface tone="work" padding="lg" radius="lg">
+              <p className="text-fg-muted mb-3 font-mono text-xs">Playlist hero collage</p>
+              <PlaylistHero
+                coverImages={SAMPLE_PLAYLIST.coverImages}
+                name={SAMPLE_PLAYLIST.name}
+                eyebrow="MPD playlist"
+                meta="18 tracks · 12,847 followers"
+              />
+            </LayoutSurface>
+          </LayoutGrid>
+
+          <CatalogDetailHero
+            entity="album"
+            eyebrow="Album"
+            imageUrl={SAMPLE_ALBUM.imageUrl}
+            meta="The Midnight · 12 tracks"
+            title={SAMPLE_ALBUM.name}
+          />
+        </div>
+      </SectionFrame>
+
+      <H2 id="radius">12. Radius scale</H2>
       <Caption>Album frames lock at radius-md.</Caption>
       <div className="flex flex-wrap items-end gap-4">
         {RADII.map((r) => (
@@ -789,7 +896,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="shadow">12. Shadow scale</H2>
+      <H2 id="shadow">13. Shadow scale</H2>
       <Caption>
         Cards default to none; depth comes from block fills. Shadows reserved for floating surfaces.
       </Caption>
@@ -805,7 +912,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="motion">13. Motion</H2>
+      <H2 id="motion">14. Motion</H2>
       <Caption>
         Fire any named animation. Durations and easings live in --duration-* / --ease-* tokens.
         Reduce-motion collapses every transition to 0ms globally.
@@ -832,7 +939,7 @@ export default function StyleguidePage() {
         </div>
       </div>
 
-      <H2 id="image">14. Image frames</H2>
+      <H2 id="image">15. Image frames</H2>
       <Caption>
         Cover at every size with a real iTunes URL (left) and the null-fallback variant (right).
         Frame thickness varies by context.
@@ -906,7 +1013,7 @@ export default function StyleguidePage() {
         </div>
       </div>
 
-      <H2 id="icons">15. Icon set</H2>
+      <H2 id="icons">16. Icon set</H2>
       <Caption>
         Lucide React, stroke 2 locked by the &lt;Icon&gt; wrapper. Sizes from --icon-xs to
         --icon-xl.
@@ -927,7 +1034,7 @@ export default function StyleguidePage() {
         ))}
       </div>
 
-      <H2 id="buttons">16. Button primitive</H2>
+      <H2 id="buttons">17. Button primitive</H2>
       <Caption>
         Public API unchanged from Phase 5 (variant + size). Internals re-keyed onto the new tokens.
       </Caption>

@@ -2,9 +2,10 @@ import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { TrackRow } from '@/components/catalog';
+import { formatDurationMs } from '@/components/catalog/format';
+import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { SimilarPlaylistsList } from '@/components/playlists/SimilarPlaylistsList';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchSimilarPlaylists } from '@/lib/analytics/api';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchPlaylistDetail, fetchPlaylistTracks } from '@/lib/playlists/api';
@@ -66,9 +67,11 @@ export default async function PlaylistDetailPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={playlist.name}
-        description={`${playlist.trackCount.toLocaleString()} tracks · ${playlist.numFollowers.toLocaleString()} followers · MPD #${playlist.mpdPid}`}
+      <PlaylistHero
+        coverImages={playlist.coverImages}
+        name={playlist.name}
+        eyebrow="MPD playlist"
+        meta={`${playlist.trackCount.toLocaleString()} tracks · ${playlist.numFollowers.toLocaleString()} followers · ${formatDurationMs(playlist.durationMs)} · MPD #${playlist.mpdPid}`}
       />
       <Card>
         <CardHeader>

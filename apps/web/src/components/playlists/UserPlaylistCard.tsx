@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { UserPlaylistListItem } from '@statify/shared';
-import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { PlaylistArtwork } from './PlaylistArtwork';
 
 interface UserPlaylistCardProps {
   playlist: UserPlaylistListItem;
@@ -9,21 +10,26 @@ interface UserPlaylistCardProps {
 
 export function UserPlaylistCard({ playlist, href }: UserPlaylistCardProps) {
   return (
-    <Card className="hover:bg-muted transition-colors">
-      <Link href={href} className="flex flex-wrap items-center justify-between gap-4 p-4">
+    <Link href={href} className="group block h-full">
+      <article className="flex h-full gap-4 rounded-(--radius-md) border border-border-default bg-surface-raised p-4 transition-colors hover:bg-section-row-hover">
+        <PlaylistArtwork coverImages={playlist.coverImages} name={playlist.name} size="lg" />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <span className="hover:text-accent truncate text-base font-medium">{playlist.name}</span>
-          <p className="text-muted-foreground truncate text-sm">
+          <h2 className="truncate text-lg font-semibold text-fg-strong group-hover:text-section-accent">
+            {playlist.name}
+          </h2>
+          <p className="truncate text-sm text-fg-muted">
             {playlist.trackCount.toLocaleString()} tracks
-            {playlist.description !== null && playlist.description.length > 0
-              ? ` · ${playlist.description}`
-              : ''}
           </p>
+          {playlist.description !== null && playlist.description.length > 0 && (
+            <p className="line-clamp-2 text-sm text-fg-muted">{playlist.description}</p>
+          )}
+          <div className="mt-auto pt-3">
+            <Badge variant={playlist.isPublic ? 'success' : 'neutral'}>
+              {playlist.isPublic ? 'Public' : 'Private'}
+            </Badge>
+          </div>
         </div>
-        <div className="text-muted-foreground flex shrink-0 gap-3 text-xs sm:text-sm">
-          <span>{playlist.isPublic ? 'Public' : 'Private'}</span>
-        </div>
-      </Link>
-    </Card>
+      </article>
+    </Link>
   );
 }

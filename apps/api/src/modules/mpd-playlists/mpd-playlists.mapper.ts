@@ -9,6 +9,7 @@ import type { MpdPlaylistListRecord, MpdPlaylistTrackRecord } from './mpd-playli
 export function toMpdPlaylistListItem(record: MpdPlaylistListRecord): MpdPlaylistListItem {
   return {
     collaborative: record.collaborative,
+    coverImages: coverImagesFromTracks(record.tracks),
     durationMs: Number(record.durationMs),
     id: record.id,
     mpdPid: record.mpdPid,
@@ -31,4 +32,10 @@ export function toMpdPlaylistTrackEntry(record: MpdPlaylistTrackRecord): MpdPlay
     pos: record.pos,
     track: toTrackListItem(record.track),
   };
+}
+
+function coverImagesFromTracks(recordTracks: MpdPlaylistListRecord['tracks']): string[] {
+  return recordTracks
+    .map(({ track }) => track.imageUrl ?? track.album.imageUrl)
+    .filter((imageUrl): imageUrl is string => imageUrl !== null);
 }

@@ -1,10 +1,10 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { PlaylistTracksManager } from '@/components/playlists/PlaylistTracksManager';
 import { VisibilityToggle } from '@/components/playlists/VisibilityToggle';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
-import { PageHeader } from '@/components/ui/PageHeader';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchMyPlaylistDetail, fetchMyPlaylistTracks } from '@/lib/user-playlists/api';
 
@@ -40,14 +40,20 @@ export default async function MyPlaylistDetailPage({ params }: { params: Promise
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title={playlist.name}
-        description={`${playlist.trackCount.toLocaleString()} tracks`}
+      <PlaylistHero
+        coverImages={playlist.coverImages}
+        name={playlist.name}
+        eyebrow="My playlist"
+        meta={`${playlist.trackCount.toLocaleString()} tracks · ${
+          playlist.isPublic ? 'Public' : 'Private'
+        }`}
+        description={
+          playlist.description !== null && playlist.description.length > 0
+            ? playlist.description
+            : undefined
+        }
         actions={<VisibilityToggle playlistId={playlistId} isPublic={playlist.isPublic} />}
       />
-      {playlist.description !== null && playlist.description.length > 0 && (
-        <p className="text-muted-foreground text-sm">{playlist.description}</p>
-      )}
       <Card>
         <CardHeader>
           <CardTitle>Tracks</CardTitle>

@@ -13,6 +13,18 @@ import type { CatalogListResult } from '../catalog/catalog.types';
 
 const USER_PLAYLIST_INCLUDE = {
   _count: { select: { tracks: true } },
+  tracks: {
+    include: {
+      track: {
+        select: {
+          album: { select: { imageUrl: true } },
+          imageUrl: true,
+        },
+      },
+    },
+    orderBy: { pos: 'asc' },
+    take: 4,
+  },
   user: { select: { id: true, displayName: true } },
 } as const satisfies Prisma.UserPlaylistInclude;
 

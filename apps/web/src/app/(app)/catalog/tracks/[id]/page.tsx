@@ -1,9 +1,14 @@
 import { cookies } from 'next/headers';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
-import { PageHeader } from '@/components/ui/PageHeader';
-import { formatDurationMs, formatTrackArtists, PreviewPlayerLauncher } from '@/components/catalog';
+import {
+  CatalogDetailHero,
+  formatDurationMs,
+  formatTrackArtists,
+  PreviewPlayerLauncher,
+} from '@/components/catalog';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Cover } from '@/components/ui/Cover';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchTrackById } from '@/lib/catalog/api';
 import { fetchPlayCount } from '@/lib/history/api';
@@ -42,22 +47,13 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
 
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader
+      <CatalogDetailHero
+        entity="track"
+        eyebrow="Track"
+        imageUrl={track.imageUrl ?? track.album.imageUrl}
         title={track.name}
-        description={`${primaryArtistName} · ${formatDurationMs(track.durationMs)}`}
-      />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Preview</CardTitle>
-          <CardDescription>
-            30-second preview courtesy of iTunes Search.{' '}
-            {playCount.count > 0
-              ? `You have played this track ${playCount.count.toLocaleString()} ${playCount.count === 1 ? 'time' : 'times'}.`
-              : 'You have not played this track yet.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
+        meta={`${primaryArtistName} · ${formatDurationMs(track.durationMs)}`}
+        actions={
           <PreviewPlayerLauncher
             track={{
               trackId: track.id,
@@ -67,24 +63,37 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
               durationMs: track.durationMs,
             }}
           />
-        </CardContent>
-      </Card>
+        }
+      >
+        {playCount.count > 0
+          ? `Played ${playCount.count.toLocaleString()} ${
+              playCount.count === 1 ? 'time' : 'times'
+            }.`
+          : 'Not played yet.'}
+      </CatalogDetailHero>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle>Album</CardTitle>
           </CardHeader>
-          <CardContent>
-            <Link
-              href={`/catalog/albums/${track.album.id}`}
-              className="text-accent hover:underline"
-            >
-              {track.album.name}
-            </Link>
-            <p className="text-muted-foreground mt-1 text-sm">
-              by {track.album.primaryArtist.name}
-            </p>
+          <CardContent className="flex items-center gap-4">
+            <Cover
+              src={track.album.imageUrl}
+              name={track.album.name}
+              entity="album"
+              size="md"
+              context="card"
+            />
+            <div className="min-w-0">
+              <Link
+                href={`/catalog/albums/${track.album.id}`}
+                className="text-section-accent hover:underline"
+              >
+                {track.album.name}
+              </Link>
+              <p className="mt-1 text-sm text-fg-muted">by {track.album.primaryArtist.name}</p>
+            </div>
           </CardContent>
         </Card>
 
@@ -96,13 +105,22 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
             <ul className="flex flex-col gap-1.5">
               {track.artists.map((artist) => (
                 <li key={artist.id} className="flex items-center justify-between gap-3">
-                  <Link
-                    href={`/catalog/artists/${artist.id}`}
-                    className="text-accent hover:underline"
-                  >
-                    {artist.name}
-                  </Link>
-                  <span className="text-muted-foreground text-xs capitalize">{artist.role}</span>
+                  <div className="flex min-w-0 items-center gap-3">
+                    <Cover
+                      src={artist.imageUrl}
+                      name={artist.name}
+                      entity="artist"
+                      size="xs"
+                      context="list-dense"
+                    />
+                    <Link
+                      href={`/catalog/artists/${artist.id}`}
+                      className="truncate text-section-accent hover:underline"
+                    >
+                      {artist.name}
+                    </Link>
+                  </div>
+                  <span className="text-xs text-fg-muted capitalize">{artist.role}</span>
                 </li>
               ))}
             </ul>

@@ -8,6 +8,18 @@ import type { CatalogListResult } from '../catalog/catalog.types';
 
 const MPD_PLAYLIST_LIST_INCLUDE = {
   _count: { select: { tracks: true } },
+  tracks: {
+    include: {
+      track: {
+        select: {
+          album: { select: { imageUrl: true } },
+          imageUrl: true,
+        },
+      },
+    },
+    orderBy: { pos: 'asc' },
+    take: 4,
+  },
 } as const satisfies Prisma.MpdPlaylistInclude;
 
 const MPD_PLAYLIST_TRACK_INCLUDE = {
