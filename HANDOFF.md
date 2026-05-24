@@ -42,7 +42,10 @@
   - `docs/erd.png` is a dbdiagram.io export generated from `docs/erd.dbml`.
   - No schema, dependency, config, or folder-structure changes landed in PR #25. The structural changes log does not need a new row for the docs/report file additions.
   - PR #25 CI passed before the rebase merge. The follow-up ERD/docs update was format-checked locally.
-  - Full authenticated end-to-end UI smoke against a running API was not run locally because Node v26 is installed and the API source-import resolution still fails there. Repo pins Node 22 in `.nvmrc`; use Node 22 for the next full local smoke. M5, M6, and M7 surfaces all need that smoke against real seeded data before the dev → main promotion.
+  - Local runtime fix after M8: `@statify/shared` and `@statify/db` now resolve runtime imports from built `dist` outputs while keeping TypeScript declarations pointed at source, root `pnpm dev` and `pnpm test` build those packages before starting app runtime/tests, and the API config loads the root `.env` when launched from `apps/api`. This fixes the local API crash where current Node 22 rejected TypeScript source directory imports.
+  - `AuthModule` now exports `AuthTokenService` so `JwtAuthGuard` can be injected from modules that import `AuthModule` (analytics, admin, history, catalog, and user playlists).
+  - Verification after the local runtime fix: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm --filter @statify/api test`, `pnpm build`, and `GET /healthz` on the local API all passed under Node 22.
+  - Full authenticated end-to-end UI smoke against seeded data still needs to be repeated under Node 22 before the dev → main promotion. The API now starts locally; use admin and user seed accounts for the smoke.
   - `toQueryString` is duplicated across `apps/web/src/lib/{admin,analytics,playlists,history,user-playlists}/api.ts`. The admin client makes it the fifth instance, so the hoist into a shared util is now due as a separate cleanup task (not in M8 scope).
 - **Blockers (gate further milestone work):** none.
 - **Deployment gates:**
@@ -90,6 +93,9 @@
 | 2026-05-24 | Web `(app)/community` route group + community pages     | ADR-001 | Elshad |
 | 2026-05-24 | Web `(app)/admin` route group + admin shell             | ADR-001 | Aykhan |
 | 2026-05-24 | `users.banned_at` column added                          | ADR-001 | Aykhan |
+| 2026-05-24 | Workspace runtime entrypoints switched to `dist`        | ADR-001 | Aykhan |
+| 2026-05-24 | Root dev/test builds runtime workspace packages first   | ADR-001 | Aykhan |
+| 2026-05-24 | API config loads root `.env` from app workspace         | ADR-001 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

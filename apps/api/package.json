@@ -8,6 +8,7 @@
     "build": "nest build",
     "start:prod": "node dist/main.js",
     "typecheck": "tsc --noEmit",
+    "pretest": "pnpm --filter @statify/shared --filter @statify/db run build",
     "test": "vitest run",
     "test:watch": "vitest"
   },

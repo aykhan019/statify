@@ -2,7 +2,7 @@
   "name": "@statify/db",
   "version": "0.0.0",
   "private": true,
-  "main": "./src/index.ts",
+  "main": "./dist/src/index.js",
   "types": "./src/index.ts",
   "scripts": {
     "prisma:generate": "prisma generate",

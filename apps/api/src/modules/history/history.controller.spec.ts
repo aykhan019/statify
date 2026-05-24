@@ -1,6 +1,5 @@
 import type { Request } from 'express';
 import { describe, expect, it, vi } from 'vitest';
-import { ZodError } from 'zod';
 import type { AuthenticatedUser } from '../auth/auth.types';
 import { HistoryController } from './history.controller';
 import type { ListeningHistoryService } from './listening-history.service';
@@ -72,7 +71,7 @@ describe('HistoryController', () => {
         USER,
         createRequest({ 'idempotency-key': 'bad key with spaces' }),
       ),
-    ).toThrow(ZodError);
+    ).toThrowError(/Invalid/);
     expect(service.record).not.toHaveBeenCalled();
   });
 });

@@ -27,6 +27,6 @@ import { PasswordService } from './password.service';
     PasswordService,
     RolesGuard,
   ],
-  exports: [AuthService, CsrfGuard, JwtAuthGuard, RolesGuard],
+  exports: [AuthService, AuthTokenService, CsrfGuard, JwtAuthGuard, RolesGuard],
 })
 export class AuthModule {}
