@@ -1,7 +1,8 @@
+import { Users } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { UserPlaylistCard } from '@/components/playlists/UserPlaylistCard';
-import { Card, CardContent } from '@/components/ui/Card';
+import { EmptyState } from '@/components/states';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchPublicUserPlaylists } from '@/lib/user-playlists/api';
 
@@ -40,13 +41,11 @@ export default async function CommunityPlaylistsPage({
         description={`Public playlists from other users. ${response.total.toLocaleString()} total.`}
       />
       {response.data.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">
-              No community playlists yet. Be the first to make yours public.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Users}
+          title="No community playlists yet"
+          description="No one has made a playlist public yet. Be the first."
+        />
       ) : (
         <>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">

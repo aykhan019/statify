@@ -1,5 +1,7 @@
+import { Gem } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { EmptyState } from '@/components/states';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -29,13 +31,11 @@ export default async function HiddenGemsPage() {
         description={`Tracks present in at least ${DEFAULT_MIN_PLAYLISTS} playlists but never previewed by any Statify user.`}
       />
       {entries.length === 0 ? (
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">
-              Nothing matches. Lower the threshold once the dataset grows.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Gem}
+          title="No hidden gems found"
+          description="Nothing matches the current threshold. Lower it once the dataset grows."
+        />
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry) => (

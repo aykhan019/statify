@@ -1,6 +1,9 @@
+import { CalendarClock } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { HeatmapGrid } from '@/components/stats/HeatmapGrid';
+import { EmptyState } from '@/components/states';
+import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -24,19 +27,19 @@ export default async function HeatmapPage() {
           title="Listening heatmap"
           description="When you listen, broken out by day and hour."
         />
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">
-              Not enough plays yet. Start a few previews and the heatmap will fill in.
-            </p>
+        <EmptyState
+          icon={CalendarClock}
+          title="Not enough plays yet"
+          description="Start a few previews from the catalog and the heatmap will fill in by day and hour."
+          action={
             <Link
               href="/catalog/tracks"
-              className="text-accent mt-2 inline-block text-sm font-medium"
+              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
             >
-              Open the catalog →
+              Open the catalog
             </Link>
-          </CardContent>
-        </Card>
+          }
+        />
       </Container>
     );
   }

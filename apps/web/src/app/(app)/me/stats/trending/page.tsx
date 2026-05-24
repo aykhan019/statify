@@ -1,6 +1,8 @@
+import { TrendingUp } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { TrendingArtistsChart } from '@/components/stats/TrendingArtistsChart';
+import { EmptyState } from '@/components/states';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -38,13 +40,11 @@ export default async function TrendingPage() {
           title="Trending artists"
           description="Artists growing in your listens versus the previous week."
         />
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">
-              Nothing trending yet. Once you have a couple of weeks of plays, growth shows up here.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={TrendingUp}
+          title="Nothing trending yet"
+          description="Once you have a couple of weeks of plays, artists growing in your listens show up here."
+        />
       </Container>
     );
   }

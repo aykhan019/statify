@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
+import { EmptyState } from '@/components/states';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/lib/utils/cn';
 
@@ -17,6 +18,7 @@ interface InfiniteScrollProps<T> {
   renderItem: (item: T) => ReactNode;
   itemKey: (item: T) => string | number;
   emptyText?: string;
+  emptyState?: ReactNode;
   listClassName?: string;
 }
 
@@ -25,7 +27,8 @@ export function InfiniteScroll<T>({
   loader,
   renderItem,
   itemKey,
-  emptyText = 'Nothing here yet.',
+  emptyText = 'Nothing here yet',
+  emptyState,
   listClassName,
 }: InfiniteScrollProps<T>) {
   const [items, setItems] = useState<T[]>(initial.data);
@@ -79,7 +82,7 @@ export function InfiniteScroll<T>({
   }, [loadNext]);
 
   if (items.length === 0) {
-    return <p className="text-muted-foreground py-6 text-sm">{emptyText}</p>;
+    return emptyState ?? <EmptyState title={emptyText} />;
   }
 
   const hasMore = page < totalPages;
@@ -96,7 +99,7 @@ export function InfiniteScroll<T>({
 
       {error !== null && (
         <div className="flex flex-col items-center gap-2 py-2">
-          <p className="text-destructive text-sm">{error}</p>
+          <p className="text-state-error-fg text-sm">{error}</p>
           <Button type="button" variant="secondary" size="sm" onClick={() => void loadNext()}>
             Retry
           </Button>
@@ -117,9 +120,7 @@ export function InfiniteScroll<T>({
         </div>
       )}
 
-      {!hasMore && (
-        <p className="text-muted-foreground text-center text-xs">All {items.length} results.</p>
-      )}
+      {!hasMore && <p className="text-fg-muted text-center text-xs">All {items.length} results.</p>}
     </div>
   );
 }

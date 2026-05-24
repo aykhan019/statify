@@ -1,6 +1,9 @@
+import { Mic2 } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { TopArtistsChart } from '@/components/stats/TopArtistsChart';
+import { EmptyState } from '@/components/states';
+import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Container } from '@/components/ui/Container';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -29,17 +32,19 @@ export default async function TopArtistsPage() {
           title="Top artists"
           description="Your most played artists, ranked by play count."
         />
-        <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-muted-foreground text-sm">
-              Not enough listens yet. Play a few previews from the{' '}
-              <Link href="/catalog/tracks" className="text-accent underline">
-                catalog
-              </Link>{' '}
-              and check back.
-            </p>
-          </CardContent>
-        </Card>
+        <EmptyState
+          icon={Mic2}
+          title="Not enough listens yet"
+          description="Play a few previews from the catalog and check back to see your most-played artists."
+          action={
+            <Link
+              href="/catalog/tracks"
+              className={buttonVariants({ variant: 'secondary', size: 'sm' })}
+            >
+              Open the catalog
+            </Link>
+          }
+        />
       </Container>
     );
   }
