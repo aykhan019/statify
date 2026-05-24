@@ -200,7 +200,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
               onDragEnd={handleDragEnd}
               onDrop={handleDragEnd}
               className={cn(
-                'flex items-center gap-3 rounded-(--radius-md) border border-border-default bg-surface-raised p-3 transition-colors hover:bg-section-row-hover',
+                'flex items-center gap-3 rounded-(--radius-md) border border-border-default bg-surface-raised p-3 motion-colors motion-list-item hover:bg-section-row-hover',
                 draggedId === entry.track.id && 'opacity-50',
               )}
             >
@@ -325,7 +325,7 @@ function AddTrackSection({ existingTrackIds, onAdd, pendingTrackId }: AddTrackSe
             return (
               <li
                 key={result.id}
-                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 hover:bg-section-row-hover"
+                className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 motion-colors motion-list-item hover:bg-section-row-hover"
               >
                 <Cover
                   src={result.imageUrl}

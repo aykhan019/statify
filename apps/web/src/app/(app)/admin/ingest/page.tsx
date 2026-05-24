@@ -70,7 +70,7 @@ export default async function AdminIngestPage() {
                   {response.data.map((row) => (
                     <tr
                       key={row.id}
-                      className="border-t transition-colors hover:bg-section-row-hover"
+                      className="border-t motion-colors motion-list-item hover:bg-section-row-hover"
                     >
                       <td className="px-3 py-2 font-medium">{row.sliceFilename}</td>
                       <td className="px-3 py-2">

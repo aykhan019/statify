@@ -64,7 +64,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
   return (
     <div
       className={cn(
-        'bg-surface text-surface-foreground flex items-center gap-4 rounded-lg border p-3 shadow-sm',
+        'motion-player bg-surface text-surface-foreground flex items-center gap-4 rounded-lg border p-3 shadow-sm',
         className,
       )}
       role="region"
@@ -101,6 +101,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
       <Button
         variant="secondary"
         size="sm"
+        className="motion-player"
         onClick={toggle}
         disabled={isUnavailable}
         aria-label={status === 'playing' ? 'Pause preview' : 'Play preview'}
@@ -133,7 +134,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
         <button
           type="button"
           onClick={() => setMuted(!isMuted)}
-          className="hover:text-accent"
+          className="motion-interactive hover:text-accent"
           aria-pressed={isMuted}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >

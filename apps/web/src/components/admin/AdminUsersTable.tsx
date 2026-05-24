@@ -78,7 +78,10 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
               const status = computeStatus(user);
               const nextRole: UserRole = user.role === 'admin' ? 'user' : 'admin';
               return (
-                <tr key={user.id} className="border-t transition-colors hover:bg-section-row-hover">
+                <tr
+                  key={user.id}
+                  className="border-t motion-colors motion-list-item hover:bg-section-row-hover"
+                >
                   <td className="px-3 py-3">
                     <div className="flex flex-col">
                       <span className="font-medium">{user.displayName}</span>

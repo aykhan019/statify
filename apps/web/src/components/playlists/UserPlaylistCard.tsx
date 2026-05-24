@@ -10,8 +10,8 @@ interface UserPlaylistCardProps {
 
 export function UserPlaylistCard({ playlist, href }: UserPlaylistCardProps) {
   return (
-    <Link href={href} className="group block h-full">
-      <article className="flex h-full gap-4 rounded-(--radius-md) border border-border-default bg-surface-raised p-4 transition-colors hover:bg-section-row-hover">
+    <Link href={href} className="group block h-full motion-list-item">
+      <article className="flex h-full gap-4 rounded-(--radius-md) border border-border-default bg-surface-raised p-4 motion-colors hover:bg-section-row-hover">
         <PlaylistArtwork coverImages={playlist.coverImages} name={playlist.name} size="lg" />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <h2 className="truncate text-lg font-semibold text-fg-strong group-hover:text-section-accent">

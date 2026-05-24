@@ -61,7 +61,7 @@ export function NavigationLink({
         onNavigate?.();
       }}
       className={cn(
-        'group inline-flex min-w-0 items-center gap-3 rounded-(--radius-sm) text-sm font-medium transition-colors transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page',
+        'group inline-flex min-w-0 items-center gap-3 rounded-(--radius-sm) text-sm font-medium motion-interactive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page',
         variantClassName[variant],
         stateClassName[resolvedState],
         className,

@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils/cn';
 
 /**
  * Base shimmer block. Token-bound: `--surface-sunken` fill, `--radius-sm`,
- * pulse under motion-safe only (the global reduce-motion guard also stops it).
+ * and `--animate-skeleton-pulse`.
  * Decorative: marked `aria-hidden`; the surrounding loading boundary owns the
  * busy semantics.
  */
@@ -11,7 +11,7 @@ export function Skeleton({ className, ...rest }: HTMLAttributes<HTMLDivElement>)
   return (
     <div
       aria-hidden="true"
-      className={cn('bg-surface-sunken motion-safe:animate-pulse rounded-(--radius-sm)', className)}
+      className={cn('bg-surface-sunken motion-skeleton rounded-(--radius-sm)', className)}
       {...rest}
     />
   );

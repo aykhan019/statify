@@ -7,7 +7,7 @@ export const Skeleton = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement
       <div
         ref={ref}
         aria-hidden="true"
-        className={cn('bg-muted animate-pulse rounded-(--radius-sm)', className)}
+        className={cn('bg-muted motion-skeleton rounded-(--radius-sm)', className)}
         {...rest}
       />
     );
