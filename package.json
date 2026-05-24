@@ -10,6 +10,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @statify/shared --filter @statify/db run build && pnpm -r --parallel --filter=./apps/* run dev",
+    "setup": "bash scripts/setup.sh",
     "build": "pnpm -r run build",
     "typecheck": "pnpm -r run typecheck",
     "lint": "eslint . --max-warnings=0",
