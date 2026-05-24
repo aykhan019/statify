@@ -141,6 +141,7 @@
 | 2026-05-24 | Web `components/forms` system path added                 | ADR-002 | Aykhan |
 | 2026-05-24 | `pnpm setup` + `scripts/setup.sh` one-shot bootstrap     | ADR-001 | Aykhan |
 | 2026-05-25 | Web `components/section/` path added                     | ADR-002 | Rahila |
+| 2026-05-25 | Web `components/charts/` path added                      | ADR-002 | Aykhan |
 
 (Append a row whenever the folder structure or repo layout changes.)
 

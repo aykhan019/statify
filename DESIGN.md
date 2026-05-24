@@ -161,7 +161,17 @@ For sequential / divergent scales (heatmap, choropleth):
 - **Sequential single-hue (Heatmap):** 5 stops from `--color-azure-100` (low) to `--color-azure-700` (high) in light mode; `--color-azure-900` → `--color-azure-400` in dark.
 - **Divergent (positive vs negative deltas in Trending):** 5 stops from `--color-vermilion-500` through neutral `--surface-work` to `--color-green-500`.
 
-Chart axes, grids, and tooltips read from semantic tokens, never raw colors: `--chart-axis: var(--fg-muted)`, `--chart-grid: var(--border-default)`, `--chart-tooltip-bg: var(--surface-raised)`, `--chart-tooltip-fg: var(--fg-default)`, `--chart-tooltip-border: var(--border-default)`.
+Chart axes, grids, and tooltips read from semantic tokens, never raw colors: `--color-chart-axis: var(--fg-muted)`, `--color-chart-grid: var(--border-default)`, `--color-chart-tooltip-bg: var(--surface-raised)`, `--color-chart-tooltip-fg: var(--fg-default)`, `--color-chart-tooltip-border: var(--border-default)`.
+
+#### 1.6.1 Chart surface treatment
+
+All analytics chart surfaces use the shared chart module at `apps/web/src/components/charts/`. Components read series, axis, grid, cursor, tooltip, and heatmap colors from CSS variables through that module. Chart components must not inline raw palette values.
+
+Tooltip treatment: `--color-chart-tooltip-bg` on `--color-chart-tooltip-fg`, 1px `--color-chart-tooltip-border`, `--radius-sm`, 0.875rem text, and compact 0.5rem / 0.75rem padding. Hover cursors use `--color-section-row-hover` so chart interaction follows the active section hue.
+
+Legend treatment: inline swatches use the series token cycle, 0.625rem circular swatches, `text-fg-muted` labels, and wrap onto additional rows without changing chart dimensions.
+
+Heatmap treatment: zero-count cells use `--surface-sunken`; nonzero cells map normalized intensity into the five `--color-chart-heatmap-{0..4}` stops. The scale stays azure in every section so the hour/day heatmap remains comparable across routes.
 
 ---
 
@@ -747,7 +757,7 @@ P6-M3 emits the following families inside `apps/web/src/app/globals.css` `@theme
 --state-{success|warning|error|info|active}-{bg|border|fg}
 
 /* §1.6 data-viz palette */
---chart-series-{0..7}, --chart-axis, --chart-grid, --chart-tooltip-{bg|fg|border}, --chart-heatmap-{0..4}, --chart-divergent-{neg-2|neg-1|zero|pos-1|pos-2}
+--color-chart-series-{0..7}, --color-chart-axis, --color-chart-grid, --color-chart-tooltip-{bg|fg|border}, --color-chart-heatmap-{0..4}, --color-chart-divergent-{neg-2|neg-1|zero|pos-1|pos-2}
 
 /* §2 typography */
 --font-{sans|mono}, plus the size/lh/tracking/weight values embedded in @utility text-{micro|xs|sm|base|md|lg|xl|2xl|3xl|4xl|5xl|6xl|7xl}

@@ -3,12 +3,15 @@
 import type { TopTrackEntry } from '@statify/shared';
 import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from 'recharts';
 import {
-  CHART_AXIS_FILL,
-  CHART_BAR_FILL,
-  CHART_GRID_STROKE,
-  CHART_TOOLTIP_STYLE,
   ChartContainer,
-} from './ChartContainer';
+  chartAxisColor,
+  chartAxisTick,
+  chartBarRadius,
+  chartGridColor,
+  chartTooltipCursor,
+  chartTooltipStyle,
+  getChartSeriesColor,
+} from '@/components/charts';
 
 interface TopTracksChartProps {
   entries: TopTrackEntry[];
@@ -36,29 +39,24 @@ export function TopTracksChart({ entries }: TopTracksChartProps) {
   return (
     <ChartContainer height={chartHeight} ariaLabel="Top tracks by play count">
       <BarChart data={data} layout="vertical" margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
-        <CartesianGrid horizontal={false} stroke={CHART_GRID_STROKE} />
-        <XAxis
-          type="number"
-          allowDecimals={false}
-          stroke={CHART_AXIS_FILL}
-          tick={{ fill: CHART_AXIS_FILL, fontSize: 12 }}
-        />
+        <CartesianGrid horizontal={false} stroke={chartGridColor} />
+        <XAxis type="number" allowDecimals={false} stroke={chartAxisColor} tick={chartAxisTick} />
         <YAxis
           dataKey="trackName"
           type="category"
           width={160}
-          stroke={CHART_AXIS_FILL}
-          tick={{ fill: CHART_AXIS_FILL, fontSize: 12 }}
+          stroke={chartAxisColor}
+          tick={chartAxisTick}
         />
         <Tooltip
-          cursor={{ fill: 'var(--color-section-row-hover)' }}
-          contentStyle={CHART_TOOLTIP_STYLE}
+          cursor={chartTooltipCursor}
+          contentStyle={chartTooltipStyle}
           formatter={(value, _name, item) => {
             const datum = item.payload as TopTrackDatum;
             return [`${value} plays`, `${datum.artistName} (rank ${datum.rank})`];
           }}
         />
-        <Bar dataKey="listenCount" fill={CHART_BAR_FILL} radius={[0, 4, 4, 0]} />
+        <Bar dataKey="listenCount" fill={getChartSeriesColor(0)} radius={chartBarRadius} />
       </BarChart>
     </ChartContainer>
   );

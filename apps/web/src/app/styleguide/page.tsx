@@ -92,6 +92,14 @@ import {
   type SectionDefinition,
   type SectionHue,
 } from '@/components/section';
+import {
+  ChartLegend,
+  chartAxisColor,
+  chartGridColor,
+  chartTooltipStyle,
+  getChartHeatmapColor,
+  getChartSeriesColor,
+} from '@/components/charts';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
@@ -214,6 +222,12 @@ const NAV_DEMO_STATES: NavigationLinkDemoState[] = [
   'disabled',
 ];
 const NAV_DEMO_PRIMARY_ITEM = NAV_DEMO_ITEMS[0]!;
+const CHART_LEGEND_ITEMS = [
+  { label: 'Current period' },
+  { label: 'Previous period' },
+  { label: 'Rolling average' },
+  { label: 'Benchmark' },
+];
 
 const RADII = ['none', 'xs', 'sm', 'md', 'lg', 'xl', '2xl', 'full'] as const;
 const SHADOWS = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -697,28 +711,70 @@ export default function StyleguidePage() {
 
       <H2 id="dataviz">6. Data-viz palette</H2>
       <Caption>
-        Eight series colors. Charts inside a section route shift the section hue to index 0.
+        Eight series colors. Charts inside a section route shift the section hue to index 0; axes,
+        grids, tooltips, legends, and heatmaps read from chart tokens.
       </Caption>
       <div className="grid grid-cols-4 gap-3 md:grid-cols-8">
         {Array.from({ length: 8 }, (_, i) => (
           <div key={i} className="text-center">
             <div
               className="mb-1 aspect-square rounded-(--radius-sm)"
-              style={{ backgroundColor: `var(--color-chart-series-${i})` }}
+              style={{ backgroundColor: getChartSeriesColor(i) }}
             />
             <span className="font-mono text-xs">series-{i}</span>
           </div>
         ))}
       </div>
+      <div className="mt-6 grid gap-4 md:grid-cols-[1fr_18rem]">
+        <div
+          className="relative min-h-40 rounded-(--radius-sm) border bg-surface-work p-4"
+          style={{ borderColor: chartGridColor }}
+        >
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-4 top-1/2 border-t border-dashed"
+            style={{ borderColor: chartGridColor }}
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-4 top-3/4 border-t border-dashed"
+            style={{ borderColor: chartGridColor }}
+          />
+          <div className="relative flex h-28 items-end gap-3">
+            {[0.38, 0.68, 0.46, 0.84].map((height, index) => (
+              <div
+                key={index}
+                className="w-10 rounded-t-(--radius-xs)"
+                style={{
+                  backgroundColor: getChartSeriesColor(index),
+                  height: `${height * 100}%`,
+                }}
+              />
+            ))}
+          </div>
+          <div
+            className="mt-3 flex justify-between font-mono text-[10px]"
+            style={{ color: chartAxisColor }}
+          >
+            <span>0</span>
+            <span>25</span>
+            <span>50</span>
+            <span>75</span>
+          </div>
+        </div>
+        <div className="space-y-4 rounded-(--radius-sm) border border-border-default bg-surface-raised p-4">
+          <ChartLegend items={CHART_LEGEND_ITEMS} />
+          <div className="shadow-sm" style={chartTooltipStyle}>
+            <p className="font-semibold">Friday, 18:00</p>
+            <p className="mt-1 text-xs">42 plays</p>
+          </div>
+        </div>
+      </div>
       <div className="mt-6">
         <p className="text-fg-muted mb-2 font-mono text-xs">Heatmap sequential (azure)</p>
         <div className="flex h-10 overflow-hidden rounded-(--radius-sm)">
           {[0, 1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="flex-1"
-              style={{ backgroundColor: `var(--color-chart-heatmap-${i})` }}
-            />
+            <div key={i} className="flex-1" style={{ backgroundColor: getChartHeatmapColor(i) }} />
           ))}
         </div>
       </div>

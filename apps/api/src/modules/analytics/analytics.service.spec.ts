@@ -44,7 +44,13 @@ describe('AnalyticsService', () => {
   describe('topArtists', () => {
     it('parameterizes user id and limit, projects rank, listens, and minutes', async () => {
       const rows: TopArtistRow[] = [
-        { rank: 1n, artist_id: 10, artist_name: 'Alpha', listen_count: 5n, total_minutes: '12.50' },
+        {
+          rank: 1n,
+          artist_id: 10,
+          artist_name: 'Alpha',
+          listen_count: 5n,
+          total_minutes: { toString: () => '12.50' },
+        },
         { rank: 2n, artist_id: 11, artist_name: 'Beta', listen_count: 3, total_minutes: 7.5 },
       ];
       const { prisma, calls } = createPrisma(rows);
