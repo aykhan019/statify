@@ -59,6 +59,7 @@ export default async function AdminAuditLogPage({
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        headingLevel={2}
         title="Audit log"
         description={`${response.total.toLocaleString()} entries match the current filters.`}
       />
@@ -70,13 +71,24 @@ export default async function AdminAuditLogPage({
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
+                <caption className="sr-only">Audit log entries</caption>
                 <thead className="text-muted-foreground text-left text-xs uppercase tracking-wide">
                   <tr>
-                    <th className="px-3 py-2">When</th>
-                    <th className="px-3 py-2">Actor</th>
-                    <th className="px-3 py-2">Action</th>
-                    <th className="px-3 py-2">Target</th>
-                    <th className="px-3 py-2">Metadata</th>
+                    <th scope="col" className="px-3 py-2">
+                      When
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Actor
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Action
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Target
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Metadata
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -85,9 +97,12 @@ export default async function AdminAuditLogPage({
                       key={entry.id}
                       className="border-t align-top motion-colors motion-list-item hover:bg-section-row-hover"
                     >
-                      <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">
+                      <th
+                        scope="row"
+                        className="px-3 py-2 text-left text-xs whitespace-nowrap text-muted-foreground"
+                      >
                         {formatDate(entry.createdAt)}
-                      </td>
+                      </th>
                       <td className="px-3 py-2">{entry.actorUserId ?? 'system'}</td>
                       <td className="px-3 py-2 font-mono text-xs">{entry.action}</td>
                       <td className="px-3 py-2 text-xs">

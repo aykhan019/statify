@@ -99,9 +99,9 @@ function HeroCopy({
   return (
     <div className={cn('min-w-0', className)}>
       <Badge variant={ENTITY_BADGE[entity]}>{eyebrow}</Badge>
-      <h1 className="mt-4 text-3xl font-extrabold text-fg-strong text-balance sm:text-4xl">
+      <h2 className="mt-4 text-3xl font-extrabold text-fg-strong text-balance sm:text-4xl">
         {title}
-      </h1>
+      </h2>
       <div className="mt-3 text-base text-fg-muted">{meta}</div>
       {children !== undefined && <div className="mt-5 text-sm text-fg-default">{children}</div>}
       {actions !== undefined && <div className="mt-6 flex flex-wrap gap-3">{actions}</div>}

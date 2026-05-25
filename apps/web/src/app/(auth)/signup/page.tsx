@@ -10,7 +10,7 @@ export default function SignupPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create your account</CardTitle>
+        <CardTitle headingLevel={1}>Create your account</CardTitle>
         <CardDescription>Track your listening history and explore the catalog.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">

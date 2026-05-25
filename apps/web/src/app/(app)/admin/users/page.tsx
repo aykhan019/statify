@@ -46,6 +46,7 @@ export default async function AdminUsersPage({
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        headingLevel={2}
         title="Users"
         description={`${response.total.toLocaleString()} accounts total.`}
       />

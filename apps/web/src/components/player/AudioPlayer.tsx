@@ -60,6 +60,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
   }
 
   const isUnavailable = status === 'unavailable' || track.previewUrl === null;
+  const effectiveVolume = isMuted ? 0 : volume;
 
   return (
     <div
@@ -71,26 +72,29 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
       aria-label="Audio preview player"
     >
       {track.previewUrl !== null && (
-        <audio
-          ref={audioRef}
-          src={track.previewUrl}
-          preload="metadata"
-          onLoadedMetadata={() => {
-            if (status === 'loading') {
-              play();
-            }
-          }}
-          onEnded={() => {
-            pause();
-            seek(track.durationMs);
-          }}
-          onTimeUpdate={() => {
-            if (audioRef.current === null) {
-              return;
-            }
-            tick(Math.round(audioRef.current.currentTime * 1000));
-          }}
-        />
+        <>
+          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- Music preview snippets have no spoken caption track. */}
+          <audio
+            ref={audioRef}
+            src={track.previewUrl}
+            preload="metadata"
+            onLoadedMetadata={() => {
+              if (status === 'loading') {
+                play();
+              }
+            }}
+            onEnded={() => {
+              pause();
+              seek(track.durationMs);
+            }}
+            onTimeUpdate={() => {
+              if (audioRef.current === null) {
+                return;
+              }
+              tick(Math.round(audioRef.current.currentTime * 1000));
+            }}
+          />
+        </>
       )}
 
       <div className="min-w-0 flex-1">
@@ -121,8 +125,9 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             seek(Number.parseInt(event.target.value, 10))
           }
-          className="w-full accent-(--color-accent)"
+          className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
           aria-label="Seek position"
+          aria-valuetext={`${formatPosition(positionMs)} of ${formatPosition(track.durationMs)}`}
         />
         <span aria-live="polite">
           {formatPosition(positionMs)} / {formatPosition(track.durationMs)}
@@ -134,7 +139,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
         <button
           type="button"
           onClick={() => setMuted(!isMuted)}
-          className="motion-interactive hover:text-accent"
+          className="rounded-(--radius-xs) motion-interactive hover:text-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
           aria-pressed={isMuted}
           aria-label={isMuted ? 'Unmute' : 'Mute'}
         >
@@ -145,12 +150,13 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
           min={0}
           max={1}
           step={0.01}
-          value={isMuted ? 0 : volume}
+          value={effectiveVolume}
           onChange={(event: ChangeEvent<HTMLInputElement>) =>
             setVolume(Number.parseFloat(event.target.value))
           }
-          className="w-full accent-(--color-accent)"
+          className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
           aria-label="Volume"
+          aria-valuetext={`${Math.round(effectiveVolume * 100)}%`}
         />
       </label>
 

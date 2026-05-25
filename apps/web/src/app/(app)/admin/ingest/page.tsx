@@ -28,6 +28,7 @@ export default async function AdminIngestPage() {
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        headingLevel={2}
         title="Ingestion"
         description="Trigger an MPD ingest run and review prior checkpoint state."
       />
@@ -56,14 +57,27 @@ export default async function AdminIngestPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
+                <caption className="sr-only">Recent ingest checkpoints</caption>
                 <thead className="text-muted-foreground text-left text-xs uppercase tracking-wide">
                   <tr>
-                    <th className="px-3 py-2">Slice</th>
-                    <th className="px-3 py-2">Playlists</th>
-                    <th className="px-3 py-2">Tracks</th>
-                    <th className="px-3 py-2">Started</th>
-                    <th className="px-3 py-2">Finished</th>
-                    <th className="px-3 py-2">State</th>
+                    <th scope="col" className="px-3 py-2">
+                      Slice
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Playlists
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Tracks
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Started
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      Finished
+                    </th>
+                    <th scope="col" className="px-3 py-2">
+                      State
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
@@ -72,7 +86,9 @@ export default async function AdminIngestPage() {
                       key={row.id}
                       className="border-t motion-colors motion-list-item hover:bg-section-row-hover"
                     >
-                      <td className="px-3 py-2 font-medium">{row.sliceFilename}</td>
+                      <th scope="row" className="px-3 py-2 text-left font-medium">
+                        {row.sliceFilename}
+                      </th>
                       <td className="px-3 py-2">
                         {row.playlistsDone.toLocaleString()} / {row.playlistsTotal.toLocaleString()}
                       </td>

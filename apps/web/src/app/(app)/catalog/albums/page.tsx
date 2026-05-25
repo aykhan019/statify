@@ -23,7 +23,7 @@ export default async function AlbumsPage({ searchParams }: AlbumsPageProps) {
 
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader title="Albums" description={description} />
+      <PageHeader headingLevel={2} title="Albums" description={description} />
       <AlbumCatalogControls values={controls} />
       <AlbumsInfiniteList initial={initial} baseQuery={query} emptyText="No albums yet." />
     </section>

@@ -48,28 +48,28 @@ The full raw set is therefore `--color-{hue}-{step}` for each combination, e.g. 
 
 Surface, foreground, border, ring, and overlay variables that every component reads. These are the only color tokens components are allowed to reference directly; raw `--hue-*` and `--color-{hue}-{step}` tokens are only for the section / entity / state / chart mappings below.
 
-| Token                | Light mode (oklch)                             | Dark mode (oklch) | Role                                 |
-| -------------------- | ---------------------------------------------- | ----------------- | ------------------------------------ |
-| `--surface-page`     | `0.985 0 0`                                    | `0.16 0.004 265`  | Page background outside blocks       |
-| `--surface-work`     | `1 0 0`                                        | `0.20 0.006 265`  | Inner work area inside cards         |
-| `--surface-raised`   | `0.99 0 0`                                     | `0.24 0.008 265`  | Cards, dropdowns, popovers           |
-| `--surface-sunken`   | `0.96 0.004 265`                               | `0.13 0.004 265`  | Tinted recesses, code blocks         |
-| `--surface-overlay`  | `0.10 0 0 / 0.55`                              | `0 0 0 / 0.70`    | Modal scrim                          |
-| `--fg-strong`        | `0.18 0.006 265`                               | `0.985 0 0`       | Display headlines, primary numerals  |
-| `--fg-default`       | `0.26 0.006 265`                               | `0.94 0 0`        | Body text                            |
-| `--fg-muted`         | `0.48 0.008 265`                               | `0.70 0.006 265`  | Secondary text, captions             |
-| `--fg-faint`         | `0.66 0.008 265`                               | `0.55 0.006 265`  | Placeholder, disabled                |
-| `--fg-on-block`      | `0.99 0 0`                                     | `0.99 0 0`        | Text on a section-hue block fill     |
-| `--border-default`   | `0.90 0.004 265`                               | `0.30 0.006 265`  | Card borders, dividers               |
-| `--border-strong`    | `0.78 0.006 265`                               | `0.42 0.008 265`  | Input borders, table rules           |
-| `--ring-focus`       | uses active section hue at `--color-{hue}-500` | same              | Focus ring (2px + 2px offset)        |
-| `--ring-focus-paper` | `0.99 0 0`                                     | `0.99 0 0`        | Inner ring when ring sits on a block |
+| Token                | Light mode (oklch)     | Dark mode (oklch) | Role                                 |
+| -------------------- | ---------------------- | ----------------- | ------------------------------------ |
+| `--surface-page`     | `0.985 0 0`            | `0.16 0.004 265`  | Page background outside blocks       |
+| `--surface-work`     | `1 0 0`                | `0.20 0.006 265`  | Inner work area inside cards         |
+| `--surface-raised`   | `0.99 0 0`             | `0.24 0.008 265`  | Cards, dropdowns, popovers           |
+| `--surface-sunken`   | `0.96 0.004 265`       | `0.13 0.004 265`  | Tinted recesses, code blocks         |
+| `--surface-overlay`  | `0.10 0 0 / 0.55`      | `0 0 0 / 0.70`    | Modal scrim                          |
+| `--fg-strong`        | `0.18 0.006 265`       | `0.985 0 0`       | Display headlines, primary numerals  |
+| `--fg-default`       | `0.26 0.006 265`       | `0.94 0 0`        | Body text                            |
+| `--fg-muted`         | `0.48 0.008 265`       | `0.70 0.006 265`  | Secondary text, captions             |
+| `--fg-faint`         | `0.66 0.008 265`       | `0.55 0.006 265`  | Placeholder, disabled                |
+| `--fg-on-block`      | `0.99 0 0`             | `0.99 0 0`        | Text on a section-hue block fill     |
+| `--border-default`   | `0.90 0.004 265`       | `0.30 0.006 265`  | Card borders, dividers               |
+| `--border-strong`    | `0.78 0.006 265`       | `0.42 0.008 265`  | Input borders, table rules           |
+| `--ring-focus`       | active hue at step 700 | step 400          | Focus ring (2px + 2px offset)        |
+| `--ring-focus-paper` | `0.99 0 0`             | `0.99 0 0`        | Inner ring when ring sits on a block |
 
 Cards do **not** use shadows by default; the block-driven language carries depth. Shadows appear only on hovered cards, popovers, and modals (see §5).
 
 ### 1.3 Section identity hues
 
-Each top-level section owns one hue. The block at the top of a route renders in `--color-{hue}-500` with `--fg-on-block` text. Section hue propagates to: active nav indicator, row hover tint (`--color-{hue}-50` light / `--color-{hue}-900` at 40% dark), chart series default, and cover frame in that section.
+Each top-level section owns one hue. The block at the top of a route renders the hue through contrast-safe semantic aliases: `--color-{hue}-700` with `--fg-on-block` text in light mode, and `--color-{hue}-400` with `--surface-page` text in dark mode. Section hue propagates to: active nav indicator, row hover tint (`--color-{hue}-50` light / `--color-{hue}-900` at 40% dark), chart series default, and cover frame in that section. Cover frames and chart series keep the hue's 500 step because they do not carry body text.
 
 | Section     | Route prefix                                    | Hue token             | Reason                   |
 | ----------- | ----------------------------------------------- | --------------------- | ------------------------ |
@@ -89,20 +89,20 @@ Each top-level section owns one hue. The block at the top of a route renders in 
 Semantic alias tokens (P6-M3 emits these alongside the raw set, so a route layout can do `bg-section-block text-section-on-block` and React reads `--color-section-*` from the route's section provider):
 
 ```
---color-section-block      → var(--color-{active hue}-500)
---color-section-block-fg   → var(--fg-on-block)
+--color-section-block      → light: var(--color-{active hue}-700) / dark: var(--color-{active hue}-400)
+--color-section-block-fg   → light: var(--fg-on-block) / dark: var(--surface-page)
 --color-section-tint       → var(--color-{active hue}-50)  /* dark: --color-{active hue}-900 at 40% */
---color-section-accent     → var(--color-{active hue}-500)
---color-section-accent-fg  → var(--fg-on-block)
+--color-section-accent     → light: var(--color-{active hue}-700) / dark: var(--color-{active hue}-400)
+--color-section-accent-fg  → light: var(--fg-on-block) / dark: var(--surface-page)
 --color-section-row-hover  → var(--color-section-tint)
---color-section-frame      → var(--color-section-accent)
+--color-section-frame      → var(--color-{active hue}-500)
 ```
 
 When a route has no section (global search, sign-in, error pages, stats overview, app overview), the active section resolves to `--hue-indigo` (Library default).
 
 ### 1.3.1 Section block headers
 
-Every routed section except Account renders a full-width block header as the first section-owned surface beneath breadcrumbs. The block has no radius, no shadow, no card wrapper, and fills the main content width with `--color-section-block` and `--color-section-block-fg`. The inner content is constrained to the normal wide container with page gutters.
+Every routed section except Account renders a full-width block header as the first section-owned surface beneath breadcrumbs. The block has no radius, no shadow, no card wrapper, and fills the main content width with `--color-section-block` and `--color-section-block-fg`. Those aliases use contrast-safe hue steps rather than the raw 500 step when text sits directly on the fill. The inner content is constrained to the normal wide container with page gutters.
 
 Block vertical padding is `--space-12` on compact viewports and `--space-16` on large viewports. The title uses `text-5xl`, weight `800`, tight line-height, and normal letter spacing. Optional route labels use the mono micro-label treatment; optional icons render at `--icon-lg` inside a simple on-block border chip.
 
@@ -786,3 +786,30 @@ P6-M3 emits the following families inside `apps/web/src/app/globals.css` `@theme
 ```
 
 Every token in this file appears as exactly one CSS variable. Any drift between this file and `globals.css` is a bug.
+
+---
+
+## 13. Contrast Table
+
+Checked 2026-05-25 against `apps/web/src/app/globals.css` using the WCAG relative-luminance contrast formula. Ratios below are text-to-background unless noted. Section rows report the lowest ratio across all routed section hues.
+
+| Pair / role                                 | Light ratio | Dark ratio | Result                                                      |
+| ------------------------------------------- | ----------- | ---------- | ----------------------------------------------------------- |
+| `--fg-default` on `--surface-page`          | 14.88:1     | 16.28:1    | AA                                                          |
+| `--fg-default` on `--surface-raised`        | 15.10:1     | 13.80:1    | AA                                                          |
+| `--fg-muted` on `--surface-work`            | 6.54:1      | 6.78:1     | AA                                                          |
+| `--fg-muted` on `--surface-sunken`          | 5.82:1      | 7.53:1     | AA                                                          |
+| `--fg-strong` on `--surface-work`           | 18.81:1     | 17.34:1    | AA                                                          |
+| `--color-chart-tooltip-fg` on tooltip bg    | 15.10:1     | 13.80:1    | AA                                                          |
+| `--color-state-success-fg` on success bg    | 5.86:1      | 5.86:1     | AA                                                          |
+| `--color-state-warning-fg` on warning bg    | 5.07:1      | 5.07:1     | AA                                                          |
+| `--color-state-error-fg` on error bg        | 6.83:1      | 6.83:1     | AA                                                          |
+| `--color-state-info-fg` on info bg          | 5.50:1      | 5.50:1     | AA                                                          |
+| `--color-state-active-fg` on active bg      | 6.27:1      | 6.27:1     | AA                                                          |
+| `--color-section-block-fg` on section block | 6.10:1      | 6.70:1     | AA                                                          |
+| `--color-section-accent-fg` on accent bg    | 6.10:1      | 6.70:1     | AA                                                          |
+| `--color-section-accent` as text on work    | 6.27:1      | 6.25:1     | AA                                                          |
+| `--fg-default` on section row hover         | 14.05:1     | 13.97:1    | AA                                                          |
+| `--fg-muted` on section row hover           | 5.91:1      | 6.23:1     | AA                                                          |
+| `--ring-focus` against page surface         | 6.01:1      | 6.70:1     | visible focus indicator                                     |
+| `--fg-faint` on `--surface-work`            | 3.11:1      | 3.73:1     | Disabled / placeholder only; not used as required body text |

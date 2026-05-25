@@ -37,7 +37,7 @@ export function PlaylistHero({
               <Badge variant="section" className="mb-3">
                 {eyebrow}
               </Badge>
-              <h1 className="text-3xl font-extrabold text-balance sm:text-4xl">{name}</h1>
+              <h2 className="text-3xl font-extrabold text-balance sm:text-4xl">{name}</h2>
               <div className="mt-2 text-sm font-medium opacity-90 sm:text-base">{meta}</div>
               {description !== undefined && (
                 <div className="mt-3 max-w-(--container-prose) text-sm opacity-85">
