@@ -6,10 +6,10 @@
 
 - **Phase 4 status:** complete. Seed script and initial Prisma migration merged to `dev`.
 - **Phase 5 status:** complete (M1-M8 all on `dev`).
-- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`), M11 ✓ (PR #39, `ec35ed2`), M12 ✓ (PR #40, `ea76c55`). Next milestone P6-M13 (accessibility pass, aykhan). (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered and is paused behind Phase 6.)
-- **Current milestone:** P6-M13 Accessibility pass. Awaiting Aykhan's explicit green light before starting; branch from latest `dev` once approved.
-- **Last shipped:** P6-M12 Motion pass. Adds semantic motion utilities backed by DESIGN.md duration, easing, and animation tokens; replaces raw transition and built-in pulse/spinner classes across navigation, forms, lists, player, section headers, and loading states; expands `/styleguide` with motion token visibility and a reduced-motion preview. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, and local UI smoke for styleguide motion tokens / reduced motion, user and admin routes, user menu panel, mobile navigation sheet, and audio player surface transitions all passed.
-- **Last maintenance fix:** Local API browser login now accepts CORS preflight from `http://localhost:3000` through the existing `ALLOWED_ORIGINS` config.
+- **Phase 6 status:** M1 ✓ (PR #28), M2 ✓ (PR #29), M3 ✓ (PR #30), M4 ✓ (`98ad518`), M5 ✓ (PR #32, `6ce01b3`), M6 ✓ (PR #33, `b9f3858`), M7 ✓ (PR #34, `871dd49`), M8 ✓ (PR #35, `ae9309f`), M9 ✓ (state vocabulary, PR #37), M10 ✓ (PR #38, `f16bb46`), M11 ✓ (PR #39, `ec35ed2`), M12 ✓ (PR #40, `ea76c55`), M13 ✓ (PR #41, `a8a49a3`). Phase 6 frontend redesign is complete. (Note: redesign is Phase 6; the existing "Deployment and submission" section stays unnumbered.)
+- **Current milestone:** none; Phase 6 is complete.
+- **Last shipped:** P6-M13 Accessibility pass. Adds root JSX accessibility lint coverage; fixes heading hierarchy, table semantics, search region wiring, media control labels, heatmap narration, focus rings, and contrast-safe section aliases; records `docs/design/a11y-audit.md` plus the DESIGN.md contrast table. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, and local accessibility smoke for signup, login, global search, track preview, playlist create, admin users, landmarks, and keyboard focus all passed.
+- **Last maintenance fix:** API CORS now permits the shared CSRF request header, unblocking local browser mutation smoke for playlist/admin flows.
 - **Last merge (non-milestone):** PR #36 `chore: add pnpm setup one-shot bootstrap` rebase-merged into `dev` 2026-05-25 (HEAD `3ad5c16`). Adds `pnpm setup` + `scripts/setup.sh`; not a milestone task, so no Phase 6 milestone status changed this session.
 - **Open file/component:** none.
 - **Locked decisions feeding Phase 6:**
@@ -21,7 +21,7 @@
   - Webfonts: self-hosted via `next/font`; families locked in P6-M2 DESIGN.md.
   - Existing UI during Phase 6: destructively replaced as each P6 milestone lands.
 - **Blocker:** none.
-- **Next concrete action:** wait for explicit green light, then start P6-M13 (accessibility pass, aykhan) on `feat/p6-m13-accessibility-pass` off latest `dev` (`ea76c55`); one PR into `dev`; rebase-merge.
+- **Next concrete action:** resume the unnumbered Deployment and submission section; start with production env vars for the web/API hosts, then production smoke.
 
 ---
 
@@ -233,7 +233,7 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
   - Files and folders touched: `apps/web/src/components/**` (transition wiring), `apps/web/src/app/globals.css` (reduce-motion override), `apps/web/src/app/styleguide/page.tsx`.
   - Depends on: P6-M7, P6-M8, P6-M9, P6-M10, P6-M11.
 
-- [ ] **P6-M13: Accessibility pass** - M - aykhan
+- [x] **P6-M13: Accessibility pass** - M - aykhan
   - Goal: end-to-end a11y audit and fix pass against WCAG 2.2 AA on the redesigned surfaces.
   - Entry criteria: P6-M12 merged.
   - Exit criteria: `eslint-plugin-jsx-a11y` clean; semantic landmarks (`header`, `nav`, `main`, `aside`, `footer`) verified on every layout; focus order keyboard-walked through every authed route; visible focus ring (from tokens) confirmed on every interactive element; color contrast checked for every semantic foreground / background pair documented in DESIGN.md and recorded in a contrast table at the bottom of DESIGN.md; screen-reader smoke (VoiceOver) on signup, login, search, track detail with preview play, playlist create, admin user edit; results recorded in `docs/design/a11y-audit.md`; lint / typecheck / build pass.
