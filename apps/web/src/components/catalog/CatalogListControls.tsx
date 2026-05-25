@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 
 const CONTROL_BASE =
-  'bg-input text-foreground h-10 rounded-(--radius-sm) border px-3 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-60';
+  'bg-input text-foreground h-10 rounded-(--radius-sm) border px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page disabled:cursor-not-allowed disabled:opacity-60';
 
 export function TrackCatalogControls({ values }: { values: TrackControlsState }) {
   return (
@@ -126,7 +126,7 @@ function ControlActions({ resetHref }: { resetHref: string }) {
       </Button>
       <Link
         href={resetHref}
-        className="text-muted-foreground hover:text-foreground rounded-(--radius-sm) px-3 py-1.5 text-sm"
+        className="text-muted-foreground hover:text-foreground rounded-(--radius-sm) px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
       >
         Reset
       </Link>

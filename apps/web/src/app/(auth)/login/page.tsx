@@ -21,7 +21,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Welcome back</CardTitle>
+        <CardTitle headingLevel={1}>Welcome back</CardTitle>
         <CardDescription>Sign in to continue.</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6">

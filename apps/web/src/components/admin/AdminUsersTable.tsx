@@ -62,13 +62,24 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
       )}
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
+          <caption className="sr-only">Admin user search results</caption>
           <thead className="text-muted-foreground text-left text-xs uppercase tracking-wide">
             <tr>
-              <th className="px-3 py-2">User</th>
-              <th className="px-3 py-2">Role</th>
-              <th className="px-3 py-2">Status</th>
-              <th className="px-3 py-2">Joined</th>
-              <th className="px-3 py-2">Actions</th>
+              <th scope="col" className="px-3 py-2">
+                User
+              </th>
+              <th scope="col" className="px-3 py-2">
+                Role
+              </th>
+              <th scope="col" className="px-3 py-2">
+                Status
+              </th>
+              <th scope="col" className="px-3 py-2">
+                Joined
+              </th>
+              <th scope="col" className="px-3 py-2">
+                Actions
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -82,12 +93,12 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                   key={user.id}
                   className="border-t motion-colors motion-list-item hover:bg-section-row-hover"
                 >
-                  <td className="px-3 py-3">
+                  <th scope="row" className="px-3 py-3 text-left">
                     <div className="flex flex-col">
                       <span className="font-medium">{user.displayName}</span>
                       <span className="text-muted-foreground text-xs">{user.email}</span>
                     </div>
-                  </td>
+                  </th>
                   <td className="px-3 py-3">
                     <span className="text-sm">{user.role}</span>
                   </td>
@@ -107,6 +118,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                         size="sm"
                         variant="secondary"
                         disabled={isSelf || isBusy || user.deletedAt !== null}
+                        aria-label={`Make ${user.displayName} ${nextRole}`}
                         onClick={() => applyRole(user.id, nextRole)}
                       >
                         Make {nextRole}
@@ -116,6 +128,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                           size="sm"
                           variant="destructive"
                           disabled={isSelf || isBusy || user.deletedAt !== null}
+                          aria-label={`Ban ${user.displayName}`}
                           onClick={() => applyBan(user.id, true)}
                         >
                           Ban
@@ -125,6 +138,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                           size="sm"
                           variant="secondary"
                           disabled={isSelf || isBusy}
+                          aria-label={`Unban ${user.displayName}`}
                           onClick={() => applyBan(user.id, false)}
                         >
                           Unban

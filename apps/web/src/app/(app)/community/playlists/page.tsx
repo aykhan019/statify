@@ -37,6 +37,7 @@ export default async function CommunityPlaylistsPage({
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        headingLevel={2}
         title="Community playlists"
         description={`Public playlists from other users. ${response.total.toLocaleString()} total.`}
       />

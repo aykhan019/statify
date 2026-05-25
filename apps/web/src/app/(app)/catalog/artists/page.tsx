@@ -23,7 +23,7 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
 
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader title="Artists" description={description} />
+      <PageHeader headingLevel={2} title="Artists" description={description} />
       <ArtistCatalogControls values={controls} />
       <ArtistsInfiniteList initial={initial} baseQuery={query} emptyText="No artists yet." />
     </section>

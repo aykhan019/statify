@@ -23,7 +23,7 @@ export default async function TracksPage({ searchParams }: TracksPageProps) {
 
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader title="Tracks" description={description} />
+      <PageHeader headingLevel={2} title="Tracks" description={description} />
       <TrackCatalogControls values={controls} />
       <TracksInfiniteList
         initial={initial}

@@ -23,13 +23,22 @@ export const CardHeader = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivEleme
   },
 );
 
-export const CardTitle = forwardRef<HTMLHeadingElement, HTMLAttributes<HTMLHeadingElement>>(
-  function CardTitle({ className, ...rest }, ref) {
-    return (
-      <h3 ref={ref} className={cn('text-lg leading-none font-semibold', className)} {...rest} />
-    );
-  },
-);
+export interface CardTitleProps extends HTMLAttributes<HTMLHeadingElement> {
+  headingLevel?: 1 | 2 | 3;
+}
+
+export const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(function CardTitle(
+  { children, className, headingLevel = 3, ...rest },
+  ref,
+) {
+  const Heading = headingLevel === 1 ? 'h1' : headingLevel === 2 ? 'h2' : 'h3';
+
+  return (
+    <Heading ref={ref} className={cn('text-lg leading-none font-semibold', className)} {...rest}>
+      {children}
+    </Heading>
+  );
+});
 
 export const CardDescription = forwardRef<
   HTMLParagraphElement,

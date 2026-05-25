@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type ReactNode } from 'react';
 import type { CatalogSearchResponse } from '@statify/shared';
 import { fetchCatalogSearch } from '@/lib/catalog/api';
 import { Cover, type EntityKind } from '@/components/ui/Cover';
@@ -12,11 +12,13 @@ type SearchStatus = 'idle' | 'loading' | 'ready' | 'error';
 
 export function GlobalSearch() {
   const router = useRouter();
+  const panelId = useId();
   const [term, setTerm] = useState('');
   const wrapperRef = useRef<HTMLDivElement | null>(null);
   const trimmedTerm = term.trim();
   const { results, setResults, status } = useCatalogSearch(trimmedTerm);
   const closeResults = () => setResults(null);
+  const panelOpen = shouldShowPanel(trimmedTerm.length, status, results);
 
   useEffect(() => {
     function handlePointerDown(event: PointerEvent) {
@@ -58,13 +60,15 @@ export function GlobalSearch() {
           onKeyDown={handleKeyDown}
           placeholder="Search catalog"
           aria-label="Search catalog"
-          aria-expanded={shouldShowPanel(trimmedTerm.length, status, results)}
+          aria-controls={panelOpen ? panelId : undefined}
+          aria-expanded={panelOpen}
           className="h-9"
         />
       </form>
 
       <SearchPanel
         onNavigate={closeResults}
+        panelId={panelId}
         results={results}
         status={status}
         termLength={trimmedTerm.length}
@@ -116,11 +120,13 @@ function useCatalogSearch(trimmedTerm: string): {
 
 function SearchPanel({
   onNavigate,
+  panelId,
   results,
   status,
   termLength,
 }: {
   onNavigate: () => void;
+  panelId: string;
   results: CatalogSearchResponse | null;
   status: SearchStatus;
   termLength: number;
@@ -130,19 +136,23 @@ function SearchPanel({
   }
 
   if (status === 'loading') {
-    return <PanelMessage>Searching...</PanelMessage>;
+    return <PanelMessage panelId={panelId}>Searching...</PanelMessage>;
   }
 
   if (status === 'error') {
-    return <PanelMessage kind="error">Search failed.</PanelMessage>;
+    return (
+      <PanelMessage panelId={panelId} kind="error">
+        Search failed.
+      </PanelMessage>
+    );
   }
 
   if (results === null || !hasSearchResults(results)) {
-    return <PanelMessage>No matches.</PanelMessage>;
+    return <PanelMessage panelId={panelId}>No matches.</PanelMessage>;
   }
 
   return (
-    <PanelShell>
+    <PanelShell id={panelId}>
       <div className="flex flex-col gap-2">
         <ResultGroup
           title="Tracks"
@@ -218,13 +228,16 @@ function ResultGroup<T>({
 function PanelMessage({
   children,
   kind = 'muted',
+  panelId,
 }: {
   children: ReactNode;
   kind?: 'error' | 'muted';
+  panelId: string;
 }) {
   return (
-    <PanelShell>
+    <PanelShell id={panelId}>
       <p
+        role={kind === 'error' ? 'alert' : 'status'}
         className={
           kind === 'error'
             ? 'text-destructive px-3 py-2 text-sm'
@@ -237,9 +250,14 @@ function PanelMessage({
   );
 }
 
-function PanelShell({ children }: { children: ReactNode }) {
+function PanelShell({ children, id }: { children: ReactNode; id: string }) {
   return (
-    <div className="bg-surface border-border absolute right-0 top-11 z-40 flex max-h-[70vh] w-[min(28rem,calc(100vw-2rem))] flex-col overflow-y-auto rounded-lg border p-2 shadow-lg">
+    <div
+      id={id}
+      role="region"
+      aria-label="Search results"
+      className="bg-surface border-border absolute right-0 top-11 z-40 flex max-h-[70vh] w-[min(28rem,calc(100vw-2rem))] flex-col overflow-y-auto rounded-lg border p-2 shadow-lg"
+    >
       {children}
     </div>
   );
@@ -276,7 +294,7 @@ function ResultLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 motion-colors motion-list-item hover:bg-section-row-hover"
+      className="flex items-center gap-3 rounded-(--radius-sm) px-3 py-2 motion-colors motion-list-item hover:bg-section-row-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
     >
       <Cover
         src={imageUrl}

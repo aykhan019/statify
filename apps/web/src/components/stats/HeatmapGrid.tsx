@@ -12,17 +12,25 @@ const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 export function HeatmapGrid({ cells }: HeatmapGridProps) {
   const counts = new Map<number, number>();
   let max = 0;
+  let peakDay = 0;
+  let peakHour = 0;
   for (const cell of cells) {
     const key = cell.dayOfWeek * HEATMAP_HOURS + cell.hourOfDay;
     counts.set(key, cell.listenCount);
     if (cell.listenCount > max) {
       max = cell.listenCount;
+      peakDay = cell.dayOfWeek;
+      peakHour = cell.hourOfDay;
     }
   }
 
   return (
     <div className="overflow-x-auto">
-      <div className="inline-flex min-w-full flex-col gap-1">
+      <div
+        className="inline-flex min-w-full flex-col gap-1"
+        role="img"
+        aria-label={describeHeatmap(max, peakDay, peakHour)}
+      >
         <div
           className="grid gap-1 text-[10px] text-fg-muted"
           style={{ gridTemplateColumns: `2.5rem repeat(${HEATMAP_HOURS}, minmax(1.25rem, 1fr))` }}
@@ -74,4 +82,14 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
       </p>
     </div>
   );
+}
+
+function describeHeatmap(max: number, peakDay: number, peakHour: number): string {
+  if (max === 0) {
+    return 'Listening heatmap by day and hour. No plays in the selected period.';
+  }
+
+  return `Listening heatmap by day and hour. Peak cell is ${DAY_LABELS[peakDay]} ${peakHour
+    .toString()
+    .padStart(2, '0')}:00 with ${max} plays.`;
 }

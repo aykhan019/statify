@@ -11,6 +11,7 @@ export default function NewPlaylistPage() {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
       <PageHeader
+        headingLevel={2}
         title="New playlist"
         description="Give your playlist a name. You can add tracks afterwards."
       />

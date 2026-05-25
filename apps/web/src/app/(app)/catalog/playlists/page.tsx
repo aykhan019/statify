@@ -36,6 +36,7 @@ export default async function PlaylistsPage({
   return (
     <div className="flex flex-col gap-6">
       <PageHeader
+        headingLevel={2}
         title="Playlists"
         description={`MPD playlists, ranked by followers. ${response.total.toLocaleString()} total.`}
       />

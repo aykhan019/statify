@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { HEADERS } from '@statify/shared';
 import { NestFactory } from '@nestjs/core';
 import * as Sentry from '@sentry/node';
 import { Logger } from 'nestjs-pino';
@@ -28,7 +29,7 @@ async function bootstrap(): Promise<void> {
     origin: config.allowedOrigins,
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', HEADERS.CSRF],
   });
 
   app.setGlobalPrefix('api/v1', { exclude: ['healthz'] });

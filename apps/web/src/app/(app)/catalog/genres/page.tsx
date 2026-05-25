@@ -8,7 +8,7 @@ export const metadata = {
 export default function GenresPage() {
   return (
     <section className="flex flex-col gap-6">
-      <PageHeader title="Genres" description="Coming soon." />
+      <PageHeader headingLevel={2} title="Genres" description="Coming soon." />
       <Card>
         <CardHeader>
           <CardTitle>Genres are not derived yet</CardTitle>
