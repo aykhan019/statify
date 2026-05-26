@@ -4,6 +4,7 @@ import {
   buildDeezerArtistQuery,
   createDeezerArtworkFetcher,
   runDeezerMediaBackfill,
+  stripAlbumEdition,
   type DeezerArtworkFetcher,
   type DeezerMediaBackfillPrisma,
 } from './backfill-media-deezer';
@@ -143,6 +144,14 @@ describe('deezer media backfill', () => {
     expect(buildDeezerArtistQuery('Adele')).toBe('Adele');
     expect(buildDeezerArtistQuery('   ')).toBeNull();
   });
+
+  it('strips edition and version qualifiers for fallback album search', () => {
+    expect(stripAlbumEdition('In Utero - 20th Anniversary Remaster')).toBe('In Utero');
+    expect(stripAlbumEdition('Make Yourself - Tour Edition')).toBe('Make Yourself');
+    expect(stripAlbumEdition('Nevermind (Deluxe Edition)')).toBe('Nevermind');
+    expect(stripAlbumEdition('Songs (Remastered) [2011]')).toBe('Songs');
+    expect(stripAlbumEdition('Vitalogy')).toBe('Vitalogy');
+  });
 });
 
 describe('deezer artwork fetcher', () => {
@@ -170,6 +179,31 @@ describe('deezer artwork fetcher', () => {
     expect(requestedUrl.pathname).toBe('/search/album');
     expect(requestedUrl.searchParams.get('q')).toBe('artist:"Adele" album:"25"');
     expect(requestedUrl.searchParams.get('limit')).toBe('1');
+  });
+
+  it('retries album search on the base title when the edition-suffixed title misses', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(jsonResponse({ data: [], total: 0 }))
+      .mockResolvedValueOnce(
+        jsonResponse({
+          data: [{ id: 1, cover_xl: 'https://cdn.deezer.com/album/xl.jpg' }],
+          total: 1,
+        }),
+      );
+    const fetcher = createDeezerArtworkFetcher({ fetch, requestIntervalMs: 0 });
+
+    await expect(
+      fetcher.getAlbumImage('In Utero - 20th Anniversary Remaster', 'Nirvana'),
+    ).resolves.toBe('https://cdn.deezer.com/album/xl.jpg');
+
+    expect(fetch).toHaveBeenCalledTimes(2);
+    const [firstUrl] = fetch.mock.calls[0] as [URL];
+    const [secondUrl] = fetch.mock.calls[1] as [URL];
+    expect(firstUrl.searchParams.get('q')).toBe(
+      'artist:"Nirvana" album:"In Utero - 20th Anniversary Remaster"',
+    );
+    expect(secondUrl.searchParams.get('q')).toBe('artist:"Nirvana" album:"In Utero"');
   });
 
   it('returns null when Deezer has no matching results', async () => {

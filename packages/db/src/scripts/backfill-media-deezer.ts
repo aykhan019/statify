@@ -422,6 +422,32 @@ export function buildDeezerAlbumQuery(album: string, artist: string): string | n
 }
 
 /**
+ * Strips edition/version qualifiers from an album title so a failed exact search can
+ * retry on the base title, e.g. "In Utero - 20th Anniversary Remaster" -> "In Utero"
+ * and "Nevermind (Deluxe Edition)" -> "Nevermind". MPD titles carry many such suffixes.
+ */
+export function stripAlbumEdition(name: string): string {
+  let cleaned = name.trim();
+
+  // Drop a dash-delimited qualifier suffix (" - Deluxe Edition", " - Tour Edition").
+  const dashIndex = cleaned.indexOf(' - ');
+
+  if (dashIndex > 0) {
+    cleaned = cleaned.slice(0, dashIndex);
+  }
+
+  // Drop trailing parenthetical / bracketed qualifiers, possibly several in a row.
+  let previous: string;
+
+  do {
+    previous = cleaned;
+    cleaned = cleaned.replace(/\s*[([][^()[\]]*[)\]]\s*$/, '').trim();
+  } while (cleaned !== previous);
+
+  return cleaned;
+}
+
+/**
  * Builds a Deezer search query for an artist. Returns null when the name is empty.
  */
 export function buildDeezerArtistQuery(artist: string): string | null {
@@ -505,17 +531,35 @@ export function createDeezerArtworkFetcher(
     lastRequestAt = Date.now();
   }
 
+  async function searchAlbumImage(album: string, artist: string): Promise<string | null> {
+    const query = buildDeezerAlbumQuery(album, artist);
+
+    if (query === null) {
+      return null;
+    }
+
+    const results = await search('/search/album', query);
+
+    return firstImageUrl(results[0], ALBUM_IMAGE_FIELDS);
+  }
+
   return {
     async getAlbumImage(album, artist) {
-      const query = buildDeezerAlbumQuery(album, artist);
+      const exact = await searchAlbumImage(album, artist);
 
-      if (query === null) {
-        return null;
+      if (exact !== null) {
+        return exact;
       }
 
-      const results = await search('/search/album', query);
+      // Edition/version suffixes ("- Remaster", "(Deluxe Edition)") break exact-title
+      // matching, so retry once on the base title before giving up.
+      const baseTitle = stripAlbumEdition(album);
 
-      return firstImageUrl(results[0], ALBUM_IMAGE_FIELDS);
+      if (baseTitle !== '' && baseTitle.toLowerCase() !== album.trim().toLowerCase()) {
+        return searchAlbumImage(baseTitle, artist);
+      }
+
+      return null;
     },
 
     async getArtistImage(artist) {
