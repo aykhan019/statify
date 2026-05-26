@@ -34,7 +34,11 @@ export function AppShell({ children, includeAdmin, user }: AppShellProps) {
         padding="none"
         className="flex flex-1"
       >
-        <SideNavigation activePath={pathname} includeAdmin={includeAdmin} />
+        <SideNavigation
+          activePath={pathname}
+          includeAdmin={includeAdmin}
+          className="sticky top-16 z-20 h-[calc(100dvh-4rem)] self-start overflow-y-auto"
+        />
         <Surface
           as="main"
           tone="work"
