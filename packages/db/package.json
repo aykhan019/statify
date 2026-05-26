@@ -11,6 +11,8 @@
     "prisma:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
     "db:ingest": "tsx src/ingest/cli.ts",
+    "db:backfill-media": "tsx src/scripts/backfill-media.ts",
+    "db:backfill-media:deezer": "tsx src/scripts/backfill-media-deezer.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
     "test": "vitest run",

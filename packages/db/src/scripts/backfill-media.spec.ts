@@ -1,113 +1,248 @@
 import { describe, expect, it, vi } from 'vitest';
 import {
+  createSpotifyCatalogFetcher,
+  parseSpotifyUri,
   runMediaBackfill,
-  toCanonicalArtworkUrl,
   type MediaBackfillPrisma,
+  type SpotifyCatalogFetcher,
 } from './backfill-media';
 
 describe('media backfill', () => {
-  it('updates missing track images and derives album images from the first imaged track', async () => {
-    const searchSongs = vi.fn().mockResolvedValue({
-      results: [
-        {
-          artworkUrl100:
-            'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/100x100bb.jpg',
-          previewUrl: 'https://example.com/preview.m4a',
-          trackId: 555,
-        },
-      ],
+  it('updates missing album and artist images through Spotify batch endpoints', async () => {
+    const albums = Array.from({ length: 21 }, (_, index) => ({
+      id: index + 1,
+      imageUrl: null,
+      spotifyUri: `spotify:album:album-${index + 1}`,
+    }));
+    const artists = Array.from({ length: 51 }, (_, index) => ({
+      id: index + 1,
+      imageUrl: null,
+      spotifyUri: `spotify:artist:artist-${index + 1}`,
+    }));
+    const catalogFetcher: SpotifyCatalogFetcher = {
+      getAlbums: vi.fn(async (ids: string[]) =>
+        ids.map((id) => ({ id, imageUrl: `https://i.scdn.co/image/${id}` })),
+      ),
+      getArtists: vi.fn(async (ids: string[]) =>
+        ids.map((id) => ({ id, imageUrl: `https://i.scdn.co/image/${id}` })),
+      ),
+    };
+    const prisma = createPrisma({ albums, artists });
+
+    await expect(
+      runMediaBackfill(prisma, { batchSize: 100, catalogFetcher }),
+    ).resolves.toMatchObject({
+      albumLookupFailures: 0,
+      albumsScanned: 21,
+      albumsSkipped: 0,
+      albumsUpdated: 21,
+      artistLookupFailures: 0,
+      artistsScanned: 51,
+      artistsSkipped: 0,
+      artistsUpdated: 51,
     });
-    const prisma = createPrisma({
-      albums: [
-        {
-          id: 20,
-          tracks: [
+
+    expect(catalogFetcher.getAlbums).toHaveBeenCalledTimes(2);
+    expect(catalogFetcher.getAlbums).toHaveBeenNthCalledWith(
+      1,
+      albums.slice(0, 20).map(({ spotifyUri }) => spotifyUri.replace('spotify:album:', '')),
+    );
+    expect(catalogFetcher.getAlbums).toHaveBeenNthCalledWith(2, ['album-21']);
+    expect(catalogFetcher.getArtists).toHaveBeenCalledTimes(2);
+    expect(catalogFetcher.getArtists).toHaveBeenNthCalledWith(
+      1,
+      artists.slice(0, 50).map(({ spotifyUri }) => spotifyUri.replace('spotify:artist:', '')),
+    );
+    expect(catalogFetcher.getArtists).toHaveBeenNthCalledWith(2, ['artist-51']);
+    expect(prisma.album.update).toHaveBeenCalledTimes(21);
+    expect(prisma.artist.update).toHaveBeenCalledTimes(51);
+  });
+
+  it('skips existing image URLs unless overwrite is explicitly enabled', async () => {
+    const catalogFetcher: SpotifyCatalogFetcher = {
+      getAlbums: vi.fn(async (ids: string[]) =>
+        ids.map((id) => ({ id, imageUrl: `https://i.scdn.co/image/${id}` })),
+      ),
+      getArtists: vi.fn(async (ids: string[]) =>
+        ids.map((id) => ({ id, imageUrl: `https://i.scdn.co/image/${id}` })),
+      ),
+    };
+    const existingAlbums = [
+      {
+        id: 1,
+        imageUrl: 'https://example.com/existing-album.jpg',
+        spotifyUri: 'spotify:album:album-1',
+      },
+    ];
+    const existingArtists = [
+      {
+        id: 1,
+        imageUrl: 'https://example.com/existing-artist.jpg',
+        spotifyUri: 'spotify:artist:artist-1',
+      },
+    ];
+    const skipPrisma = createPrisma({ albums: existingAlbums, artists: existingArtists });
+
+    await expect(
+      runMediaBackfill(skipPrisma, { batchSize: 10, catalogFetcher }),
+    ).resolves.toMatchObject({
+      albumsScanned: 0,
+      albumsUpdated: 0,
+      artistsScanned: 0,
+      artistsUpdated: 0,
+    });
+
+    expect(skipPrisma.album.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { gt: 0 }, imageUrl: null } }),
+    );
+    expect(skipPrisma.artist.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { gt: 0 }, imageUrl: null } }),
+    );
+    expect(skipPrisma.album.update).not.toHaveBeenCalled();
+    expect(skipPrisma.artist.update).not.toHaveBeenCalled();
+
+    const overwritePrisma = createPrisma({ albums: existingAlbums, artists: existingArtists });
+    await expect(
+      runMediaBackfill(overwritePrisma, {
+        batchSize: 10,
+        catalogFetcher,
+        overwriteExisting: true,
+      }),
+    ).resolves.toMatchObject({
+      albumsScanned: 1,
+      albumsUpdated: 1,
+      artistsScanned: 1,
+      artistsUpdated: 1,
+    });
+
+    expect(overwritePrisma.album.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { gt: 0 } } }),
+    );
+    expect(overwritePrisma.artist.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { gt: 0 } } }),
+    );
+  });
+
+  it('parses only Spotify URIs for the expected entity kind', () => {
+    expect(parseSpotifyUri('spotify:album:abc123', 'album')).toBe('abc123');
+    expect(parseSpotifyUri('spotify:artist:def456', 'artist')).toBe('def456');
+    expect(parseSpotifyUri('spotify:track:def456', 'artist')).toBeNull();
+    expect(parseSpotifyUri('https://open.spotify.com/album/abc123', 'album')).toBeNull();
+    expect(parseSpotifyUri('spotify:album:', 'album')).toBeNull();
+  });
+
+  it('backs off and retries Spotify requests after a 429 Retry-After response', async () => {
+    const delay = vi.fn().mockResolvedValue(undefined);
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: 'token',
+          expires_in: 3600,
+          token_type: 'bearer',
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('{}', {
+          headers: { 'Retry-After': '2' },
+          status: 429,
+        }),
+      )
+      .mockResolvedValueOnce(
+        jsonResponse({
+          albums: [
             {
-              imageUrl:
-                'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
+              id: 'album-1',
+              images: [{ url: 'https://i.scdn.co/image/album-1' }],
             },
           ],
-        },
-      ],
-      tracks: [
-        {
-          album: { primaryArtist: { name: 'Album Artist' } },
-          id: 10,
-          name: 'Track',
-          trackArtists: [{ artist: { name: 'Primary Artist' }, role: 'primary' }],
-        },
-      ],
+        }),
+      );
+    const fetcher = createSpotifyCatalogFetcher({
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      delay,
+      fetch,
+      requestIntervalMs: 0,
     });
 
-    await expect(runMediaBackfill(prisma, { batchSize: 10, searchSongs })).resolves.toMatchObject({
-      albumsUpdated: 1,
-      lookupFailures: 0,
-      tracksScanned: 1,
-      tracksSkipped: 0,
-      tracksUpdated: 1,
-    });
+    await expect(fetcher.getAlbums(['album-1'])).resolves.toEqual([
+      { id: 'album-1', imageUrl: 'https://i.scdn.co/image/album-1' },
+    ]);
 
-    expect(searchSongs).toHaveBeenCalledWith({ term: 'Track Primary Artist', limit: 5 });
-    expect(prisma.track.update).toHaveBeenCalledWith({
-      data: {
-        imageUrl:
-          'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
-        itunesTrackId: 555n,
-        previewFetchedAt: expect.any(Date),
-        previewUrl: 'https://example.com/preview.m4a',
-      },
-      where: { id: 10 },
-    });
-    expect(prisma.album.update).toHaveBeenCalledWith({
-      data: {
-        imageUrl:
-          'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
-      },
-      where: { id: 20 },
-    });
+    expect(delay).toHaveBeenCalledWith(2000);
+    expect(fetch).toHaveBeenCalledTimes(3);
   });
 
-  it('is idempotent when tracks and albums already have media', async () => {
-    const searchSongs = vi.fn();
-    const prisma = createPrisma({ albums: [], tracks: [] });
-
-    await expect(runMediaBackfill(prisma, { batchSize: 10, searchSongs })).resolves.toEqual({
-      albumsUpdated: 0,
-      lookupFailures: 0,
-      tracksScanned: 0,
-      tracksSkipped: 0,
-      tracksUpdated: 0,
+  it('includes Spotify response text when a request fails', async () => {
+    const fetch = vi
+      .fn()
+      .mockResolvedValueOnce(
+        jsonResponse({
+          access_token: 'token',
+          expires_in: 3600,
+          token_type: 'bearer',
+        }),
+      )
+      .mockResolvedValueOnce(
+        new Response('Active premium subscription required for the owner of the app.', {
+          status: 403,
+        }),
+      );
+    const fetcher = createSpotifyCatalogFetcher({
+      clientId: 'client-id',
+      clientSecret: 'client-secret',
+      fetch,
+      requestIntervalMs: 0,
     });
 
-    expect(searchSongs).not.toHaveBeenCalled();
-    expect(prisma.track.update).not.toHaveBeenCalled();
-    expect(prisma.album.update).not.toHaveBeenCalled();
-  });
-
-  it('canonicalizes iTunes artwork URLs to the stored 600px size', () => {
-    expect(
-      toCanonicalArtworkUrl(
-        'https://is4-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/100x100bb.jpg',
-      ),
-    ).toBe('https://is4-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg');
+    await expect(fetcher.getAlbums(['album-1'])).rejects.toThrow(
+      /Active premium subscription required/,
+    );
   });
 });
 
+function jsonResponse(body: unknown): Response {
+  return new Response(JSON.stringify(body), {
+    headers: { 'Content-Type': 'application/json' },
+    status: 200,
+  });
+}
+
 function createPrisma({
   albums,
-  tracks,
+  artists,
 }: {
-  albums: unknown[];
-  tracks: unknown[];
+  albums: Array<{ id: number; imageUrl: string | null; spotifyUri: string }>;
+  artists: Array<{ id: number; imageUrl: string | null; spotifyUri: string }>;
 }): MediaBackfillPrisma {
   return {
     album: {
-      findMany: vi.fn().mockResolvedValueOnce(albums).mockResolvedValue([]),
+      findMany: vi.fn(async (args) => filterRecords(albums, args)),
       update: vi.fn().mockResolvedValue({}),
     },
-    track: {
-      findMany: vi.fn().mockResolvedValueOnce(tracks).mockResolvedValue([]),
+    artist: {
+      findMany: vi.fn(async (args) => filterRecords(artists, args)),
       update: vi.fn().mockResolvedValue({}),
     },
   } as unknown as MediaBackfillPrisma;
+}
+
+function filterRecords<T extends { id: number; imageUrl: string | null }>(
+  records: T[],
+  args: {
+    take?: number;
+    where?: {
+      id?: { gt?: number };
+      imageUrl?: null;
+    };
+  },
+): T[] {
+  const minId = args.where?.id?.gt ?? 0;
+  const filtered = records.filter(
+    (record) =>
+      record.id > minId && (args.where?.imageUrl === null ? record.imageUrl === null : true),
+  );
+
+  return filtered.slice(0, args.take);
 }

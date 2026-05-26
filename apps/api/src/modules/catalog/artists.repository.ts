@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { Artist, Prisma } from '@prisma/client';
+import { Prisma as PrismaClient } from '@prisma/client';
 import type { ArtistSort, ArtistsQuery } from '@statify/shared';
 import { BaseRepository } from '../../database/base.repository';
 import { PrismaService } from '../../database/prisma.service';
@@ -34,6 +35,11 @@ export class ArtistsRepository extends BaseRepository {
 
   async list(query: ArtistsQuery): Promise<CatalogListResult<Artist>> {
     const where = buildArtistWhere(query);
+
+    if (query.q === undefined && query.sort === 'name') {
+      return this.listByFriendlyNameOrder(query);
+    }
+
     const [data, total] = await Promise.all([
       this.client.artist.findMany({
         orderBy: ARTIST_ORDER_BY[query.sort],
@@ -42,6 +48,29 @@ export class ArtistsRepository extends BaseRepository {
         where,
       }),
       this.client.artist.count({ where }),
+    ]);
+
+    return { data, total };
+  }
+
+  private async listByFriendlyNameOrder(query: ArtistsQuery): Promise<CatalogListResult<Artist>> {
+    const [data, total] = await Promise.all([
+      this.client.$queryRaw<Artist[]>(PrismaClient.sql`
+        SELECT
+          id,
+          spotify_uri AS "spotifyUri",
+          name,
+          image_url AS "imageUrl",
+          created_at AS "createdAt"
+        FROM artists
+        ORDER BY
+          CASE WHEN name ~ '^[[:alnum:]]' THEN 0 ELSE 1 END,
+          lower(name) ASC,
+          id ASC
+        OFFSET ${getOffset(query)}
+        LIMIT ${query.limit}
+      `),
+      this.client.artist.count({ where: {} }),
     ]);
 
     return { data, total };

@@ -21,7 +21,6 @@ export interface ItunesSearchResult {
 }
 
 export interface ItunesPreviewMatch {
-  imageUrl?: string;
   itunesTrackId: number;
   previewUrl: string;
 }

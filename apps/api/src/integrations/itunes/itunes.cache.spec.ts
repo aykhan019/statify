@@ -38,7 +38,6 @@ describe('ItunesCache', () => {
     await cache.savePreview(
       1,
       {
-        imageUrl: 'https://example.com/cover.jpg',
         itunesTrackId: 123,
         previewUrl: 'https://example.com/preview.m4a',
       },
@@ -48,7 +47,6 @@ describe('ItunesCache', () => {
     expect(track.update).toHaveBeenCalledWith(
       expect.objectContaining({
         data: {
-          imageUrl: 'https://example.com/cover.jpg',
           itunesTrackId: 123n,
           previewFetchedAt: fetchedAt,
           previewUrl: 'https://example.com/preview.m4a',

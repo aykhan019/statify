@@ -98,8 +98,6 @@ describe('ItunesService', () => {
     expect(cache.savePreview).toHaveBeenCalledWith(
       1,
       {
-        imageUrl:
-          'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
         itunesTrackId: 456,
         previewUrl: 'https://example.com/new-preview.m4a',
       },

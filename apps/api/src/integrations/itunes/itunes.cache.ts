@@ -56,7 +56,6 @@ export class ItunesCache extends BaseRepository {
   ): Promise<ItunesCacheRecord> {
     return this.client.track.update({
       data: {
-        ...(match.imageUrl === undefined ? {} : { imageUrl: match.imageUrl }),
         itunesTrackId: BigInt(match.itunesTrackId),
         previewFetchedAt: fetchedAt,
         previewUrl: match.previewUrl,

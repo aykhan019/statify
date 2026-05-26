@@ -21,8 +21,6 @@ describe('ItunesAdapter', () => {
         ],
       }),
     ).toEqual({
-      imageUrl:
-        'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/a/b/c/example.jpg/600x600bb.jpg',
       itunesTrackId: 123,
       previewUrl: 'https://example.com/preview.m4a',
     });

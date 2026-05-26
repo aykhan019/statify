@@ -1,68 +1,42 @@
 import { PrismaClient, type Prisma } from '@prisma/client';
 
 const DEFAULT_BATCH_SIZE = 100;
-const DEFAULT_ITUNES_API_BASE_URL = 'https://itunes.apple.com';
-const DEFAULT_ITUNES_RATE_LIMIT_RPS = 20;
-const DEFAULT_ITUNES_REQUEST_TIMEOUT_MS = 5000;
-const CANONICAL_ARTWORK_SIZE = 600;
-const ITUNES_ARTWORK_SIZE_PATTERN = /\d+x\d+bb\.(jpg|jpeg|png|webp)(\?.*)?$/i;
+const DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL = 'https://accounts.spotify.com';
+const DEFAULT_SPOTIFY_API_BASE_URL = 'https://api.spotify.com';
+const DEFAULT_SPOTIFY_MAX_RETRIES = 5;
+const DEFAULT_SPOTIFY_REQUEST_INTERVAL_MS = 350;
+const DEFAULT_SPOTIFY_REQUEST_TIMEOUT_MS = 10000;
 
-const TRACK_SELECT = {
-  album: {
-    select: {
-      primaryArtist: {
-        select: {
-          name: true,
-        },
-      },
-    },
-  },
-  id: true,
-  name: true,
-  trackArtists: {
-    orderBy: {
-      artistId: 'asc',
-    },
-    select: {
-      artist: {
-        select: {
-          name: true,
-        },
-      },
-      role: true,
-    },
-  },
-} as const satisfies Prisma.TrackSelect;
+const SPOTIFY_ALBUM_IDS_PER_REQUEST = 1;
+const SPOTIFY_ARTIST_IDS_PER_REQUEST = 1;
+const SPOTIFY_TOKEN_EXPIRY_BUFFER_MS = 60000;
 
 const ALBUM_SELECT = {
   id: true,
-  tracks: {
-    orderBy: {
-      id: 'asc',
-    },
-    select: {
-      imageUrl: true,
-    },
-    take: 1,
-    where: {
-      imageUrl: {
-        not: null,
-      },
-    },
-  },
+  imageUrl: true,
+  spotifyUri: true,
 } as const satisfies Prisma.AlbumSelect;
 
-type BackfillTrack = Prisma.TrackGetPayload<{ select: typeof TRACK_SELECT }>;
+const ARTIST_SELECT = {
+  id: true,
+  imageUrl: true,
+  spotifyUri: true,
+} as const satisfies Prisma.ArtistSelect;
+
 type BackfillAlbum = Prisma.AlbumGetPayload<{ select: typeof ALBUM_SELECT }>;
+type BackfillArtist = Prisma.ArtistGetPayload<{ select: typeof ARTIST_SELECT }>;
+type BackfillEntityKind = 'album' | 'artist';
+type BackfillRecord = BackfillAlbum | BackfillArtist;
+type BackfillCandidate = { record: BackfillRecord; spotifyId: string };
 
 export interface MediaBackfillPrisma {
   album: {
     findMany(args: Prisma.AlbumFindManyArgs): Promise<BackfillAlbum[]>;
     update(args: Prisma.AlbumUpdateArgs): Promise<unknown>;
   };
-  track: {
-    findMany(args: Prisma.TrackFindManyArgs): Promise<BackfillTrack[]>;
-    update(args: Prisma.TrackUpdateArgs): Promise<unknown>;
+  artist: {
+    findMany(args: Prisma.ArtistFindManyArgs): Promise<BackfillArtist[]>;
+    update(args: Prisma.ArtistUpdateArgs): Promise<unknown>;
   };
 }
 
@@ -73,51 +47,92 @@ export interface MediaBackfillLogger {
 
 export interface MediaBackfillOptions {
   batchSize?: number;
-  itunesApiBaseUrl?: string;
-  itunesRateLimitRps?: number;
-  itunesRequestTimeoutMs?: number;
+  catalogFetcher?: SpotifyCatalogFetcher;
+  delay?: Delay;
+  fetch?: FetchLike;
   limit?: number | null;
   logger?: MediaBackfillLogger;
-  searchSongs?: ItunesSongSearch;
+  overwriteExisting?: boolean;
+  spotifyAccountsBaseUrl?: string;
+  spotifyApiBaseUrl?: string;
+  spotifyClientId?: string;
+  spotifyClientSecret?: string;
+  spotifyMaxRetries?: number;
+  spotifyRequestIntervalMs?: number;
+  spotifyRequestTimeoutMs?: number;
 }
 
 export interface MediaBackfillResult {
+  albumLookupFailures: number;
+  albumsScanned: number;
+  albumsSkipped: number;
   albumsUpdated: number;
-  lookupFailures: number;
-  tracksScanned: number;
-  tracksSkipped: number;
-  tracksUpdated: number;
+  artistLookupFailures: number;
+  artistsScanned: number;
+  artistsSkipped: number;
+  artistsUpdated: number;
 }
 
-export interface ItunesSongSearchParams {
-  limit?: number;
-  term: string;
+export interface SpotifyCatalogImage {
+  id: string;
+  imageUrl: string | null;
 }
 
-export type ItunesSongSearch = (params: ItunesSongSearchParams) => Promise<ItunesSearchResponse>;
-
-interface ItunesSearchResponse {
-  results?: ItunesSearchResult[];
-}
-
-interface ItunesSearchResult {
-  artworkUrl100?: unknown;
-  previewUrl?: unknown;
-  trackId?: unknown;
-}
-
-interface MediaMatch {
-  imageUrl: string;
-  itunesTrackId: number;
-  previewUrl: string;
+export interface SpotifyCatalogFetcher {
+  getAlbums(ids: string[]): Promise<SpotifyCatalogImage[]>;
+  getArtists(ids: string[]): Promise<SpotifyCatalogImage[]>;
 }
 
 interface ResolvedMediaBackfillOptions {
   batchSize: number;
+  catalogFetcher: SpotifyCatalogFetcher;
   limit: number | null;
   logger: MediaBackfillLogger;
-  searchSongs: ItunesSongSearch;
+  overwriteExisting: boolean;
 }
+
+interface SpotifyCatalogClientOptions {
+  accountsBaseUrl?: string;
+  apiBaseUrl?: string;
+  clientId: string;
+  clientSecret: string;
+  delay?: Delay;
+  fetch?: FetchLike;
+  maxRetries?: number;
+  requestIntervalMs?: number;
+  requestTimeoutMs?: number;
+}
+
+interface ResolvedSpotifyCatalogClientOptions {
+  accountsBaseUrl: string;
+  apiBaseUrl: string;
+  clientId: string;
+  clientSecret: string;
+  delay: Delay;
+  fetch: FetchLike;
+  maxRetries: number;
+  requestIntervalMs: number;
+  requestTimeoutMs: number;
+}
+
+interface SpotifyAccessToken {
+  accessToken: string;
+  expiresAt: number;
+}
+
+interface SpotifyTokenResponse {
+  access_token?: unknown;
+  expires_in?: unknown;
+  token_type?: unknown;
+}
+
+interface SpotifyMediaObject {
+  id?: unknown;
+  images?: unknown;
+}
+
+type Delay = (ms: number) => Promise<void>;
+type FetchLike = (input: URL, init?: RequestInit) => Promise<Response>;
 
 const SILENT_LOGGER: MediaBackfillLogger = {
   info() {},
@@ -131,10 +146,11 @@ export async function runMediaBackfill(
   const resolved = resolveMediaBackfillOptions(options);
   const result = createEmptyResult();
 
-  await backfillTrackImages(prisma, resolved, result);
-  result.albumsUpdated = await backfillAlbumImages(prisma, resolved.batchSize);
+  await backfillAlbums(prisma, resolved, result);
+  await backfillArtists(prisma, resolved, result);
+
   resolved.logger.info(
-    `Media backfill complete. tracksScanned=${result.tracksScanned} tracksUpdated=${result.tracksUpdated} tracksSkipped=${result.tracksSkipped} lookupFailures=${result.lookupFailures} albumsUpdated=${result.albumsUpdated}`,
+    `Media backfill complete. albumsScanned=${result.albumsScanned} albumsUpdated=${result.albumsUpdated} albumsSkipped=${result.albumsSkipped} albumLookupFailures=${result.albumLookupFailures} artistsScanned=${result.artistsScanned} artistsUpdated=${result.artistsUpdated} artistsSkipped=${result.artistsSkipped} artistLookupFailures=${result.artistLookupFailures}`,
   );
 
   return result;
@@ -142,24 +158,59 @@ export async function runMediaBackfill(
 
 function resolveMediaBackfillOptions(options: MediaBackfillOptions): ResolvedMediaBackfillOptions {
   return {
-    batchSize: resolveBatchSize(options.batchSize),
+    batchSize: resolvePositiveInt(options.batchSize ?? DEFAULT_BATCH_SIZE, 'batchSize'),
+    catalogFetcher:
+      options.catalogFetcher ?? createSpotifyCatalogFetcher(resolveSpotifyEnv(options)),
     limit: resolveLimit(options.limit),
     logger: options.logger ?? SILENT_LOGGER,
-    searchSongs: resolveSearchSongs(options),
+    overwriteExisting: options.overwriteExisting ?? false,
   };
 }
 
-function resolveBatchSize(value: number | undefined): number {
-  const batchSize = value ?? DEFAULT_BATCH_SIZE;
-  if (!Number.isInteger(batchSize) || batchSize <= 0) {
-    throw new Error(`batchSize must be a positive integer, got ${batchSize}`);
+function resolveSpotifyEnv(options: MediaBackfillOptions): SpotifyCatalogClientOptions {
+  const clientId = options.spotifyClientId ?? process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = options.spotifyClientSecret ?? process.env.SPOTIFY_CLIENT_SECRET;
+
+  if (clientId === undefined || clientId.trim() === '') {
+    throw new Error('SPOTIFY_CLIENT_ID is required for Spotify artwork backfill');
   }
 
-  return batchSize;
+  if (clientSecret === undefined || clientSecret.trim() === '') {
+    throw new Error('SPOTIFY_CLIENT_SECRET is required for Spotify artwork backfill');
+  }
+
+  return {
+    accountsBaseUrl: options.spotifyAccountsBaseUrl,
+    apiBaseUrl: options.spotifyApiBaseUrl,
+    clientId,
+    clientSecret,
+    delay: options.delay,
+    fetch: options.fetch,
+    maxRetries: options.spotifyMaxRetries,
+    requestIntervalMs: options.spotifyRequestIntervalMs,
+    requestTimeoutMs: options.spotifyRequestTimeoutMs,
+  };
+}
+
+function resolvePositiveInt(value: number, label: string): number {
+  if (!Number.isInteger(value) || value <= 0) {
+    throw new Error(`${label} must be a positive integer, got ${value}`);
+  }
+
+  return value;
+}
+
+function resolveNonNegativeInt(value: number, label: string): number {
+  if (!Number.isInteger(value) || value < 0) {
+    throw new Error(`${label} must be a non-negative integer, got ${value}`);
+  }
+
+  return value;
 }
 
 function resolveLimit(value: number | null | undefined): number | null {
   const limit = value ?? null;
+
   if (limit !== null && (!Number.isInteger(limit) || limit < 0)) {
     throw new Error(`limit must be a non-negative integer, got ${limit}`);
   }
@@ -167,231 +218,523 @@ function resolveLimit(value: number | null | undefined): number | null {
   return limit;
 }
 
-function resolveSearchSongs(options: MediaBackfillOptions): ItunesSongSearch {
-  return (
-    options.searchSongs ??
-    createItunesSearcher({
-      apiBaseUrl: options.itunesApiBaseUrl ?? DEFAULT_ITUNES_API_BASE_URL,
-      rateLimitRps: options.itunesRateLimitRps ?? DEFAULT_ITUNES_RATE_LIMIT_RPS,
-      requestTimeoutMs: options.itunesRequestTimeoutMs ?? DEFAULT_ITUNES_REQUEST_TIMEOUT_MS,
-    })
-  );
-}
-
 function createEmptyResult(): MediaBackfillResult {
   return {
+    albumLookupFailures: 0,
+    albumsScanned: 0,
+    albumsSkipped: 0,
     albumsUpdated: 0,
-    lookupFailures: 0,
-    tracksScanned: 0,
-    tracksSkipped: 0,
-    tracksUpdated: 0,
+    artistLookupFailures: 0,
+    artistsScanned: 0,
+    artistsSkipped: 0,
+    artistsUpdated: 0,
   };
 }
 
-async function backfillTrackImages(
+async function backfillAlbums(
   prisma: MediaBackfillPrisma,
   options: ResolvedMediaBackfillOptions,
   result: MediaBackfillResult,
 ): Promise<void> {
-  let lastTrackId = 0;
-  let remainingTracks = options.limit;
-
-  while (remainingTracks === null || remainingTracks > 0) {
-    const tracks = await findTrackBatch(prisma, lastTrackId, options.batchSize, remainingTracks);
-
-    if (tracks.length === 0) {
-      break;
-    }
-
-    for (const track of tracks) {
-      result.tracksScanned += 1;
-      lastTrackId = track.id;
-      await backfillTrackImage(prisma, options, result, track);
-    }
-
-    if (remainingTracks !== null) {
-      remainingTracks -= tracks.length;
-    }
-  }
-}
-
-function findTrackBatch(
-  prisma: MediaBackfillPrisma,
-  lastTrackId: number,
-  batchSize: number,
-  remainingTracks: number | null,
-): Promise<BackfillTrack[]> {
-  const take = remainingTracks === null ? batchSize : Math.min(batchSize, remainingTracks);
-
-  return prisma.track.findMany({
-    orderBy: { id: 'asc' },
-    select: TRACK_SELECT,
-    take,
-    where: {
-      id: { gt: lastTrackId },
-      imageUrl: null,
+  await backfillEntityImages({
+    fetchImages: options.catalogFetcher.getAlbums.bind(options.catalogFetcher),
+    findBatch: (lastId, take) => findAlbumBatch(prisma, lastId, take, options.overwriteExisting),
+    kind: 'album',
+    maxIdsPerRequest: SPOTIFY_ALBUM_IDS_PER_REQUEST,
+    onLookupFailure: (count) => {
+      result.albumLookupFailures += count;
     },
+    onScanned: () => {
+      result.albumsScanned += 1;
+    },
+    onSkipped: () => {
+      result.albumsSkipped += 1;
+    },
+    onUpdated: () => {
+      result.albumsUpdated += 1;
+    },
+    options,
+    update: (id, imageUrl) =>
+      prisma.album.update({
+        data: { imageUrl },
+        where: { id },
+      }),
   });
 }
 
-async function backfillTrackImage(
+async function backfillArtists(
   prisma: MediaBackfillPrisma,
   options: ResolvedMediaBackfillOptions,
   result: MediaBackfillResult,
-  track: BackfillTrack,
 ): Promise<void> {
-  try {
-    const response = await options.searchSongs({ term: createSearchTerm(track), limit: 5 });
-    const match = toMediaMatch(response);
-
-    if (match === null) {
-      result.tracksSkipped += 1;
-      return;
-    }
-
-    await prisma.track.update({
-      data: {
-        imageUrl: match.imageUrl,
-        itunesTrackId: BigInt(match.itunesTrackId),
-        previewFetchedAt: new Date(),
-        previewUrl: match.previewUrl,
-      },
-      where: { id: track.id },
-    });
-    result.tracksUpdated += 1;
-  } catch (error) {
-    result.lookupFailures += 1;
-    options.logger.warn(`Track ${track.id} lookup failed: ${toErrorMessage(error)}`);
-  }
+  await backfillEntityImages({
+    fetchImages: options.catalogFetcher.getArtists.bind(options.catalogFetcher),
+    findBatch: (lastId, take) => findArtistBatch(prisma, lastId, take, options.overwriteExisting),
+    kind: 'artist',
+    maxIdsPerRequest: SPOTIFY_ARTIST_IDS_PER_REQUEST,
+    onLookupFailure: (count) => {
+      result.artistLookupFailures += count;
+    },
+    onScanned: () => {
+      result.artistsScanned += 1;
+    },
+    onSkipped: () => {
+      result.artistsSkipped += 1;
+    },
+    onUpdated: () => {
+      result.artistsUpdated += 1;
+    },
+    options,
+    update: (id, imageUrl) =>
+      prisma.artist.update({
+        data: { imageUrl },
+        where: { id },
+      }),
+  });
 }
 
-async function backfillAlbumImages(
-  prisma: MediaBackfillPrisma,
-  batchSize: number,
-): Promise<number> {
-  let lastAlbumId = 0;
-  let updated = 0;
+async function backfillEntityImages(args: {
+  fetchImages(ids: string[]): Promise<SpotifyCatalogImage[]>;
+  findBatch(lastId: number, take: number): Promise<BackfillRecord[]>;
+  kind: BackfillEntityKind;
+  maxIdsPerRequest: number;
+  onLookupFailure(count: number): void;
+  onScanned(): void;
+  onSkipped(): void;
+  onUpdated(): void;
+  options: ResolvedMediaBackfillOptions;
+  update(id: number, imageUrl: string): Promise<unknown>;
+}): Promise<void> {
+  let lastId = 0;
+  let remaining = args.options.limit;
 
-  for (;;) {
-    const albums = await prisma.album.findMany({
-      orderBy: { id: 'asc' },
-      select: ALBUM_SELECT,
-      take: batchSize,
-      where: {
-        id: { gt: lastAlbumId },
-        imageUrl: null,
-        tracks: {
-          some: {
-            imageUrl: {
-              not: null,
-            },
-          },
-        },
-      },
-    });
+  args.options.logger.info(
+    `${args.kind} backfill started. batchSize=${args.options.batchSize} limit=${remaining ?? 'all'}`,
+  );
 
-    if (albums.length === 0) {
+  while (remaining === null || remaining > 0) {
+    const take = resolveNextTake(remaining, args.options.batchSize);
+
+    args.options.logger.info(`${args.kind} fetching DB batch after lastId=${lastId} take=${take}`);
+
+    const records = await args.findBatch(lastId, take);
+
+    args.options.logger.info(`${args.kind} DB batch loaded. records=${records.length}`);
+
+    if (records.length === 0) {
+      args.options.logger.info(`${args.kind} no more records found.`);
       break;
     }
 
-    for (const album of albums) {
-      lastAlbumId = album.id;
-      const imageUrl = album.tracks[0]?.imageUrl;
+    const candidates = collectBackfillCandidates({
+      kind: args.kind,
+      onScanned: args.onScanned,
+      onSkipped: args.onSkipped,
+      overwriteExisting: args.options.overwriteExisting,
+      records,
+    });
 
-      if (imageUrl === undefined || imageUrl === null) {
-        continue;
-      }
+    args.options.logger.info(`${args.kind} candidates collected. candidates=${candidates.length}`);
 
-      await prisma.album.update({
-        data: { imageUrl },
-        where: { id: album.id },
-      });
-      updated += 1;
+    lastId = records[records.length - 1]?.id ?? lastId;
+
+    for (const chunk of chunkArray(candidates, args.maxIdsPerRequest)) {
+      await backfillEntityChunk(args, chunk);
+    }
+
+    if (remaining !== null) {
+      remaining -= records.length;
     }
   }
-
-  return updated;
 }
 
-function toMediaMatch(response: ItunesSearchResponse): MediaMatch | null {
-  const match = response.results?.find(hasArtworkPreviewMatch);
+function resolveNextTake(remaining: number | null, batchSize: number): number {
+  return remaining === null ? batchSize : Math.min(batchSize, remaining);
+}
 
-  if (match === undefined) {
+function collectBackfillCandidates(args: {
+  kind: BackfillEntityKind;
+  onScanned(): void;
+  onSkipped(): void;
+  overwriteExisting: boolean;
+  records: BackfillRecord[];
+}): BackfillCandidate[] {
+  const candidates: BackfillCandidate[] = [];
+
+  for (const record of args.records) {
+    args.onScanned();
+
+    const spotifyId = toCandidateSpotifyId(record, args.kind, args.overwriteExisting);
+
+    if (spotifyId === null) {
+      args.onSkipped();
+      continue;
+    }
+
+    candidates.push({ record, spotifyId });
+  }
+
+  return candidates;
+}
+
+function toCandidateSpotifyId(
+  record: BackfillRecord,
+  kind: BackfillEntityKind,
+  overwriteExisting: boolean,
+): string | null {
+  if (record.imageUrl !== null && !overwriteExisting) {
     return null;
   }
 
-  return {
-    imageUrl: toCanonicalArtworkUrl(match.artworkUrl100),
-    itunesTrackId: match.trackId,
-    previewUrl: match.previewUrl,
-  };
+  return parseSpotifyUri(record.spotifyUri, kind);
 }
 
-function hasArtworkPreviewMatch(result: ItunesSearchResult): result is {
-  artworkUrl100: string;
-  previewUrl: string;
-  trackId: number;
-} {
-  return (
-    typeof result.trackId === 'number' &&
-    typeof result.previewUrl === 'string' &&
-    result.previewUrl.length > 0 &&
-    typeof result.artworkUrl100 === 'string' &&
-    result.artworkUrl100.length > 0
-  );
+async function backfillEntityChunk(
+  args: {
+    fetchImages(ids: string[]): Promise<SpotifyCatalogImage[]>;
+    kind: BackfillEntityKind;
+    onLookupFailure(count: number): void;
+    onSkipped(): void;
+    onUpdated(): void;
+    options: ResolvedMediaBackfillOptions;
+    update(id: number, imageUrl: string): Promise<unknown>;
+  },
+  chunk: BackfillCandidate[],
+): Promise<void> {
+  const ids = chunk.map(({ spotifyId }) => spotifyId);
+
+  try {
+    const images = await args.fetchImages(ids);
+    const imagesById = new Map(images.map((image) => [image.id, image.imageUrl]));
+
+    for (const { record, spotifyId } of chunk) {
+      const newImageUrl = imagesById.get(spotifyId);
+
+      if (newImageUrl === undefined || newImageUrl === null) {
+        args.options.logger.info(
+          `${args.kind} skipped dbId=${record.id} spotifyId=${spotifyId} reason=no-image-found`,
+        );
+        args.onSkipped();
+        continue;
+      }
+
+      await args.update(record.id, newImageUrl);
+
+      args.options.logger.info(
+        `${args.kind} updated dbId=${record.id} spotifyUri=${record.spotifyUri} spotifyId=${spotifyId} oldImageUrl=${record.imageUrl ?? 'null'} newImageUrl=${newImageUrl}`,
+      );
+
+      args.onUpdated();
+    }
+  } catch (error) {
+    args.onLookupFailure(chunk.length);
+    args.options.logger.warn(
+      `${args.kind} image lookup failed for ${ids.length} Spotify IDs: ${toErrorMessage(error)}`,
+    );
+  }
 }
 
-export function toCanonicalArtworkUrl(url: string): string {
-  return url.replace(
-    ITUNES_ARTWORK_SIZE_PATTERN,
-    `${CANONICAL_ARTWORK_SIZE}x${CANONICAL_ARTWORK_SIZE}bb.$1$2`,
-  );
+function findAlbumBatch(
+  prisma: MediaBackfillPrisma,
+  lastId: number,
+  take: number,
+  overwriteExisting: boolean,
+): Promise<BackfillAlbum[]> {
+  const where: Prisma.AlbumWhereInput = { id: { gt: lastId } };
+
+  if (!overwriteExisting) {
+    where.imageUrl = null;
+  }
+
+  return prisma.album.findMany({
+    orderBy: { id: 'asc' },
+    select: ALBUM_SELECT,
+    take,
+    where,
+  });
 }
 
-function createSearchTerm(track: BackfillTrack): string {
-  return [track.name, getPrimaryArtistName(track)].filter(Boolean).join(' ');
+function findArtistBatch(
+  prisma: MediaBackfillPrisma,
+  lastId: number,
+  take: number,
+  overwriteExisting: boolean,
+): Promise<BackfillArtist[]> {
+  const where: Prisma.ArtistWhereInput = { id: { gt: lastId } };
+
+  if (!overwriteExisting) {
+    where.imageUrl = null;
+  }
+
+  return prisma.artist.findMany({
+    orderBy: { id: 'asc' },
+    select: ARTIST_SELECT,
+    take,
+    where,
+  });
 }
 
-function getPrimaryArtistName(track: BackfillTrack): string | undefined {
-  return (
-    (
-      track.trackArtists.find((trackArtist) => trackArtist.role === 'primary') ??
-      track.trackArtists[0]
-    )?.artist.name ?? track.album.primaryArtist.name
-  );
+export function parseSpotifyUri(uri: string, expectedKind: BackfillEntityKind): string | null {
+  const parts = uri.split(':');
+
+  if (parts.length !== 3) {
+    return null;
+  }
+
+  const [scheme, kind, id] = parts;
+
+  if (scheme !== 'spotify' || kind !== expectedKind || id === undefined || id.trim() === '') {
+    return null;
+  }
+
+  return id;
 }
 
-function createItunesSearcher(options: {
-  apiBaseUrl: string;
-  rateLimitRps: number;
-  requestTimeoutMs: number;
-}): ItunesSongSearch {
-  const minimumIntervalMs = Math.ceil(1000 / Math.max(1, options.rateLimitRps));
+export function createSpotifyCatalogFetcher(
+  options: SpotifyCatalogClientOptions,
+): SpotifyCatalogFetcher {
+  const resolved = resolveSpotifyCatalogClientOptions(options);
+  let accessToken: SpotifyAccessToken | null = null;
   let lastRequestAt = 0;
 
-  return async (params) => {
-    const elapsedMs = Date.now() - lastRequestAt;
-    if (elapsedMs < minimumIntervalMs) {
-      await delay(minimumIntervalMs - elapsedMs);
+  async function getAccessToken(): Promise<string> {
+    if (accessToken !== null && Date.now() < accessToken.expiresAt) {
+      return accessToken.accessToken;
     }
-    lastRequestAt = Date.now();
 
-    const url = new URL('/search', options.apiBaseUrl);
-    url.searchParams.set('term', params.term);
-    url.searchParams.set('media', 'music');
-    url.searchParams.set('entity', 'song');
-    url.searchParams.set('limit', String(params.limit ?? 5));
+    const url = new URL('/api/token', resolved.accountsBaseUrl);
+    const credentials = Buffer.from(`${resolved.clientId}:${resolved.clientSecret}`).toString(
+      'base64',
+    );
 
-    const response = await fetch(url, {
-      signal: AbortSignal.timeout(options.requestTimeoutMs),
+    const response = await fetchWithRetry(url, {
+      headers: {
+        Authorization: `Basic ${credentials}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      method: 'POST',
+      body: new URLSearchParams({ grant_type: 'client_credentials' }).toString(),
     });
 
-    if (!response.ok) {
-      throw new Error(`iTunes lookup failed with status ${response.status}`);
+    if (response === null) {
+      throw new Error('Spotify token request unexpectedly returned no response');
     }
 
-    return (await response.json()) as ItunesSearchResponse;
+    const body = parseTokenResponse((await response.json()) as SpotifyTokenResponse);
+
+    accessToken = {
+      accessToken: body.accessToken,
+      expiresAt: Date.now() + body.expiresIn * 1000 - SPOTIFY_TOKEN_EXPIRY_BUFFER_MS,
+    };
+
+    return accessToken.accessToken;
+  }
+
+  async function fetchSingleCatalogItem(
+    path: '/v1/albums' | '/v1/artists',
+    id: string,
+  ): Promise<SpotifyCatalogImage> {
+    console.log(`[media-backfill] Spotify fetching ${path}/${id}`);
+
+    const token = await getAccessToken();
+    const url = new URL(`${path}/${encodeURIComponent(id)}`, resolved.apiBaseUrl);
+
+    const response = await fetchWithRetry(
+      url,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        method: 'GET',
+      },
+      {
+        softStatuses: [400, 404],
+      },
+    );
+
+    if (response === null) {
+      console.log(`[media-backfill] Spotify returned empty/soft-failed for ${path}/${id}`);
+      return {
+        id,
+        imageUrl: null,
+      };
+    }
+
+    const body = (await response.json()) as unknown;
+    const mediaObject = isSpotifyMediaObject(body) ? body : null;
+
+    return {
+      id:
+        mediaObject !== null && typeof mediaObject.id === 'string' && mediaObject.id.length > 0
+          ? mediaObject.id
+          : id,
+      imageUrl: mediaObject === null ? null : firstImageUrl(mediaObject.images),
+    };
+  }
+
+  async function fetchCatalogItems(
+    path: '/v1/albums' | '/v1/artists',
+    ids: string[],
+  ): Promise<SpotifyCatalogImage[]> {
+    const results: SpotifyCatalogImage[] = [];
+
+    for (const id of ids) {
+      results.push(await fetchSingleCatalogItem(path, id));
+    }
+
+    return results;
+  }
+
+  async function fetchWithRetry(
+    url: URL,
+    init: RequestInit,
+    options: { softStatuses?: number[] } = {},
+  ): Promise<Response | null> {
+    for (let attempt = 0; ; attempt += 1) {
+      await paceRequest();
+
+      const response = await resolved.fetch(url, {
+        ...init,
+        signal: AbortSignal.timeout(resolved.requestTimeoutMs),
+      });
+
+      if (response.status === 429) {
+        if (attempt >= resolved.maxRetries) {
+          throw new Error('Spotify request exceeded retry limit after status 429');
+        }
+
+        const retryAfterMs = parseRetryAfterMs(response.headers.get('Retry-After'));
+        await resolved.delay(retryAfterMs);
+        continue;
+      }
+
+      if (options.softStatuses?.includes(response.status)) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error(await createSpotifyRequestError(response));
+      }
+
+      return response;
+    }
+  }
+
+  async function paceRequest(): Promise<void> {
+    const elapsedMs = Date.now() - lastRequestAt;
+
+    if (elapsedMs < resolved.requestIntervalMs) {
+      await resolved.delay(resolved.requestIntervalMs - elapsedMs);
+    }
+
+    lastRequestAt = Date.now();
+  }
+
+  return {
+    async getAlbums(ids) {
+      return fetchCatalogItems('/v1/albums', ids);
+    },
+
+    async getArtists(ids) {
+      return fetchCatalogItems('/v1/artists', ids);
+    },
   };
+}
+
+async function createSpotifyRequestError(response: Response): Promise<string> {
+  const body = await response.text();
+  const suffix = body.trim().length === 0 ? '' : `: ${body.trim().slice(0, 500)}`;
+
+  return `Spotify request failed with status ${response.status}${suffix}`;
+}
+
+function resolveSpotifyCatalogClientOptions(
+  options: SpotifyCatalogClientOptions,
+): ResolvedSpotifyCatalogClientOptions {
+  return {
+    accountsBaseUrl: options.accountsBaseUrl ?? DEFAULT_SPOTIFY_ACCOUNTS_BASE_URL,
+    apiBaseUrl: options.apiBaseUrl ?? DEFAULT_SPOTIFY_API_BASE_URL,
+    clientId: options.clientId,
+    clientSecret: options.clientSecret,
+    delay: options.delay ?? delay,
+    fetch: options.fetch ?? fetch,
+    maxRetries: resolveNonNegativeInt(
+      options.maxRetries ?? DEFAULT_SPOTIFY_MAX_RETRIES,
+      'maxRetries',
+    ),
+    requestIntervalMs: resolveNonNegativeInt(
+      options.requestIntervalMs ?? DEFAULT_SPOTIFY_REQUEST_INTERVAL_MS,
+      'requestIntervalMs',
+    ),
+    requestTimeoutMs: resolvePositiveInt(
+      options.requestTimeoutMs ?? DEFAULT_SPOTIFY_REQUEST_TIMEOUT_MS,
+      'requestTimeoutMs',
+    ),
+  };
+}
+
+function parseTokenResponse(response: SpotifyTokenResponse): {
+  accessToken: string;
+  expiresIn: number;
+} {
+  if (
+    typeof response.access_token !== 'string' ||
+    response.access_token.length === 0 ||
+    typeof response.expires_in !== 'number'
+  ) {
+    throw new Error('Spotify token response is missing access_token or expires_in');
+  }
+
+  return {
+    accessToken: response.access_token,
+    expiresIn: response.expires_in,
+  };
+}
+
+function isSpotifyMediaObject(value: unknown): value is SpotifyMediaObject {
+  return typeof value === 'object' && value !== null;
+}
+
+function firstImageUrl(images: unknown): string | null {
+  if (!Array.isArray(images)) {
+    return null;
+  }
+
+  for (const image of images) {
+    if (
+      typeof image === 'object' &&
+      image !== null &&
+      'url' in image &&
+      typeof image.url === 'string' &&
+      image.url.length > 0
+    ) {
+      return image.url;
+    }
+  }
+
+  return null;
+}
+
+function parseRetryAfterMs(value: string | null): number {
+  if (value === null) {
+    return 1000;
+  }
+
+  const seconds = Number.parseInt(value, 10);
+
+  if (!Number.isFinite(seconds) || seconds < 0) {
+    return 1000;
+  }
+
+  return Math.max(1000, seconds * 1000);
+}
+
+function chunkArray<T>(items: T[], size: number): T[][] {
+  const chunks: T[][] = [];
+
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+
+  return chunks;
 }
 
 function delay(ms: number): Promise<void> {
@@ -400,11 +743,17 @@ function delay(ms: number): Promise<void> {
   });
 }
 
-function parseArgs(argv: string[]): Pick<MediaBackfillOptions, 'batchSize' | 'limit'> {
-  const options: Pick<MediaBackfillOptions, 'batchSize' | 'limit'> = {};
+function parseArgs(
+  argv: string[],
+): Pick<MediaBackfillOptions, 'batchSize' | 'limit' | 'overwriteExisting'> {
+  const options: Pick<MediaBackfillOptions, 'batchSize' | 'limit' | 'overwriteExisting'> = {};
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
+
+    if (arg === '--') {
+      continue;
+    }
 
     if (arg === '--batch-size') {
       options.batchSize = parseRequiredInt(argv, (index += 1), arg);
@@ -416,6 +765,11 @@ function parseArgs(argv: string[]): Pick<MediaBackfillOptions, 'batchSize' | 'li
       continue;
     }
 
+    if (arg === '--overwrite-existing') {
+      options.overwriteExisting = true;
+      continue;
+    }
+
     throw new Error(`Unknown argument: ${arg}`);
   }
 
@@ -424,11 +778,13 @@ function parseArgs(argv: string[]): Pick<MediaBackfillOptions, 'batchSize' | 'li
 
 function parseRequiredInt(argv: string[], index: number, flag: string): number {
   const value = argv[index];
+
   if (value === undefined) {
     throw new Error(`Missing value for ${flag}`);
   }
 
   const parsed = Number.parseInt(value, 10);
+
   if (!Number.isInteger(parsed)) {
     throw new Error(`Expected integer for ${flag}, got ${value}`);
   }
@@ -440,6 +796,7 @@ function toErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
+
   return String(error);
 }
 
@@ -447,6 +804,7 @@ const CONSOLE_LOGGER: MediaBackfillLogger = {
   info(message) {
     console.log(`[media-backfill] ${message}`);
   },
+
   warn(message) {
     console.warn(`[media-backfill] ${message}`);
   },
@@ -458,15 +816,6 @@ async function main(): Promise<void> {
   try {
     await runMediaBackfill(prisma as unknown as MediaBackfillPrisma, {
       ...parseArgs(process.argv.slice(2)),
-      itunesApiBaseUrl: process.env.ITUNES_API_BASE_URL,
-      itunesRateLimitRps:
-        process.env.ITUNES_RATE_LIMIT_RPS === undefined
-          ? undefined
-          : Number.parseInt(process.env.ITUNES_RATE_LIMIT_RPS, 10),
-      itunesRequestTimeoutMs:
-        process.env.ITUNES_REQUEST_TIMEOUT_MS === undefined
-          ? undefined
-          : Number.parseInt(process.env.ITUNES_REQUEST_TIMEOUT_MS, 10),
       logger: CONSOLE_LOGGER,
     });
   } finally {
