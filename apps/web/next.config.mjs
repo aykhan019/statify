@@ -10,6 +10,11 @@ const nextConfig = {
         hostname: 'i.scdn.co',
         protocol: 'https',
       },
+      {
+        // Deezer artwork backfill (cdn-images / e-cdns-images .dzcdn.net).
+        hostname: '**.dzcdn.net',
+        protocol: 'https',
+      },
     ],
   },
   reactStrictMode: true,
