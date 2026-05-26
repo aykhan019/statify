@@ -13,6 +13,7 @@
     "db:ingest": "tsx src/ingest/cli.ts",
     "db:backfill-media": "tsx src/scripts/backfill-media.ts",
     "db:backfill-media:deezer": "tsx src/scripts/backfill-media-deezer.ts",
+    "db:seed-history": "tsx src/scripts/seed-listening-history.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc",
     "test": "vitest run",
