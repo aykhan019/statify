@@ -27,15 +27,15 @@ export interface AlbumControlsState {
   sort: AlbumSort;
 }
 
-const TRACK_SORTS = ['name', '-name', 'durationMs', '-durationMs'] as const;
+const TRACK_SORTS = ['plays', '-plays', 'name', '-name', 'durationMs', '-durationMs'] as const;
 const ARTIST_SORTS = ['name', '-name', 'createdAt', '-createdAt'] as const;
-const ALBUM_SORTS = ['name', '-name', 'createdAt', '-createdAt'] as const;
+const ALBUM_SORTS = ['plays', '-plays', 'name', '-name', 'createdAt', '-createdAt'] as const;
 
 export function readTrackListQuery(params: CatalogSearchParams): {
   controls: TrackControlsState;
   query: Partial<TracksQuery>;
 } {
-  const sort = readAllowed(readSingle(params.sort), TRACK_SORTS, 'name');
+  const sort = readAllowed(readSingle(params.sort), TRACK_SORTS, '-plays');
   const q = readSearchTerm(params.q);
   const hasPreview = readHasPreview(params.hasPreview);
   const minDurationSec = readNonNegativeIntString(params.minDurationSec);
@@ -79,7 +79,7 @@ export function readAlbumListQuery(params: CatalogSearchParams): {
   controls: AlbumControlsState;
   query: Partial<AlbumsQuery>;
 } {
-  const sort = readAllowed(readSingle(params.sort), ALBUM_SORTS, 'name');
+  const sort = readAllowed(readSingle(params.sort), ALBUM_SORTS, '-plays');
   const q = readSearchTerm(params.q);
 
   return {

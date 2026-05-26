@@ -20,6 +20,8 @@ export function TrackCatalogControls({ values }: { values: TrackControlsState })
       <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Field label="Sort">
           <select name="sort" defaultValue={values.sort} className={CONTROL_BASE}>
+            <option value="-plays">Most played</option>
+            <option value="plays">Least played</option>
             <option value="name">Name A-Z</option>
             <option value="-name">Name Z-A</option>
             <option value="durationMs">Shortest</option>
@@ -97,6 +99,8 @@ export function AlbumCatalogControls({ values }: { values: AlbumControlsState })
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <Field label="Sort">
           <select name="sort" defaultValue={values.sort} className={CONTROL_BASE}>
+            <option value="-plays">Most played</option>
+            <option value="plays">Least played</option>
             <option value="name">Name A-Z</option>
             <option value="-name">Name Z-A</option>
             <option value="-createdAt">Newest</option>
