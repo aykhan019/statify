@@ -8,7 +8,7 @@ const containerSize: Record<ContainerSize, string> = {
   narrow: 'max-w-[min(100%,var(--container-narrow))]',
   prose: 'max-w-[min(100%,var(--container-prose))]',
   wide: 'max-w-[min(100%,var(--container-wide))]',
-  full: 'max-w-[min(100%,var(--container-full))]',
+  full: 'max-w-[min(100%,var(--container-app))]',
   bleed: 'max-w-none',
 };
 

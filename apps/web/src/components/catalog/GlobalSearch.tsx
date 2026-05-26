@@ -7,6 +7,7 @@ import type { CatalogSearchResponse } from '@statify/shared';
 import { fetchCatalogSearch } from '@/lib/catalog/api';
 import { Cover, type EntityKind } from '@/components/ui/Cover';
 import { Input } from '@/components/ui/Input';
+import { formatTrackName } from './format';
 
 type SearchStatus = 'idle' | 'loading' | 'ready' | 'error';
 
@@ -161,7 +162,7 @@ function SearchPanel({
             <ResultLink
               key={`track-${track.id}`}
               href={`/catalog/tracks/${track.id}`}
-              title={track.name}
+              title={formatTrackName(track.name)}
               subtitle={`${track.primaryArtistName} · ${track.albumName}`}
               imageUrl={track.imageUrl}
               entity="track"

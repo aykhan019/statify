@@ -12,6 +12,7 @@ import {
   chartTooltipStyle,
   getChartSeriesColor,
 } from '@/components/charts';
+import { formatTrackName } from '@/components/catalog';
 
 interface TopTracksChartProps {
   entries: TopTrackEntry[];
@@ -27,7 +28,7 @@ interface TopTrackDatum {
 
 export function TopTracksChart({ entries }: TopTracksChartProps) {
   const data: TopTrackDatum[] = entries.map((entry) => ({
-    trackName: entry.trackName,
+    trackName: formatTrackName(entry.trackName),
     artistName: entry.primaryArtistName,
     listenCount: entry.listenCount,
     totalMinutes: entry.totalMinutes,

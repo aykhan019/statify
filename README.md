@@ -63,6 +63,20 @@ pnpm dev
 
 The API runs on http://localhost:4000 and the web app on http://localhost:3000.
 
+## Artwork Backfill
+
+Album and artist artwork is populated from the Spotify Web API. The Spotify
+app owner must have an active Premium subscription while the app is in
+development mode. Set `SPOTIFY_CLIENT_ID` and `SPOTIFY_CLIENT_SECRET` in
+`.env`, then run:
+
+```bash
+pnpm --filter @statify/db db:backfill-media
+```
+
+The script only fills missing `image_url` values by default. Use
+`--overwrite-existing` only when the stored artwork should be replaced.
+
 ## Working on the project
 
 - Read `HANDOFF.md` first.

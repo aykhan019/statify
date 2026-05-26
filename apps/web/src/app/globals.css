@@ -265,6 +265,66 @@
   }
 }
 
+[data-theme='light'] {
+  --surface-page: oklch(0.985 0 0);
+  --surface-work: oklch(1 0 0);
+  --surface-raised: oklch(0.99 0 0);
+  --surface-sunken: oklch(0.96 0.004 265);
+  --surface-overlay: oklch(0.1 0 0 / 0.55);
+
+  --fg-strong: oklch(0.18 0.006 265);
+  --fg-default: oklch(0.26 0.006 265);
+  --fg-muted: oklch(0.48 0.008 265);
+  --fg-faint: oklch(0.66 0.008 265);
+  --fg-on-block: oklch(0.99 0 0);
+
+  --border-default: oklch(0.9 0.004 265);
+  --border-strong: oklch(0.78 0.006 265);
+  --ring-focus: var(--color-indigo-700);
+  --ring-focus-paper: oklch(0.99 0 0);
+}
+
+[data-theme='light'] [data-section-hue] {
+  --section-block: var(--section-hue-700);
+  --section-block-fg: var(--fg-on-block);
+  --section-tint: var(--section-hue-50);
+  --section-accent: var(--section-hue-700);
+  --section-accent-fg: var(--fg-on-block);
+  --section-row-hover: var(--section-tint);
+  --section-frame: var(--section-hue-500);
+  --ring-focus: var(--section-hue-700);
+}
+
+[data-theme='dark'] {
+  --surface-page: oklch(0.16 0.004 265);
+  --surface-work: oklch(0.2 0.006 265);
+  --surface-raised: oklch(0.24 0.008 265);
+  --surface-sunken: oklch(0.13 0.004 265);
+  --surface-overlay: oklch(0 0 0 / 0.7);
+
+  --fg-strong: oklch(0.985 0 0);
+  --fg-default: oklch(0.94 0 0);
+  --fg-muted: oklch(0.7 0.006 265);
+  --fg-faint: oklch(0.55 0.006 265);
+  --fg-on-block: oklch(0.99 0 0);
+
+  --border-default: oklch(0.3 0.006 265);
+  --border-strong: oklch(0.42 0.008 265);
+  --ring-focus: var(--color-indigo-400);
+  --ring-focus-paper: oklch(0.99 0 0);
+}
+
+[data-theme='dark'] [data-section-hue] {
+  --section-block: var(--section-hue-400);
+  --section-block-fg: var(--surface-page);
+  --section-accent: var(--section-hue-400);
+  --section-accent-fg: var(--surface-page);
+  --section-tint: color-mix(in oklch, var(--section-hue-900) 40%, transparent);
+  --section-row-hover: var(--section-tint);
+  --section-frame: var(--section-hue-500);
+  --ring-focus: var(--section-hue-400);
+}
+
 /* ============================================================
  * Tailwind 4 token surface
  *
@@ -514,7 +574,7 @@
   --container-narrow: 720px;
   --container-prose: 880px;
   --container-wide: 1280px;
-  --container-full: 1600px;
+  --container-app: 1600px;
 
   /* ----- Radius ----- */
   --radius-none: 0;
@@ -722,6 +782,22 @@
   }
 }
 
+[data-theme='light'] {
+  --color-chart-heatmap-0: var(--color-azure-100);
+  --color-chart-heatmap-1: var(--color-azure-200);
+  --color-chart-heatmap-2: var(--color-azure-400);
+  --color-chart-heatmap-3: var(--color-azure-500);
+  --color-chart-heatmap-4: var(--color-azure-700);
+}
+
+[data-theme='dark'] {
+  --color-chart-heatmap-0: color-mix(in oklch, var(--color-azure-900) 70%, transparent);
+  --color-chart-heatmap-1: var(--color-azure-900);
+  --color-chart-heatmap-2: var(--color-azure-700);
+  --color-chart-heatmap-3: var(--color-azure-600);
+  --color-chart-heatmap-4: var(--color-azure-400);
+}
+
 /* ============================================================
  * Transitional aliases for Phase 5 component utility names.
  * These keep the existing app surfaces rendering during the
@@ -889,6 +965,10 @@ body {
     'cv11' on;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 *,
 *::before,
 *::after {
@@ -923,6 +1003,10 @@ body {
  * ============================================================ */
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   *,
   *::before,
   *::after {

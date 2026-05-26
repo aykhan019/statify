@@ -67,6 +67,12 @@ Surface, foreground, border, ring, and overlay variables that every component re
 
 Cards do **not** use shadows by default; the block-driven language carries depth. Shadows appear only on hovered cards, popovers, and modals (see §5).
 
+### 1.2.1 Color mode control
+
+The app supports explicit light and dark modes. The root layout writes `data-theme="light"` or `data-theme="dark"` on `<html>`, seeded from a persistent `statify_theme` cookie and updated client-side by the shared theme toggle. The toggle is a two-option icon segmented control and appears in public, auth, and authed navigation chrome.
+
+When no prior preference exists, light mode is the default. Theme changes update the document attribute, local storage, and the cookie so server-rendered pages and client navigation agree on the active mode.
+
 ### 1.3 Section identity hues
 
 Each top-level section owns one hue. The block at the top of a route renders the hue through contrast-safe semantic aliases: `--color-{hue}-700` with `--fg-on-block` text in light mode, and `--color-{hue}-400` with `--surface-page` text in dark mode. Section hue propagates to: active nav indicator, row hover tint (`--color-{hue}-50` light / `--color-{hue}-900` at 40% dark), chart series default, and cover frame in that section. Cover frames and chart series keep the hue's 500 step because they do not carry body text.
@@ -280,7 +286,7 @@ P6-M5 ships token-bound primitives in `apps/web/src/components/layout/`. These a
 | `narrow`   | `--container-narrow`                                | Forms, settings, single-column reads   |
 | `prose`    | `--container-prose`                                 | Detail pages with long text            |
 | `wide`     | `--container-wide`                                  | Default authed app shell               |
-| `full`     | `--container-full`                                  | Dashboards, analytics with wide charts |
+| `full`     | `--container-app`                                   | Dashboards, analytics with wide charts |
 | `bleed`    | no max width                                        | Full-width section blocks              |
 | `page`     | 16 / 20 / 24 / 32 / 40px responsive gutter sequence | Default route gutter                   |
 | `compact`  | 12 / 16 / 20px responsive gutter sequence           | Dense nested surfaces                  |

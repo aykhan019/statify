@@ -5,6 +5,7 @@ import { useEffect, useId, useState } from 'react';
 import { Container, Surface } from '@/components/layout';
 import { GlobalSearch } from '@/components/catalog';
 import { Icon } from '@/components/ui/Icon';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { cn } from '@/lib/utils/cn';
 import { getNavigationItems, isNavigationItemActive } from './items';
 import { NavigationLink } from './NavigationLink';
@@ -64,8 +65,9 @@ export function MobileNavigation({ activePath, className, includeAdmin }: Mobile
           className="motion-sheet fixed inset-x-0 top-16 z-40 border-b border-border-default md:hidden"
         >
           <Container size="full" gutter="page" className="py-4">
-            <div className="mb-4">
+            <div className="mb-4 flex items-center gap-3">
               <GlobalSearch />
+              <ThemeToggle className="shrink-0" />
             </div>
             <nav aria-label="Mobile primary" className="flex flex-col gap-1">
               {items.map((item) => (

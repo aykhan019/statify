@@ -5,6 +5,7 @@ import {
   CatalogDetailHero,
   formatDurationMs,
   formatTrackArtists,
+  formatTrackName,
   PreviewPlayerLauncher,
 } from '@/components/catalog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -44,6 +45,7 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
   );
 
   const primaryArtistName = formatTrackArtists(track.artists);
+  const trackName = formatTrackName(track.name);
 
   return (
     <section className="flex flex-col gap-6">
@@ -51,13 +53,13 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
         entity="track"
         eyebrow="Track"
         imageUrl={track.imageUrl ?? track.album.imageUrl}
-        title={track.name}
+        title={trackName}
         meta={`${primaryArtistName} · ${formatDurationMs(track.durationMs)}`}
         actions={
           <PreviewPlayerLauncher
             track={{
               trackId: track.id,
-              trackName: track.name,
+              trackName,
               artistName: primaryArtistName,
               previewUrl: track.previewUrl,
               durationMs: track.durationMs,

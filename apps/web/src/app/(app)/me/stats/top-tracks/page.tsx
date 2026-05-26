@@ -1,6 +1,7 @@
 import { Music2 } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
+import { formatTrackName } from '@/components/catalog';
 import { TopTracksChart } from '@/components/stats/TopTracksChart';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
@@ -77,7 +78,7 @@ export default async function TopTracksPage() {
                       href={`/catalog/tracks/${entry.trackId}`}
                       className="block truncate text-sm font-medium text-fg-strong hover:text-section-accent"
                     >
-                      {entry.trackName}
+                      {formatTrackName(entry.trackName)}
                     </Link>
                     <p className="truncate text-xs text-fg-muted">
                       {entry.primaryArtistName} · {entry.albumName}

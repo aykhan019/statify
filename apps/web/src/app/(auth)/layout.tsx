@@ -1,15 +1,18 @@
-import Link from 'next/link';
 import type { ReactNode } from 'react';
+import { BrandMarkLink } from '@/components/ui/BrandMarkLink';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { Container } from '@/components/ui/Container';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="bg-background flex min-h-screen flex-col">
-      <header className="border-border border-b">
+    <div
+      data-section-hue="indigo"
+      className="flex min-h-screen flex-col bg-surface-page text-fg-default"
+    >
+      <header className="border-b border-border-default bg-surface-page/85 backdrop-blur">
         <Container size="lg" className="flex h-16 items-center justify-between">
-          <Link href="/" className="text-lg font-semibold tracking-tight">
-            Statify
-          </Link>
+          <BrandMarkLink href="/" />
+          <ThemeToggle />
         </Container>
       </header>
       <main className="flex flex-1 items-center justify-center px-4 py-12">

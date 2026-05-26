@@ -11,7 +11,7 @@ export default function HistoryLayout({ children }: { children: ReactNode }) {
         title="History"
         description="Your listening activity in reverse chronological order."
       />
-      <SectionContent size="prose" className="flex flex-col gap-6">
+      <SectionContent size="wide" className="flex flex-col gap-6">
         {children}
       </SectionContent>
     </>

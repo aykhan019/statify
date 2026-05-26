@@ -318,13 +318,13 @@ const ICON_DEMO = [
 
 const ICON_SIZES: IconSize[] = ['xs', 'sm', 'md', 'lg', 'xl'];
 
-// Styleguide-only sample image for the cover frame demo. Real ingest writes
-// arrive in P6-M4; this URL is a single iTunes-shaped string used only here.
+// Styleguide-only local data images for cover frame demos. Route surfaces use
+// live database imageUrl values when available and the designed fallback otherwise.
 const SAMPLE_COVER_URL =
-  'https://is1-ssl.mzstatic.com/image/thumb/Music122/v4/52/4d/65/524d6582-d2fb-04ad-3b3c-0bd1f8b86d35/074646793725.jpg/600x600bb.jpg';
+  'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 600%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%232f3d9d%22/%3E%3Cstop offset=%221%22 stop-color=%22%230ea5a7%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22600%22 height=%22600%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%22145%22 cy=%22125%22 r=%2264%22 fill=%22%23dbeafe%22 fill-opacity=%22.85%22/%3E%3Cpath d=%22M-80 330 680 160v95L-80 425z%22 fill=%22%23ffffff%22 fill-opacity=%22.55%22/%3E%3Ccircle cx=%22435%22 cy=%22435%22 r=%22126%22 fill=%22none%22 stroke=%22%23dbeafe%22 stroke-width=%2218%22 stroke-opacity=%22.55%22/%3E%3C/svg%3E';
 
 const SAMPLE_COVER_URL_ALT =
-  'https://is1-ssl.mzstatic.com/image/thumb/Music125/v4/83/8f/0c/838f0cc3-b3d5-6f3f-2a9d-1ea653a9ce48/886446689968.jpg/600x600bb.jpg';
+  'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 600 600%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%22 x2=%221%22 y1=%220%22 y2=%221%22%3E%3Cstop offset=%220%22 stop-color=%22%2393197a%22/%3E%3Cstop offset=%221%22 stop-color=%22%23f97316%22/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%22600%22 height=%22600%22 fill=%22url(%23g)%22/%3E%3Ccircle cx=%22455%22 cy=%22130%22 r=%2274%22 fill=%22%23fae8ff%22 fill-opacity=%22.8%22/%3E%3Cpath d=%22M-70 180 690 320v90L-70 270z%22 fill=%22%23ffffff%22 fill-opacity=%22.48%22/%3E%3Crect x=%22118%22 y=%22392%22 width=%22348%22 height=%2236%22 rx=%2218%22 fill=%22%23500f3c%22 fill-opacity=%22.55%22/%3E%3C/svg%3E';
 
 const SAMPLE_ARTIST = {
   id: 1,
@@ -1256,7 +1256,7 @@ export default function StyleguidePage() {
 
       <H2 id="image">15. Image frames</H2>
       <Caption>
-        Cover at every size with a real iTunes URL (left) and the null-fallback variant (right).
+        Cover at every size with a local sample image (left) and the null-fallback variant (right).
         Frame thickness varies by context.
       </Caption>
       <div className="space-y-8">

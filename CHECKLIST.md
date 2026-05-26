@@ -10,11 +10,14 @@
 - **Current milestone:** none; Phase 6 is complete.
 - **Last shipped:** P6-M13 Accessibility pass. Adds root JSX accessibility lint coverage; fixes heading hierarchy, table semantics, search region wiring, media control labels, heatmap narration, focus rings, and contrast-safe section aliases; records `docs/design/a11y-audit.md` plus the DESIGN.md contrast table. Verification: `pnpm format:check`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm build`, CI, and local accessibility smoke for signup, login, global search, track preview, playlist create, admin users, landmarks, and keyboard focus all passed.
 - **Last maintenance fix:** API CORS now permits the shared CSRF request header, unblocking local browser mutation smoke for playlist/admin flows.
+- **Last local change:** Expired hard-coded Apple artwork sample URLs on the redesigned landing surfaces were replaced with local tokenized decorative cover tiles; `/styleguide` cover demos use local data images; `apps/web/next.config.mjs` now allows `i.scdn.co` for Spotify artwork. Verification passed: `pnpm lint`, `pnpm --filter @statify/web typecheck`, `pnpm --filter @statify/web test`, `pnpm --filter @statify/web build`, and local HTTP smoke for `/` plus `/styleguide` on port 3001 with no remaining `mzstatic` sample references.
+- **Previous local UI change:** Public `/` and authed `/me` landings are redesigned, and manual light/dark mode is wired through root `data-theme`, `statify_theme` persistence, and shared theme toggles in public, auth, desktop app, and mobile app chrome. Verification passed: `pnpm format:check`, `pnpm lint`, `pnpm --filter @statify/web typecheck`, `pnpm --filter @statify/web test`, `pnpm --filter @statify/web build`, and local HTTP smoke for `/`, `/login`, dark-mode `/login`, and authenticated `/me` on port 3001.
+- **Previous local change:** ADR-003 records Spotify as the album/artist artwork source and iTunes as the preview source; `packages/db/src/scripts/backfill-media.ts` now bulk-fills album and artist `image_url` values from Spotify with idempotent skipping, chunked Web API requests, and 429 backoff. A live probe reached Spotify successfully but Spotify returned `403 Active premium subscription required for the owner of the app`; run again after the Spotify app owner has Premium or swap in credentials from a Premium-owned app. Verification passed: `pnpm format:check`, `pnpm lint`, `pnpm --filter @statify/db test`, `pnpm --filter @statify/db typecheck`, `pnpm --filter @statify/api test`, and `pnpm --filter @statify/api typecheck`.
 - **Last merge (non-milestone):** PR #36 `chore: add pnpm setup one-shot bootstrap` rebase-merged into `dev` 2026-05-25 (HEAD `3ad5c16`). Adds `pnpm setup` + `scripts/setup.sh`; not a milestone task, so no Phase 6 milestone status changed this session.
 - **Open file/component:** none.
 - **Locked decisions feeding Phase 6:**
   - Design direction: Vivid Workshop (picked 2026-05-24).
-  - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. Recorded in ADR-002 during P6-M4.
+  - Entity media field shape: single nullable `image_url` on `tracks`, `albums`, `artists`. ADR-003 supersedes the original ADR-002 iTunes artwork-source assumption: Spotify populates album and artist artwork, iTunes only populates track preview metadata, and track `image_url` remains nullable with UI fallback to album artwork.
   - Playlist media shape: list/detail DTOs expose `coverImages: string[]` derived from the first four member tracks' `track.imageUrl ?? album.imageUrl`; UI repeats fewer than four to fill the 2x2 collage and falls back to the playlist letter when none exist. Landed in P6-M7.
   - Form primitives: built on RHF + native control elements (no @radix-ui/react-switch / -select), styled through CSS-variable + state-color tokens; spec lives in DESIGN.md §9. Landed in P6-M8.
   - Motion library: `tailwindcss-animate`; `framer-motion` was not introduced during P6-M12.
@@ -249,10 +252,12 @@ Existing `(app)/**` components are destructively replaced as each Phase 6 milest
 - [ ] Track recommendations via simple matrix factorization on `listening_history` - XL
 - [ ] Social: follow other users, see their public listens - XL
 - [ ] Native shell via Capacitor - L
+- [x] Public and authed landing page redesign with manual light/dark mode and local decorative cover art - M - rahila
 
 ## Deployment and submission
 
 - [x] Generate initial Prisma migration (`prisma migrate dev --name initial`); commit `packages/db/prisma/migrations/` - S - aykhan
+- [x] Spotify album and artist artwork backfill script + ADR - M - aykhan
 - [ ] Production env vars set in Vercel and Render - S - aykhan
 - [ ] Smoke test against production URLs - S - aykhan
 - [ ] Demo dataset confirmed on prod DB (10k-playlist subset ingested) - M - eljan

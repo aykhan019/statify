@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDurationMs, formatTrackArtists } from './format';
+import { formatDurationMs, formatTrackArtists, formatTrackName } from './format';
 
 describe('formatDurationMs', () => {
   it('formats whole minutes', () => {
@@ -38,5 +38,19 @@ describe('formatTrackArtists', () => {
 
   it('returns Unknown when no artists are provided', () => {
     expect(formatTrackArtists([])).toBe('Unknown');
+  });
+});
+
+describe('formatTrackName', () => {
+  it('removes wrapping double quotes from track titles', () => {
+    expect(formatTrackName('"A Far Green Country"')).toBe('A Far Green Country');
+  });
+
+  it('keeps internal quotes intact', () => {
+    expect(formatTrackName('Say "Hello" Again')).toBe('Say "Hello" Again');
+  });
+
+  it('trims surrounding whitespace', () => {
+    expect(formatTrackName('  Track Name  ')).toBe('Track Name');
   });
 });

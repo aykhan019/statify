@@ -6,6 +6,10 @@ const nextConfig = {
         hostname: 'is*-ssl.mzstatic.com',
         protocol: 'https',
       },
+      {
+        hostname: 'i.scdn.co',
+        protocol: 'https',
+      },
     ],
   },
   reactStrictMode: true,

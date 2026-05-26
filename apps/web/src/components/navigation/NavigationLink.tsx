@@ -67,7 +67,7 @@ export function NavigationLink({
         className,
       )}
     >
-      <Icon as={item.icon} size="md" className={cn(isActive && 'fill-current')} />
+      <Icon as={item.icon} size="md" />
       <span className="truncate">{item.label}</span>
     </Link>
   );

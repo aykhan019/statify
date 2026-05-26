@@ -10,6 +10,13 @@ export function formatDurationMs(ms: number): string {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 }
 
+export function formatTrackName(name: string): string {
+  const trimmed = name.trim();
+  const match = trimmed.match(/^"(.+)"$/);
+
+  return match?.[1] ?? trimmed;
+}
+
 export function formatTrackArtists(
   artists: ReadonlyArray<{ name: string; role: 'primary' | 'featured' }>,
 ): string {

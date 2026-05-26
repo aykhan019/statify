@@ -46,7 +46,7 @@ export function StatePanel({
     <div
       role={role}
       className={cn(
-        'flex flex-col items-center justify-center gap-3 rounded-(--radius-lg) border px-6 py-16 text-center',
+        'flex w-full flex-col items-center justify-center gap-3 rounded-(--radius-lg) border px-6 py-16 text-center',
         tokens.container,
         className,
       )}

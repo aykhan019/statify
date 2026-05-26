@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, type ChangeEvent } from 'react';
 import { Button } from '@/components/ui/Button';
+import { formatTrackName } from '@/components/catalog';
 import { cn } from '@/lib/utils/cn';
 import { usePlayerStore } from './player-store';
 
@@ -98,7 +99,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
       )}
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{track.trackName}</p>
+        <p className="truncate text-sm font-medium">{formatTrackName(track.trackName)}</p>
         <p className="text-muted-foreground truncate text-xs">{track.artistName}</p>
       </div>
 
