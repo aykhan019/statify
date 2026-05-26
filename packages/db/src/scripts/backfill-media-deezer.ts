@@ -347,7 +347,17 @@ async function backfillEntityRecord<TRecord extends { id: number; imageUrl: stri
     return;
   }
 
-  await args.update(record.id, newImageUrl);
+  try {
+    await args.update(record.id, newImageUrl);
+  } catch (error) {
+    // A transient DB error (e.g. connection-pool timeout) should not abort a multi-hour run;
+    // the row stays null and is retried on the next resume.
+    args.onLookupFailure();
+    args.options.logger.warn(
+      `${args.kind} image update failed for dbId=${record.id} ${args.describe(record)}: ${toErrorMessage(error)}`,
+    );
+    return;
+  }
 
   args.options.logger.info(
     `${args.kind} updated dbId=${record.id} ${args.describe(record)} oldImageUrl=${record.imageUrl ?? 'null'} newImageUrl=${newImageUrl}`,

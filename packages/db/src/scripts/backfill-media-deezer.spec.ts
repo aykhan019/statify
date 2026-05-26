@@ -134,6 +134,36 @@ describe('deezer media backfill', () => {
     );
   });
 
+  it('counts a transient DB update failure without aborting the run', async () => {
+    const artworkFetcher: DeezerArtworkFetcher = {
+      getAlbumImage: vi.fn(async () => 'https://cdn.deezer.com/album/x.jpg'),
+      getArtistImage: vi.fn(async () => 'https://cdn.deezer.com/artist/x.jpg'),
+    };
+    const prisma = {
+      album: {
+        findMany: vi
+          .fn()
+          .mockResolvedValueOnce([
+            { id: 1, imageUrl: null, name: 'A', primaryArtist: { name: 'X' } },
+          ])
+          .mockResolvedValue([]),
+        update: vi.fn().mockRejectedValue(new Error('Timed out fetching a new connection')),
+      },
+      artist: {
+        findMany: vi.fn().mockResolvedValue([]),
+        update: vi.fn().mockResolvedValue({}),
+      },
+    } as unknown as DeezerMediaBackfillPrisma;
+
+    await expect(
+      runDeezerMediaBackfill(prisma, { batchSize: 10, artworkFetcher }),
+    ).resolves.toMatchObject({
+      albumLookupFailures: 1,
+      albumsScanned: 1,
+      albumsUpdated: 0,
+    });
+  });
+
   it('builds advanced album queries and plain artist queries', () => {
     expect(buildDeezerAlbumQuery('25', 'Adele')).toBe('artist:"Adele" album:"25"');
     expect(buildDeezerAlbumQuery('Untitled', '')).toBe('album:"Untitled"');
