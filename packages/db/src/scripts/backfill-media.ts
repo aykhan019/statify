@@ -7,8 +7,10 @@ const DEFAULT_SPOTIFY_MAX_RETRIES = 5;
 const DEFAULT_SPOTIFY_REQUEST_INTERVAL_MS = 350;
 const DEFAULT_SPOTIFY_REQUEST_TIMEOUT_MS = 10000;
 
-const SPOTIFY_ALBUM_IDS_PER_REQUEST = 1;
-const SPOTIFY_ARTIST_IDS_PER_REQUEST = 1;
+// Spotify batch endpoints: Get Several Albums allows 20 ids, Get Several Artists allows 50.
+// Batching keeps the request count (and therefore quota burn) ~20-50x lower than one id per call.
+const SPOTIFY_ALBUM_IDS_PER_REQUEST = 20;
+const SPOTIFY_ARTIST_IDS_PER_REQUEST = 50;
 const SPOTIFY_TOKEN_EXPIRY_BUFFER_MS = 60000;
 
 const ALBUM_SELECT = {
@@ -530,14 +532,19 @@ export function createSpotifyCatalogFetcher(
     return accessToken.accessToken;
   }
 
-  async function fetchSingleCatalogItem(
+  async function fetchCatalogItems(
     path: '/v1/albums' | '/v1/artists',
-    id: string,
-  ): Promise<SpotifyCatalogImage> {
-    console.log(`[media-backfill] Spotify fetching ${path}/${id}`);
+    ids: string[],
+  ): Promise<SpotifyCatalogImage[]> {
+    if (ids.length === 0) {
+      return [];
+    }
+
+    console.log(`[media-backfill] Spotify fetching ${path}?ids= (${ids.length} ids)`);
 
     const token = await getAccessToken();
-    const url = new URL(`${path}/${encodeURIComponent(id)}`, resolved.apiBaseUrl);
+    const url = new URL(path, resolved.apiBaseUrl);
+    url.searchParams.set('ids', ids.join(','));
 
     const response = await fetchWithRetry(
       url,
@@ -551,36 +558,27 @@ export function createSpotifyCatalogFetcher(
     );
 
     if (response === null) {
-      console.log(`[media-backfill] Spotify returned empty/soft-failed for ${path}/${id}`);
-      return {
-        id,
-        imageUrl: null,
-      };
+      console.log(
+        `[media-backfill] Spotify returned empty/soft-failed for ${path} (${ids.length} ids)`,
+      );
+      return ids.map((id) => ({ id, imageUrl: null }));
     }
 
     const body = (await response.json()) as unknown;
-    const mediaObject = isSpotifyMediaObject(body) ? body : null;
+    const items = extractCatalogArray(body, path === '/v1/albums' ? 'albums' : 'artists');
+    const imageById = new Map<string, string | null>();
 
-    return {
-      id:
-        mediaObject !== null && typeof mediaObject.id === 'string' && mediaObject.id.length > 0
-          ? mediaObject.id
-          : id,
-      imageUrl: mediaObject === null ? null : firstImageUrl(mediaObject.images),
-    };
-  }
+    for (const item of items) {
+      const mediaObject = isSpotifyMediaObject(item) ? item : null;
 
-  async function fetchCatalogItems(
-    path: '/v1/albums' | '/v1/artists',
-    ids: string[],
-  ): Promise<SpotifyCatalogImage[]> {
-    const results: SpotifyCatalogImage[] = [];
-
-    for (const id of ids) {
-      results.push(await fetchSingleCatalogItem(path, id));
+      if (mediaObject !== null && typeof mediaObject.id === 'string' && mediaObject.id.length > 0) {
+        imageById.set(mediaObject.id, firstImageUrl(mediaObject.images));
+      }
     }
 
-    return results;
+    // The response array can contain nulls for ids Spotify cannot resolve; map by the
+    // requested id so each row gets an explicit entry (null image => skipped, no error).
+    return ids.map((id) => ({ id, imageUrl: imageById.get(id) ?? null }));
   }
 
   async function fetchWithRetry(
@@ -687,6 +685,18 @@ function parseTokenResponse(response: SpotifyTokenResponse): {
     accessToken: response.access_token,
     expiresIn: response.expires_in,
   };
+}
+
+function extractCatalogArray(body: unknown, key: 'albums' | 'artists'): unknown[] {
+  if (typeof body === 'object' && body !== null && key in body) {
+    const value = (body as Record<string, unknown>)[key];
+
+    if (Array.isArray(value)) {
+      return value;
+    }
+  }
+
+  return [];
 }
 
 function isSpotifyMediaObject(value: unknown): value is SpotifyMediaObject {

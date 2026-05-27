@@ -8,7 +8,7 @@ import {
 } from './backfill-media';
 
 describe('media backfill', () => {
-  it('updates missing album and artist images one Spotify ID per request', async () => {
+  it('updates missing album and artist images through Spotify batch endpoints', async () => {
     const albums = Array.from({ length: 21 }, (_, index) => ({
       id: index + 1,
       imageUrl: null,
@@ -42,13 +42,19 @@ describe('media backfill', () => {
       artistsUpdated: 51,
     });
 
-    // Spotify dev-mode quota forces one ID per request, so each entity is its own call.
-    expect(catalogFetcher.getAlbums).toHaveBeenCalledTimes(21);
-    expect(catalogFetcher.getAlbums).toHaveBeenNthCalledWith(1, ['album-1']);
-    expect(catalogFetcher.getAlbums).toHaveBeenNthCalledWith(21, ['album-21']);
-    expect(catalogFetcher.getArtists).toHaveBeenCalledTimes(51);
-    expect(catalogFetcher.getArtists).toHaveBeenNthCalledWith(1, ['artist-1']);
-    expect(catalogFetcher.getArtists).toHaveBeenNthCalledWith(51, ['artist-51']);
+    // Batched: 21 albums => 20 + 1 calls; 51 artists => 50 + 1 calls.
+    expect(catalogFetcher.getAlbums).toHaveBeenCalledTimes(2);
+    expect(catalogFetcher.getAlbums).toHaveBeenNthCalledWith(
+      1,
+      albums.slice(0, 20).map(({ spotifyUri }) => spotifyUri.replace('spotify:album:', '')),
+    );
+    expect(catalogFetcher.getAlbums).toHaveBeenNthCalledWith(2, ['album-21']);
+    expect(catalogFetcher.getArtists).toHaveBeenCalledTimes(2);
+    expect(catalogFetcher.getArtists).toHaveBeenNthCalledWith(
+      1,
+      artists.slice(0, 50).map(({ spotifyUri }) => spotifyUri.replace('spotify:artist:', '')),
+    );
+    expect(catalogFetcher.getArtists).toHaveBeenNthCalledWith(2, ['artist-51']);
     expect(prisma.album.update).toHaveBeenCalledTimes(21);
     expect(prisma.artist.update).toHaveBeenCalledTimes(51);
   });
@@ -145,8 +151,12 @@ describe('media backfill', () => {
       )
       .mockResolvedValueOnce(
         jsonResponse({
-          id: 'album-1',
-          images: [{ url: 'https://i.scdn.co/image/album-1' }],
+          albums: [
+            {
+              id: 'album-1',
+              images: [{ url: 'https://i.scdn.co/image/album-1' }],
+            },
+          ],
         }),
       );
     const fetcher = createSpotifyCatalogFetcher({
