@@ -2,6 +2,8 @@ import { ListMusic } from 'lucide-react';
 import { cookies } from 'next/headers';
 import { PlaylistCard } from '@/components/playlists/PlaylistCard';
 import { EmptyState } from '@/components/states';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
 import { PageHeader } from '@/components/ui/PageHeader';
 import { fetchPlaylists } from '@/lib/playlists/api';
 
@@ -40,6 +42,17 @@ export default async function PlaylistsPage({
         title="Playlists"
         description={`MPD playlists, ranked by followers. ${response.total.toLocaleString()} total.`}
       />
+      <form action="/catalog/playlists" className="flex max-w-md gap-2">
+        <Input
+          name="q"
+          type="search"
+          defaultValue={params.q ?? ''}
+          placeholder="Search playlists"
+        />
+        <Button type="submit" size="sm">
+          Search
+        </Button>
+      </form>
       {response.data.length === 0 ? (
         <EmptyState icon={ListMusic} title="No playlists yet" />
       ) : (

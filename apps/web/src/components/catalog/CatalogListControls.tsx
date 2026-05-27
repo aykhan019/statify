@@ -16,8 +16,10 @@ export function TrackCatalogControls({ values }: { values: TrackControlsState })
       className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
       action="/catalog/tracks"
     >
-      {values.q !== undefined && <input type="hidden" name="q" value={values.q} />}
       <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+        <Field label="Search">
+          <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search tracks" />
+        </Field>
         <Field label="Sort">
           <select name="sort" defaultValue={values.sort} className={CONTROL_BASE}>
             <option value="-plays">Most played</option>
@@ -73,10 +75,19 @@ export function ArtistCatalogControls({ values }: { values: ArtistControlsState 
       className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
       action="/catalog/artists"
     >
-      {values.q !== undefined && <input type="hidden" name="q" value={values.q} />}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Field label="Search">
+          <Input
+            name="q"
+            type="search"
+            defaultValue={values.q ?? ''}
+            placeholder="Search artists"
+          />
+        </Field>
         <Field label="Sort">
           <select name="sort" defaultValue={values.sort} className={CONTROL_BASE}>
+            <option value="-plays">Most played</option>
+            <option value="plays">Least played</option>
             <option value="name">Name A-Z</option>
             <option value="-name">Name Z-A</option>
             <option value="-createdAt">Newest</option>
@@ -95,8 +106,10 @@ export function AlbumCatalogControls({ values }: { values: AlbumControlsState })
       className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
       action="/catalog/albums"
     >
-      {values.q !== undefined && <input type="hidden" name="q" value={values.q} />}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Field label="Search">
+          <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search albums" />
+        </Field>
         <Field label="Sort">
           <select name="sort" defaultValue={values.sort} className={CONTROL_BASE}>
             <option value="-plays">Most played</option>
