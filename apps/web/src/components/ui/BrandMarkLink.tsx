@@ -18,7 +18,7 @@ export function BrandMarkLink({ href = '/', className, ...props }: BrandMarkLink
       {...props}
     >
       <StatifyMark className="size-7 shrink-0" />
-      <span className="text-lg font-bold tracking-normal">Statify</span>
+      <span className="text-lg font-bold leading-none tracking-normal">Statify</span>
     </Link>
   );
 }
