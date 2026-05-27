@@ -46,13 +46,15 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
 
   const primaryArtistName = formatTrackArtists(track.artists);
   const trackName = formatTrackName(track.name);
+  // Prefer track art, then album art, then the artist photo before the letter fallback.
+  const coverImage = track.imageUrl ?? track.album.imageUrl ?? track.album.primaryArtist.imageUrl;
 
   return (
     <section className="flex flex-col gap-6">
       <CatalogDetailHero
         entity="track"
         eyebrow="Track"
-        imageUrl={track.imageUrl ?? track.album.imageUrl}
+        imageUrl={coverImage}
         title={trackName}
         meta={`${primaryArtistName} · ${formatDurationMs(track.durationMs)}`}
         actions={
@@ -61,7 +63,7 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
               trackId: track.id,
               trackName,
               artistName: primaryArtistName,
-              imageUrl: track.imageUrl ?? track.album.imageUrl,
+              imageUrl: coverImage,
               previewUrl: track.previewUrl,
               durationMs: track.durationMs,
             }}
