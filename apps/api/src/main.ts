@@ -40,8 +40,8 @@ async function bootstrap(): Promise<void> {
 
   app.setGlobalPrefix('api/v1', { exclude: ['healthz'] });
 
-  const port = config.apiPort;
-  await app.listen(port);
+  const port = Number(process.env.PORT ?? process.env.API_PORT ?? 4000);
+  await app.listen(port, '0.0.0.0');
 
   const logger = app.get(Logger);
   logger.log(`Statify API listening on http://localhost:${port}`);
