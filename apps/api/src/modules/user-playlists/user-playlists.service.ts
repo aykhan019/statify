@@ -3,6 +3,7 @@ import {
   AppError,
   ErrorCode,
   type CreateUserPlaylistRequest,
+  type UpdateUserPlaylistRequest,
   type UserPlaylistDetail,
   type UserPlaylistListResponse,
   type UserPlaylistTracksQuery,
@@ -71,6 +72,20 @@ export class UserPlaylistsService {
     await this.requirePublic(playlistId);
     const result = await this.repository.listTracks(playlistId, query);
     return toOffsetPage(result.data.map(toUserPlaylistTrackEntry), result.total, query);
+  }
+
+  async update(
+    userId: number,
+    playlistId: number,
+    input: UpdateUserPlaylistRequest,
+  ): Promise<UserPlaylistDetail> {
+    const description =
+      input.description !== undefined && input.description.length > 0 ? input.description : null;
+    const record = await this.repository.update(userId, playlistId, {
+      name: input.name,
+      description,
+    });
+    return toUserPlaylistDetail(record);
   }
 
   async setVisibility(

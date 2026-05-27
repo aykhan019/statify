@@ -4,6 +4,7 @@ import type { CatalogSearchTrackResult, UserPlaylistTrackEntry } from '@statify/
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import { ArrowDown, ArrowUp, GripVertical, Trash2 } from 'lucide-react';
 import { Input } from '@/components/forms';
+import { PlayPreviewButton } from '@/components/player';
 import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
 import { Icon } from '@/components/ui/Icon';
@@ -223,6 +224,15 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                 </p>
               </div>
               <div className="flex items-center gap-1">
+                <PlayPreviewButton
+                  track={{
+                    trackId: entry.track.id,
+                    trackName: entry.track.name,
+                    artistName: entry.track.artists.map((artist) => artist.name).join(', '),
+                    previewUrl: entry.track.previewUrl,
+                    durationMs: entry.track.durationMs,
+                  }}
+                />
                 <Button
                   size="sm"
                   variant="ghost"

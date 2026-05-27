@@ -152,6 +152,31 @@ export class UserPlaylistsRepository extends BaseRepository {
     });
   }
 
+  async update(
+    userId: number,
+    playlistId: number,
+    data: { name: string; description: string | null },
+  ): Promise<UserPlaylistRecord> {
+    return this.prisma.transaction(async (tx) => {
+      const playlist = await tx.userPlaylist.findFirst({
+        where: { id: playlistId, userId },
+        select: { id: true },
+      });
+      if (playlist === null) {
+        throw new AppError({
+          code: ErrorCode.PLAYLIST_NOT_FOUND,
+          message: 'Playlist not found',
+          httpStatus: HttpStatus.NOT_FOUND,
+        });
+      }
+      return tx.userPlaylist.update({
+        where: { id: playlistId },
+        data: { name: data.name, description: data.description },
+        include: USER_PLAYLIST_INCLUDE,
+      });
+    });
+  }
+
   async listTracks(
     playlistId: number,
     query: UserPlaylistTracksQuery,

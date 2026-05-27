@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
+import { EditPlaylistDetailsForm } from '@/components/playlists/EditPlaylistDetailsForm';
 import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { PlaylistTracksManager } from '@/components/playlists/PlaylistTracksManager';
 import { VisibilityToggle } from '@/components/playlists/VisibilityToggle';
@@ -52,11 +53,16 @@ export default async function MyPlaylistDetailPage({ params }: { params: Promise
             ? playlist.description
             : undefined
         }
-        actions={<VisibilityToggle playlistId={playlistId} isPublic={playlist.isPublic} />}
+      />
+      <EditPlaylistDetailsForm
+        playlistId={playlistId}
+        name={playlist.name}
+        description={playlist.description}
       />
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between gap-4">
           <CardTitle>Tracks</CardTitle>
+          <VisibilityToggle playlistId={playlistId} isPublic={playlist.isPublic} />
         </CardHeader>
         <CardContent>
           <PlaylistTracksManager playlistId={playlistId} initialTracks={tracks.data} />

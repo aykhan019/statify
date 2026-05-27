@@ -16,12 +16,14 @@ import {
   AddUserPlaylistTrackRequestSchema,
   CreateUserPlaylistRequestSchema,
   ReorderUserPlaylistTracksRequestSchema,
+  UpdateUserPlaylistRequestSchema,
   UpdateUserPlaylistVisibilityRequestSchema,
   UserPlaylistTracksQuerySchema,
   UserPlaylistsListQuerySchema,
   type AddUserPlaylistTrackRequest,
   type CreateUserPlaylistRequest,
   type ReorderUserPlaylistTracksRequest,
+  type UpdateUserPlaylistRequest,
   type UpdateUserPlaylistVisibilityRequest,
   type UserPlaylistDetail,
   type UserPlaylistListResponse,
@@ -74,6 +76,16 @@ export class UserPlaylistsController {
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<UserPlaylistTracksResponse> {
     return this.service.listTracks(user.id, id, query);
+  }
+
+  @Patch(':id')
+  @UseGuards(CsrfGuard)
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body(new ZodValidationPipe(UpdateUserPlaylistRequestSchema)) body: UpdateUserPlaylistRequest,
+    @CurrentUser() user: AuthenticatedUser,
+  ): Promise<UserPlaylistDetail> {
+    return this.service.update(user.id, id, body);
   }
 
   @Patch(':id/visibility')

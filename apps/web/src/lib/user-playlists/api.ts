@@ -2,6 +2,7 @@ import {
   COOKIE_NAMES,
   HEADERS,
   type CreateUserPlaylistRequest,
+  type UpdateUserPlaylistRequest,
   type UserPlaylistDetail,
   type UserPlaylistListResponse,
   type UserPlaylistTracksResponse,
@@ -114,6 +115,16 @@ export function setPlaylistVisibility(
   return mutate<UserPlaylistDetail>(`/api/v1/me/playlists/${playlistId}/visibility`, {
     method: 'PATCH',
     body: { isPublic },
+  });
+}
+
+export function updateMyPlaylist(
+  playlistId: number,
+  input: UpdateUserPlaylistRequest,
+): Promise<UserPlaylistDetail> {
+  return mutate<UserPlaylistDetail>(`/api/v1/me/playlists/${playlistId}`, {
+    method: 'PATCH',
+    body: input,
   });
 }
 

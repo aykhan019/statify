@@ -114,6 +114,17 @@ describe('UserPlaylistsService', () => {
     expect(repository.setVisibility).toHaveBeenCalledWith(42, 1, true);
   });
 
+  it('forwards update to the repository, normalizing an empty description to null', async () => {
+    const updated = createRecord({ name: 'Renamed' });
+    const repository = mockRepository({ update: vi.fn().mockResolvedValue(updated) });
+    const service = new UserPlaylistsService(repository);
+
+    await expect(
+      service.update(42, 1, { name: 'Renamed', description: '' }),
+    ).resolves.toMatchObject({ name: 'Renamed' });
+    expect(repository.update).toHaveBeenCalledWith(42, 1, { name: 'Renamed', description: null });
+  });
+
   it('lists public playlists and applies the pagination envelope', async () => {
     const repository = mockRepository({
       listPublic: vi.fn().mockResolvedValue({

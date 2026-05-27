@@ -48,6 +48,13 @@ export const UpdateUserPlaylistVisibilityRequestSchema = z.object({
   isPublic: z.boolean(),
 });
 
+export const UpdateUserPlaylistRequestSchema = z.object({
+  name: z.string().trim().min(1).max(USER_PLAYLIST_NAME_MAX),
+  description: z.string().trim().max(USER_PLAYLIST_DESCRIPTION_MAX).optional(),
+});
+
+export type UpdateUserPlaylistRequest = z.infer<typeof UpdateUserPlaylistRequestSchema>;
+
 export const AddUserPlaylistTrackRequestSchema = z.object({
   trackId: z.number().int().positive(),
 });
