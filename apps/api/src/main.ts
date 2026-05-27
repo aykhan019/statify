@@ -29,7 +29,13 @@ async function bootstrap(): Promise<void> {
     origin: config.allowedOrigins,
     credentials: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', HEADERS.CSRF],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      HEADERS.CSRF,
+      HEADERS.IDEMPOTENCY,
+      HEADERS.REQUEST_ID,
+    ],
   });
 
   app.setGlobalPrefix('api/v1', { exclude: ['healthz'] });
