@@ -20,16 +20,25 @@ export type ArtistDetailRecord = Prisma.ArtistGetPayload<{
   include: typeof ARTIST_DETAIL_INCLUDE;
 }>;
 
-// Play count spans artist -> track_artists -> listening_history, which Prisma orderBy cannot
-// reach, so the `plays` sorts go through listByPlays; the rest map directly to Prisma orderBy.
-type ArtistOrderableSort = Exclude<ArtistSort, 'plays' | '-plays'>;
+// `plays` (raw aggregation) and `name` (friendly raw ordering) are handled separately; the
+// remaining sorts map directly to Prisma orderBy.
+type ArtistPrismaSort = Exclude<ArtistSort, 'plays' | '-plays' | 'name'>;
 
-const ARTIST_ORDER_BY: Record<ArtistOrderableSort, Prisma.ArtistOrderByWithRelationInput[]> = {
+const ARTIST_ORDER_BY: Record<ArtistPrismaSort, Prisma.ArtistOrderByWithRelationInput[]> = {
   '-createdAt': [{ createdAt: 'desc' }, { id: 'asc' }],
   '-name': [{ name: 'desc' }, { id: 'asc' }],
   createdAt: [{ createdAt: 'asc' }, { id: 'asc' }],
-  name: [{ name: 'asc' }, { id: 'asc' }],
 };
+
+// Name ordering for the `name` sort and as a tie-break: letters (A-Z) first, then digits, then
+// punctuation/symbols, alphabetical within each group.
+const ARTIST_FRIENDLY_NAME_ORDER = PrismaClient.sql`
+  CASE
+    WHEN a.name ~ '^[[:alpha:]]' THEN 0
+    WHEN a.name ~ '^[[:digit:]]' THEN 1
+    ELSE 2
+  END,
+  lower(a.name) ASC`;
 
 @Injectable()
 export class ArtistsRepository extends BaseRepository {
@@ -42,12 +51,11 @@ export class ArtistsRepository extends BaseRepository {
       return this.listByPlays(query);
     }
 
-    const where = buildArtistWhere(query);
-
-    if (query.q === undefined && query.sort === 'name') {
-      return this.listByFriendlyNameOrder(query);
+    if (query.sort === 'name') {
+      return this.listByFriendlyName(query);
     }
 
+    const where = buildArtistWhere(query);
     const [data, total] = await Promise.all([
       this.client.artist.findMany({
         orderBy: ARTIST_ORDER_BY[query.sort],
@@ -67,9 +75,8 @@ export class ArtistsRepository extends BaseRepository {
    * hydrates and restores that order.
    */
   private async listByPlays(query: ArtistsQuery): Promise<CatalogListResult<Artist>> {
-    const where = buildArtistWhere(query);
     const direction = query.sort === 'plays' ? PrismaClient.sql`ASC` : PrismaClient.sql`DESC`;
-    const filters = buildArtistPlaysFilters(query);
+    const filters = buildArtistSqlFilters(query);
 
     const rows = await this.client.$queryRaw<Array<{ id: number }>>(PrismaClient.sql`
       SELECT a.id
@@ -81,15 +88,47 @@ export class ArtistsRepository extends BaseRepository {
       ORDER BY
         (a.image_url IS NULL),
         COUNT(lh.id) ${direction},
-        CASE WHEN a.name ~ '^[[:alnum:]]' THEN 0 ELSE 1 END,
-        lower(a.name) ASC,
+        ${ARTIST_FRIENDLY_NAME_ORDER},
         a.id ASC
       OFFSET ${getOffset(query)}
       LIMIT ${query.limit}
     `);
 
-    const ids = rows.map((row) => row.id);
+    return this.hydrate(
+      rows.map((row) => row.id),
+      buildArtistWhere(query),
+    );
+  }
 
+  /** Orders artists by name with letters first, then digits, then punctuation. */
+  private async listByFriendlyName(query: ArtistsQuery): Promise<CatalogListResult<Artist>> {
+    const filters = buildArtistSqlFilters(query);
+
+    const data = await this.client.$queryRaw<Artist[]>(PrismaClient.sql`
+      SELECT
+        a.id,
+        a.spotify_uri AS "spotifyUri",
+        a.name,
+        a.image_url AS "imageUrl",
+        a.created_at AS "createdAt"
+      FROM artists a
+      ${filters}
+      ORDER BY
+        ${ARTIST_FRIENDLY_NAME_ORDER},
+        a.id ASC
+      OFFSET ${getOffset(query)}
+      LIMIT ${query.limit}
+    `);
+
+    const total = await this.client.artist.count({ where: buildArtistWhere(query) });
+
+    return { data, total };
+  }
+
+  private async hydrate(
+    ids: number[],
+    where: Prisma.ArtistWhereInput,
+  ): Promise<CatalogListResult<Artist>> {
     const [records, total] = await Promise.all([
       ids.length === 0
         ? Promise.resolve<Artist[]>([])
@@ -101,29 +140,6 @@ export class ArtistsRepository extends BaseRepository {
     const data = ids
       .map((id) => byId.get(id))
       .filter((record): record is Artist => record !== undefined);
-
-    return { data, total };
-  }
-
-  private async listByFriendlyNameOrder(query: ArtistsQuery): Promise<CatalogListResult<Artist>> {
-    const [data, total] = await Promise.all([
-      this.client.$queryRaw<Artist[]>(PrismaClient.sql`
-        SELECT
-          id,
-          spotify_uri AS "spotifyUri",
-          name,
-          image_url AS "imageUrl",
-          created_at AS "createdAt"
-        FROM artists
-        ORDER BY
-          CASE WHEN name ~ '^[[:alnum:]]' THEN 0 ELSE 1 END,
-          lower(name) ASC,
-          id ASC
-        OFFSET ${getOffset(query)}
-        LIMIT ${query.limit}
-      `),
-      this.client.artist.count({ where: {} }),
-    ]);
 
     return { data, total };
   }
@@ -146,7 +162,7 @@ function buildArtistWhere(query: ArtistsQuery): Prisma.ArtistWhereInput {
   };
 }
 
-function buildArtistPlaysFilters(query: ArtistsQuery): Prisma.Sql {
+function buildArtistSqlFilters(query: ArtistsQuery): Prisma.Sql {
   if (query.q === undefined) {
     return PrismaClient.empty;
   }

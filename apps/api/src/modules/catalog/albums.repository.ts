@@ -27,16 +27,25 @@ export type AlbumDetailRecord = Prisma.AlbumGetPayload<{
   include: typeof ALBUM_DETAIL_INCLUDE;
 }>;
 
-// Play count has no direct album relation (albums -> tracks -> listening_history), so the
-// `plays` sorts are handled by listByPlays; the rest map directly to Prisma orderBy.
-type AlbumOrderableSort = Exclude<AlbumSort, 'plays' | '-plays'>;
+// `plays` (raw aggregation) and `name` (friendly raw ordering) are handled separately; the
+// remaining sorts map directly to Prisma orderBy.
+type AlbumPrismaSort = Exclude<AlbumSort, 'plays' | '-plays' | 'name'>;
 
-const ALBUM_ORDER_BY: Record<AlbumOrderableSort, Prisma.AlbumOrderByWithRelationInput[]> = {
+const ALBUM_ORDER_BY: Record<AlbumPrismaSort, Prisma.AlbumOrderByWithRelationInput[]> = {
   '-createdAt': [{ createdAt: 'desc' }, { id: 'asc' }],
   '-name': [{ name: 'desc' }, { id: 'asc' }],
   createdAt: [{ createdAt: 'asc' }, { id: 'asc' }],
-  name: [{ name: 'asc' }, { id: 'asc' }],
 };
+
+// Name ordering for the `name` sort and as a tie-break: letters (A-Z) first, then digits, then
+// punctuation/symbols, alphabetical within each group.
+const ALBUM_FRIENDLY_NAME_ORDER = Prisma.sql`
+  CASE
+    WHEN a.name ~ '^[[:alpha:]]' THEN 0
+    WHEN a.name ~ '^[[:digit:]]' THEN 1
+    ELSE 2
+  END,
+  lower(a.name) ASC`;
 
 @Injectable()
 export class AlbumsRepository extends BaseRepository {
@@ -47,6 +56,10 @@ export class AlbumsRepository extends BaseRepository {
   async list(query: AlbumsQuery): Promise<CatalogListResult<AlbumCatalogRecord>> {
     if (query.sort === 'plays' || query.sort === '-plays') {
       return this.listByPlays(query);
+    }
+
+    if (query.sort === 'name') {
+      return this.listByFriendlyName(query);
     }
 
     const where = buildAlbumWhere(query);
@@ -65,14 +78,12 @@ export class AlbumsRepository extends BaseRepository {
   }
 
   /**
-   * Orders albums by total plays across their tracks. Prisma's orderBy cannot reach a
-   * two-hop relation count, so we resolve the ordered page of IDs in raw SQL, then hydrate
-   * full records (with includes) and restore that order in memory.
+   * Orders albums by total plays across their tracks (no-image rows last). Prisma's orderBy
+   * cannot reach a two-hop relation count, so the ordered page of ids is resolved in raw SQL.
    */
   private async listByPlays(query: AlbumsQuery): Promise<CatalogListResult<AlbumCatalogRecord>> {
-    const where = buildAlbumWhere(query);
     const direction = query.sort === 'plays' ? Prisma.sql`ASC` : Prisma.sql`DESC`;
-    const filters = buildAlbumPlaysFilters(query);
+    const filters = buildAlbumSqlFilters(query);
 
     const rows = await this.client.$queryRaw<Array<{ id: number }>>(Prisma.sql`
       SELECT a.id
@@ -84,15 +95,45 @@ export class AlbumsRepository extends BaseRepository {
       ORDER BY
         (a.image_url IS NULL),
         COUNT(lh.id) ${direction},
-        CASE WHEN a.name ~ '^[[:alnum:]]' THEN 0 ELSE 1 END,
-        lower(a.name) ASC,
+        ${ALBUM_FRIENDLY_NAME_ORDER},
         a.id ASC
       OFFSET ${getOffset(query)}
       LIMIT ${query.limit}
     `);
 
-    const ids = rows.map((row) => row.id);
+    return this.hydrate(
+      rows.map((row) => row.id),
+      buildAlbumWhere(query),
+    );
+  }
 
+  /** Orders albums by name with letters first, then digits, then punctuation. */
+  private async listByFriendlyName(
+    query: AlbumsQuery,
+  ): Promise<CatalogListResult<AlbumCatalogRecord>> {
+    const filters = buildAlbumSqlFilters(query);
+
+    const rows = await this.client.$queryRaw<Array<{ id: number }>>(Prisma.sql`
+      SELECT a.id
+      FROM albums a
+      ${filters}
+      ORDER BY
+        ${ALBUM_FRIENDLY_NAME_ORDER},
+        a.id ASC
+      OFFSET ${getOffset(query)}
+      LIMIT ${query.limit}
+    `);
+
+    return this.hydrate(
+      rows.map((row) => row.id),
+      buildAlbumWhere(query),
+    );
+  }
+
+  private async hydrate(
+    ids: number[],
+    where: Prisma.AlbumWhereInput,
+  ): Promise<CatalogListResult<AlbumCatalogRecord>> {
     const [records, total] = await Promise.all([
       ids.length === 0
         ? Promise.resolve<AlbumCatalogRecord[]>([])
@@ -133,7 +174,7 @@ function buildAlbumWhere(query: AlbumsQuery): Prisma.AlbumWhereInput {
   return where;
 }
 
-function buildAlbumPlaysFilters(query: AlbumsQuery): Prisma.Sql {
+function buildAlbumSqlFilters(query: AlbumsQuery): Prisma.Sql {
   const conditions: Prisma.Sql[] = [];
 
   if (query.q !== undefined) {

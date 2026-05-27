@@ -66,6 +66,30 @@ describe('TracksRepository', () => {
     expect(result.data.map((record) => record.id)).toEqual([5, 2]);
     expect(result.total).toBe(2);
   });
+
+  it('orders by name via raw SQL (letters first) and restores the SQL order', async () => {
+    const queryRaw = vi.fn().mockResolvedValue([{ id: 7 }, { id: 4 }]);
+    const track = {
+      count: vi.fn().mockResolvedValue(2),
+      findMany: vi.fn().mockResolvedValue([
+        { id: 4, name: 'D' },
+        { id: 7, name: 'G' },
+      ]),
+    };
+    const repository = new TracksRepository({
+      $queryRaw: queryRaw,
+      track,
+    } as unknown as PrismaService);
+
+    const result = await repository.list({ limit: 10, page: 1, sort: 'name' });
+
+    expect(queryRaw).toHaveBeenCalledTimes(1);
+    expect(isPrismaSql(queryRaw.mock.calls[0]?.[0])).toBe(true);
+    expect(track.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { in: [7, 4] } } }),
+    );
+    expect(result.data.map((record) => record.id)).toEqual([7, 4]);
+  });
 });
 
 function isPrismaSql(value: unknown): boolean {

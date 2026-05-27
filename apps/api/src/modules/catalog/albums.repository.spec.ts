@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { AlbumsRepository } from './albums.repository';
 
 describe('AlbumsRepository', () => {
-  it('applies artist search, sorting, and offset pagination', async () => {
+  it('applies artist search, sorting, and offset pagination on the Prisma path', async () => {
     const album = {
       count: vi.fn().mockResolvedValue(1),
       findMany: vi.fn().mockResolvedValue([]),
@@ -15,7 +15,7 @@ describe('AlbumsRepository', () => {
       limit: 5,
       page: 4,
       q: 'blue',
-      sort: 'name',
+      sort: '-createdAt',
     });
 
     const where = {
@@ -25,13 +25,37 @@ describe('AlbumsRepository', () => {
 
     expect(album.findMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        orderBy: [{ name: 'asc' }, { id: 'asc' }],
+        orderBy: [{ createdAt: 'desc' }, { id: 'asc' }],
         skip: 15,
         take: 5,
         where,
       }),
     );
     expect(album.count).toHaveBeenCalledWith({ where });
+  });
+
+  it('orders by name via raw SQL (letters first) and restores the SQL order', async () => {
+    const queryRaw = vi.fn().mockResolvedValue([{ id: 2 }, { id: 1 }]);
+    const album = {
+      count: vi.fn().mockResolvedValue(2),
+      findMany: vi.fn().mockResolvedValue([
+        { id: 1, name: 'A' },
+        { id: 2, name: 'B' },
+      ]),
+    };
+    const repository = new AlbumsRepository({
+      $queryRaw: queryRaw,
+      album,
+    } as unknown as PrismaService);
+
+    const result = await repository.list({ limit: 5, page: 1, sort: 'name' });
+
+    expect(queryRaw).toHaveBeenCalledTimes(1);
+    expect(isPrismaSql(queryRaw.mock.calls[0]?.[0])).toBe(true);
+    expect(album.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { in: [2, 1] } } }),
+    );
+    expect(result.data.map((record) => record.id)).toEqual([2, 1]);
   });
 
   it('orders by total plays via raw aggregation and restores the SQL order', async () => {
