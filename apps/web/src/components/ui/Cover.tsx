@@ -145,7 +145,7 @@ function getWrapStyle({
     ...(responsive ? { aspectRatio: 'var(--aspect-square)' } : { height: `${px}px` }),
     padding: `${thickness}px`,
     backgroundColor: frameColor,
-    borderRadius: 'var(--radius-md)',
+    borderRadius: 'var(--radius-lg)',
     ...getGlowStyle(context, thickness, frameColor),
   };
 }
@@ -161,7 +161,9 @@ function getGlowStyle(context: CoverContext, thickness: number, frameColor: stri
 }
 
 function getInnerStyle(thickness: number): CSSProperties {
+  // Keep the inner radius concentric with the frame (outer − thickness) so the borders stay
+  // parallel; the larger base radius keeps the image corners visibly rounded, not square.
   return {
-    borderRadius: `calc(var(--radius-md) - ${thickness}px)`,
+    borderRadius: `calc(var(--radius-lg) - ${thickness}px)`,
   };
 }
