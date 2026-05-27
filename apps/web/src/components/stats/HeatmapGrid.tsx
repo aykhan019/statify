@@ -1,5 +1,8 @@
+'use client';
+
 import type { HeatmapCell } from '@statify/shared';
 import { HEATMAP_DAYS, HEATMAP_HOURS } from '@statify/shared';
+import { useState } from 'react';
 import { CHART_HEATMAP_STOPS, getChartHeatmapColor } from '@/components/charts/theme';
 import { cn } from '@/lib/utils/cn';
 
@@ -7,9 +10,17 @@ interface HeatmapGridProps {
   cells: HeatmapCell[];
 }
 
+interface HoveredCell {
+  label: string;
+  x: number;
+  y: number;
+}
+
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export function HeatmapGrid({ cells }: HeatmapGridProps) {
+  const [hovered, setHovered] = useState<HoveredCell | null>(null);
+
   const counts = new Map<number, number>();
   let max = 0;
   let peakDay = 0;
@@ -56,20 +67,20 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
                 CHART_HEATMAP_STOPS - 1,
                 Math.floor(intensity * (CHART_HEATMAP_STOPS - 1)),
               );
+              const label = `${DAY_LABELS[day]} ${hour.toString().padStart(2, '0')}:00 — ${count} ${
+                count === 1 ? 'play' : 'plays'
+              }`;
               return (
                 <div
                   key={hour}
-                  title={`${DAY_LABELS[day]} ${hour.toString().padStart(2, '0')}:00 — ${count} plays`}
+                  onMouseMove={(event) => setHovered({ label, x: event.clientX, y: event.clientY })}
+                  onMouseLeave={() => setHovered(null)}
                   className={cn(
                     'aspect-square min-h-5 rounded-(--radius-xs) border',
                     count === 0 && 'bg-surface-sunken',
                   )}
                   style={
-                    count === 0
-                      ? undefined
-                      : {
-                          backgroundColor: getChartHeatmapColor(heatmapStop),
-                        }
+                    count === 0 ? undefined : { backgroundColor: getChartHeatmapColor(heatmapStop) }
                   }
                 />
               );
@@ -80,6 +91,16 @@ export function HeatmapGrid({ cells }: HeatmapGridProps) {
       <p className="mt-4 text-xs text-fg-muted">
         Darker cells indicate more plays. Hover a cell for the exact count.
       </p>
+
+      {hovered !== null && (
+        <div
+          role="tooltip"
+          className="border-border-default bg-surface-raised text-fg-strong pointer-events-none fixed z-50 rounded-(--radius-sm) border px-2 py-1 text-xs shadow-lg"
+          style={{ left: hovered.x + 12, top: hovered.y + 12 }}
+        >
+          {hovered.label}
+        </div>
+      )}
     </div>
   );
 }

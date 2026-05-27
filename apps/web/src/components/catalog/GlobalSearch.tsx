@@ -46,7 +46,7 @@ export function GlobalSearch() {
   };
 
   return (
-    <div ref={wrapperRef} className="relative w-44 sm:w-72 lg:w-96">
+    <div ref={wrapperRef} className="relative ml-auto w-72 lg:w-[28rem]">
       <form
         role="search"
         onSubmit={(event) => {

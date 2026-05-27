@@ -49,7 +49,7 @@ export function AppShell({ children, includeAdmin, user }: AppShellProps) {
           className="min-w-0 flex-1"
         >
           <Stack as="div" gap="none" className="min-h-full">
-            <Container size="wide" gutter="page" className="py-4 sm:py-5">
+            <Container size="wide" gutter="page" className="pt-4 pb-2">
               <Breadcrumbs activePath={pathname} />
             </Container>
             {children}
