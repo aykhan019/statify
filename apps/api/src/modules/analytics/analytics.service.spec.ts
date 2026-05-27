@@ -129,7 +129,9 @@ describe('AnalyticsService', () => {
         },
       ]);
       expect(calls[0]?.sql).toContain('NOT EXISTS');
-      expect(calls[0]?.values).toEqual([7, 7, 20]);
+      expect(calls[0]?.sql).toContain('random()');
+      // userId, userId, pool size (limit * 5), final limit
+      expect(calls[0]?.values).toEqual([7, 7, 100, 20]);
     });
   });
 
@@ -233,7 +235,9 @@ describe('AnalyticsService', () => {
       ]);
       expect(calls[0]?.sql).toContain('LEFT JOIN listening_history');
       expect(calls[0]?.sql).toContain('WHERE lh.id IS NULL');
-      expect(calls[0]?.values).toEqual([3, 20]);
+      expect(calls[0]?.sql).toContain('random()');
+      // minPlaylistCount, pool size (limit * 5), final limit
+      expect(calls[0]?.values).toEqual([3, 100, 20]);
     });
   });
 });

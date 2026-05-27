@@ -37,6 +37,10 @@ import type {
 
 const TRENDING_WINDOW_DAYS = 7;
 
+// Discover and Hidden Gems build a candidate pool of this many times the requested limit, then
+// sample randomly from it so each visit shows a fresh-but-still-relevant set.
+const RANDOM_POOL_FACTOR = 5;
+
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
@@ -87,6 +91,10 @@ export class AnalyticsService {
   }
 
   async discover(userId: number, query: DiscoverQuery): Promise<DiscoverResponse> {
+    // Build a pool of the strongest co-occurring candidates, then sample randomly from it so the
+    // recommendations stay relevant but vary between visits instead of being the same fixed list.
+    const poolSize = query.limit * RANDOM_POOL_FACTOR;
+
     const rows = await this.prisma.$queryRaw<DiscoverRow[]>(Prisma.sql`
       WITH top_track AS (
         SELECT lh.track_id
@@ -100,25 +108,31 @@ export class AnalyticsService {
         SELECT DISTINCT mpt.playlist_id
         FROM mpd_playlist_tracks mpt
         WHERE mpt.track_id = (SELECT track_id FROM top_track)
+      ),
+      candidates AS (
+        SELECT
+          t.id AS track_id,
+          t.name AS track_name,
+          al.name AS album_name,
+          pa.name AS primary_artist_name,
+          COUNT(*)::int AS cooccurrence_count
+        FROM mpd_playlist_tracks mpt
+        JOIN tracks t ON t.id = mpt.track_id
+        JOIN albums al ON al.id = t.album_id
+        JOIN artists pa ON pa.id = al.primary_artist_id
+        WHERE mpt.playlist_id IN (SELECT playlist_id FROM cohort_playlists)
+          AND mpt.track_id <> (SELECT track_id FROM top_track)
+          AND NOT EXISTS (
+            SELECT 1 FROM listening_history lh
+            WHERE lh.user_id = ${userId} AND lh.track_id = t.id
+          )
+        GROUP BY t.id, t.name, al.name, pa.name
+        ORDER BY cooccurrence_count DESC, track_name ASC
+        LIMIT ${poolSize}
       )
-      SELECT
-        t.id AS track_id,
-        t.name AS track_name,
-        al.name AS album_name,
-        pa.name AS primary_artist_name,
-        COUNT(*)::int AS cooccurrence_count
-      FROM mpd_playlist_tracks mpt
-      JOIN tracks t ON t.id = mpt.track_id
-      JOIN albums al ON al.id = t.album_id
-      JOIN artists pa ON pa.id = al.primary_artist_id
-      WHERE mpt.playlist_id IN (SELECT playlist_id FROM cohort_playlists)
-        AND mpt.track_id <> (SELECT track_id FROM top_track)
-        AND NOT EXISTS (
-          SELECT 1 FROM listening_history lh
-          WHERE lh.user_id = ${userId} AND lh.track_id = t.id
-        )
-      GROUP BY t.id, t.name, al.name, pa.name
-      ORDER BY cooccurrence_count DESC, track_name ASC
+      SELECT track_id, track_name, album_name, primary_artist_name, cooccurrence_count
+      FROM candidates
+      ORDER BY random()
       LIMIT ${query.limit}
     `);
 
@@ -220,22 +234,32 @@ export class AnalyticsService {
   }
 
   async hiddenGems(query: HiddenGemsQuery): Promise<HiddenGemsResponse> {
+    // Pool the most-playlisted unplayed gems, then sample randomly so the page varies between
+    // visits while still surfacing genuine gems rather than the same fixed top list.
+    const poolSize = query.limit * RANDOM_POOL_FACTOR;
+
     const rows = await this.prisma.$queryRaw<HiddenGemRow[]>(Prisma.sql`
-      SELECT
-        t.id AS track_id,
-        t.name AS track_name,
-        al.name AS album_name,
-        pa.name AS primary_artist_name,
-        COUNT(DISTINCT mpt.playlist_id)::int AS playlist_count
-      FROM tracks t
-      JOIN albums al ON al.id = t.album_id
-      JOIN artists pa ON pa.id = al.primary_artist_id
-      JOIN mpd_playlist_tracks mpt ON mpt.track_id = t.id
-      LEFT JOIN listening_history lh ON lh.track_id = t.id
-      WHERE lh.id IS NULL
-      GROUP BY t.id, t.name, al.name, pa.name
-      HAVING COUNT(DISTINCT mpt.playlist_id) >= ${query.minPlaylistCount}
-      ORDER BY playlist_count DESC, track_name ASC
+      WITH gems AS (
+        SELECT
+          t.id AS track_id,
+          t.name AS track_name,
+          al.name AS album_name,
+          pa.name AS primary_artist_name,
+          COUNT(DISTINCT mpt.playlist_id)::int AS playlist_count
+        FROM tracks t
+        JOIN albums al ON al.id = t.album_id
+        JOIN artists pa ON pa.id = al.primary_artist_id
+        JOIN mpd_playlist_tracks mpt ON mpt.track_id = t.id
+        LEFT JOIN listening_history lh ON lh.track_id = t.id
+        WHERE lh.id IS NULL
+        GROUP BY t.id, t.name, al.name, pa.name
+        HAVING COUNT(DISTINCT mpt.playlist_id) >= ${query.minPlaylistCount}
+        ORDER BY playlist_count DESC, track_name ASC
+        LIMIT ${poolSize}
+      )
+      SELECT track_id, track_name, album_name, primary_artist_name, playlist_count
+      FROM gems
+      ORDER BY random()
       LIMIT ${query.limit}
     `);
 
