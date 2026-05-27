@@ -15,6 +15,16 @@ const nextConfig = {
         hostname: '**.dzcdn.net',
         protocol: 'https',
       },
+      {
+        // Deezer artist "picture" fallback, which is an api.deezer.com redirect to the CDN.
+        hostname: 'api.deezer.com',
+        protocol: 'https',
+      },
+      {
+        // Lone Ticketmaster cover left in the catalog from pre-backfill data.
+        hostname: '**.ticketm.net',
+        protocol: 'https',
+      },
     ],
   },
   reactStrictMode: true,
