@@ -34,17 +34,17 @@ export function VisibilityToggle({ playlistId, isPublic }: VisibilityToggleProps
   };
 
   return (
-    <div className="flex flex-col items-end gap-1.5">
+    <div className="flex flex-col items-start gap-1.5">
       <Switch
         checked={optimistic}
         onCheckedChange={() => void toggle()}
         disabled={pending}
         label={optimistic ? 'Public' : 'Private'}
-        description={
-          optimistic ? 'Anyone can browse this playlist.' : 'Only you can see this playlist.'
-        }
       />
-      {error !== null && <FormError className="self-end">{error}</FormError>}
+      <p className="text-xs text-fg-muted">
+        {optimistic ? 'Anyone can browse this playlist.' : 'Only you can see this playlist.'}
+      </p>
+      {error !== null && <FormError>{error}</FormError>}
     </div>
   );
 }
