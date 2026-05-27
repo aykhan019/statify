@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { generatePlaylistPlan } from './seed-user-playlists';
+import { buildCommunityUsers, generatePlaylistPlan } from './seed-user-playlists';
 
 function seededRng(seed: number): () => number {
   let state = seed >>> 0;
@@ -16,7 +16,7 @@ function seededRng(seed: number): () => number {
 const trackPool = Array.from({ length: 1000 }, (_, index) => index + 1);
 
 describe('generatePlaylistPlan', () => {
-  it('creates 1-3 playlists per community user plus the current user mix', () => {
+  it('creates 2-5 playlists per community user plus the current user mix', () => {
     const plans = generatePlaylistPlan({
       communityUserIds: [10, 20, 30],
       currentUserId: 1,
@@ -29,8 +29,8 @@ describe('generatePlaylistPlan', () => {
 
     for (const userId of [10, 20, 30]) {
       const count = communityPlans.filter((plan) => plan.userId === userId).length;
-      expect(count).toBeGreaterThanOrEqual(1);
-      expect(count).toBeLessThanOrEqual(3);
+      expect(count).toBeGreaterThanOrEqual(2);
+      expect(count).toBeLessThanOrEqual(5);
     }
 
     // The current user always gets the fixed set with a public/private mix (mostly public).
@@ -77,5 +77,20 @@ describe('generatePlaylistPlan', () => {
     expect(() =>
       generatePlaylistPlan({ communityUserIds: [10], currentUserId: 1, trackPool: [] }),
     ).toThrow(/track pool/);
+  });
+});
+
+describe('buildCommunityUsers', () => {
+  it('keeps the base named users first and generates the rest with unique emails', () => {
+    const users = buildCommunityUsers(40);
+
+    expect(users).toHaveLength(40);
+    expect(users[0]?.email).toBe('maya.rivers@statify.demo');
+    expect(new Set(users.map((user) => user.email)).size).toBe(40);
+    expect(users.every((user) => user.displayName.length > 0)).toBe(true);
+  });
+
+  it('returns just the requested base users when the count is small', () => {
+    expect(buildCommunityUsers(3)).toHaveLength(3);
   });
 });

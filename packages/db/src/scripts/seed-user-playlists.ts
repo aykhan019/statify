@@ -3,13 +3,23 @@ import { hashPassword } from '../seed/passwords';
 
 const CURRENT_USER_EMAIL = 'ayxan@gmail.com';
 const DEMO_PASSWORD = 'statify-demo';
+const DEFAULT_USER_COUNT = 40;
 const TRACK_POOL_SIZE = 4000;
 const MIN_TRACKS_PER_PLAYLIST = 12;
 const MAX_TRACKS_PER_PLAYLIST = 28;
+const MIN_PLAYLISTS_PER_USER = 2;
+const MAX_PLAYLISTS_PER_USER = 5;
 const DEFAULT_PUBLIC_RATIO = 0.8;
 const INSERT_CHUNK_SIZE = 500;
 
-const COMMUNITY_USERS = [
+export interface CommunityUser {
+  displayName: string;
+  email: string;
+}
+
+// The original named users are kept as the base so re-runs don't orphan them; further users are
+// generated from name pools with stable `community-N` emails (idempotent under skipDuplicates).
+const BASE_COMMUNITY_USERS: CommunityUser[] = [
   { email: 'maya.rivers@statify.demo', displayName: 'Maya Rivers' },
   { email: 'dj.nova@statify.demo', displayName: 'DJ Nova' },
   { email: 'leo.park@statify.demo', displayName: 'Leo Park' },
@@ -18,7 +28,86 @@ const COMMUNITY_USERS = [
   { email: 'indie.aoki@statify.demo', displayName: 'Indie Aoki' },
   { email: 'ravi.mehta@statify.demo', displayName: 'Ravi Mehta' },
   { email: 'elena.costa@statify.demo', displayName: 'Elena Costa' },
-] as const;
+];
+
+const FIRST_NAMES = [
+  'Mia',
+  'Liam',
+  'Noah',
+  'Ava',
+  'Ethan',
+  'Zoe',
+  'Kai',
+  'Lena',
+  'Omar',
+  'Nina',
+  'Jonas',
+  'Aria',
+  'Diego',
+  'Yuki',
+  'Priya',
+  'Mateo',
+  'Freya',
+  'Hugo',
+  'Amara',
+  'Soren',
+  'Talia',
+  'Marco',
+  'Ines',
+  'Felix',
+  'Nadia',
+  'Caleb',
+  'Lara',
+  'Oskar',
+  'Tess',
+  'Rafael',
+];
+
+const LAST_NAMES = [
+  'Hayes',
+  'Nakamura',
+  'Okafor',
+  'Lindqvist',
+  'Moreau',
+  'Silva',
+  'Petrov',
+  'Reyes',
+  'Haddad',
+  'Romano',
+  'Novak',
+  'Bauer',
+  'Fontaine',
+  'Cruz',
+  'Walsh',
+  'Kowalski',
+  'Mensah',
+  'Ito',
+  'Vargas',
+  'Stern',
+  'Dubois',
+  'Cohen',
+  'Marsh',
+  'Bianchi',
+  'Adler',
+  'Falk',
+  'Ramos',
+  'Voss',
+  'Quinn',
+  'Larsen',
+];
+
+/** Deterministic community-user list of the requested size (base users first). */
+export function buildCommunityUsers(count: number): CommunityUser[] {
+  const users = [...BASE_COMMUNITY_USERS];
+
+  for (let i = users.length; i < count; i += 1) {
+    const first = FIRST_NAMES[i % FIRST_NAMES.length] as string;
+    const last = LAST_NAMES[(i * 13) % LAST_NAMES.length] as string;
+    users.push({ email: `community-${i + 1}@statify.demo`, displayName: `${first} ${last}` });
+  }
+
+  return users.slice(0, Math.max(count, 0));
+}
 
 const PLAYLIST_NAMES = [
   'Late Night Drive',
@@ -90,7 +179,9 @@ export function generatePlaylistPlan(options: GeneratePlaylistPlanOptions): Play
   }
 
   for (const userId of options.communityUserIds) {
-    const count = 1 + Math.floor(rng() * 3); // 1-3 playlists
+    const count =
+      MIN_PLAYLISTS_PER_USER +
+      Math.floor(rng() * (MAX_PLAYLISTS_PER_USER - MIN_PLAYLISTS_PER_USER + 1));
     const names = pickDistinct(PLAYLIST_NAMES, count, rng);
 
     for (const name of names) {
@@ -159,6 +250,7 @@ function pick<T>(items: readonly T[], rng: () => number): T {
 export interface SeedUserPlaylistsOptions {
   logger?: { info(message: string): void };
   reset?: boolean;
+  userCount?: number;
 }
 
 export interface SeedUserPlaylistsResult {
@@ -182,14 +274,15 @@ export async function runSeedUserPlaylists(
     await prisma.userPlaylist.deleteMany({});
   }
 
+  const communityUserDefs = buildCommunityUsers(options.userCount ?? DEFAULT_USER_COUNT);
   const passwordHash = await hashPassword(DEMO_PASSWORD);
   await prisma.user.createMany({
-    data: COMMUNITY_USERS.map((user) => ({ ...user, passwordHash })),
+    data: communityUserDefs.map((user) => ({ ...user, passwordHash })),
     skipDuplicates: true,
   });
 
   const communityUsers = await prisma.user.findMany({
-    where: { email: { in: COMMUNITY_USERS.map((user) => user.email) } },
+    where: { email: { in: communityUserDefs.map((user) => user.email) } },
     select: { id: true },
   });
   const currentUser = await prisma.user.findUnique({
@@ -255,13 +348,31 @@ async function loadTrackPool(prisma: PrismaClient): Promise<number[]> {
   return rows.map((row) => row.id);
 }
 
+function parseUserCount(argv: string[]): number {
+  const index = argv.indexOf('--users');
+
+  if (index === -1) {
+    return DEFAULT_USER_COUNT;
+  }
+
+  const parsed = Number.parseInt(argv[index + 1] ?? '', 10);
+
+  if (!Number.isInteger(parsed) || parsed <= 0) {
+    throw new Error('--users requires a positive integer');
+  }
+
+  return parsed;
+}
+
 async function main(): Promise<void> {
   const prisma = new PrismaClient();
-  const reset = process.argv.slice(2).includes('--reset');
+  const argv = process.argv.slice(2);
+  const reset = argv.includes('--reset');
+  const userCount = parseUserCount(argv);
   const logger = { info: (message: string) => console.log(`[seed-playlists] ${message}`) };
 
   try {
-    const result = await runSeedUserPlaylists(prisma, { logger, reset });
+    const result = await runSeedUserPlaylists(prisma, { logger, reset, userCount });
     logger.info(
       `Done. communityUsers=${result.communityUsers} playlists=${result.playlists} public=${result.publicPlaylists} tracks=${result.tracks}`,
     );
