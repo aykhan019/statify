@@ -32,7 +32,7 @@ export class SearchRepository extends BaseRepository {
     return this.client.$queryRaw<SearchTrackRow[]>(Prisma.sql`
       SELECT
         t.id,
-        t.image_url,
+        COALESCE(t.image_url, al.image_url) AS image_url,
         t.name,
         al.name AS album_name,
         pa.name AS primary_artist_name,

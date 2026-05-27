@@ -150,12 +150,25 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
         track: {
           album: {
             id: 0,
-            imageUrl: null,
+            imageUrl: result.imageUrl,
             name: result.albumName,
-            primaryArtist: { id: 0, imageUrl: null, name: '', spotifyUri: '' },
+            primaryArtist: {
+              id: 0,
+              imageUrl: null,
+              name: result.primaryArtistName,
+              spotifyUri: '',
+            },
             spotifyUri: '',
           },
-          artists: [],
+          artists: [
+            {
+              id: 0,
+              imageUrl: null,
+              name: result.primaryArtistName,
+              role: 'primary',
+              spotifyUri: '',
+            },
+          ],
           durationMs: 0,
           id: trackId,
           imageUrl: result.imageUrl,
@@ -330,7 +343,7 @@ function AddTrackSection({ existingTrackIds, onAdd, pendingTrackId }: AddTrackSe
         <p className="text-xs text-fg-muted">No matches.</p>
       )}
       {results.length > 0 && (
-        <ul className="flex max-h-72 flex-col gap-1 overflow-y-auto rounded-(--radius-md) border border-border-default p-1">
+        <ul className="flex max-h-96 flex-col gap-1 overflow-y-auto rounded-(--radius-md) border border-border-default p-1">
           {results.map((result) => {
             const isExisting = existing.has(result.id);
             return (
