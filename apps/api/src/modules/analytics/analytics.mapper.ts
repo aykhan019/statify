@@ -45,6 +45,7 @@ export function toDiscoverEntry(row: DiscoverRow): DiscoverEntry {
     trackName: row.track_name,
     albumName: row.album_name,
     primaryArtistName: row.primary_artist_name,
+    imageUrl: row.image_url,
     cooccurrenceCount: toNumber(row.cooccurrence_count),
   };
 }

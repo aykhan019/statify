@@ -115,6 +115,7 @@ export class AnalyticsService {
           t.name AS track_name,
           al.name AS album_name,
           pa.name AS primary_artist_name,
+          COALESCE(t.image_url, al.image_url) AS image_url,
           COUNT(*)::int AS cooccurrence_count
         FROM mpd_playlist_tracks mpt
         JOIN tracks t ON t.id = mpt.track_id
@@ -126,11 +127,11 @@ export class AnalyticsService {
             SELECT 1 FROM listening_history lh
             WHERE lh.user_id = ${userId} AND lh.track_id = t.id
           )
-        GROUP BY t.id, t.name, al.name, pa.name
+        GROUP BY t.id, t.name, al.name, pa.name, t.image_url, al.image_url
         ORDER BY cooccurrence_count DESC, track_name ASC
         LIMIT ${poolSize}
       )
-      SELECT track_id, track_name, album_name, primary_artist_name, cooccurrence_count
+      SELECT track_id, track_name, album_name, primary_artist_name, image_url, cooccurrence_count
       FROM candidates
       ORDER BY random()
       LIMIT ${query.limit}

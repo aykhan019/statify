@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Cover } from '@/components/ui/Cover';
 import { fetchDiscover } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -47,15 +48,28 @@ export default async function DiscoverPage() {
           key={entry.trackId}
           className="motion-colors motion-list-item hover:bg-section-row-hover"
         >
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">
-              <Link href={`/catalog/tracks/${entry.trackId}`} className="hover:text-section-accent">
-                {entry.trackName}
-              </Link>
-            </CardTitle>
-            <p className="truncate text-sm text-fg-muted">
-              {entry.primaryArtistName} · {entry.albumName}
-            </p>
+          <CardHeader className="flex flex-row items-center gap-3 pb-2">
+            <Cover
+              src={entry.imageUrl}
+              name={entry.trackName}
+              entity="track"
+              size="md"
+              context="card"
+              inSection={false}
+            />
+            <div className="min-w-0">
+              <CardTitle className="text-base">
+                <Link
+                  href={`/catalog/tracks/${entry.trackId}`}
+                  className="hover:text-section-accent"
+                >
+                  {entry.trackName}
+                </Link>
+              </CardTitle>
+              <p className="truncate text-sm text-fg-muted">
+                {entry.primaryArtistName} · {entry.albumName}
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="pt-2">
             <span className="rounded-(--radius-sm) bg-section-tint px-2 py-1 text-xs font-medium text-section-accent">

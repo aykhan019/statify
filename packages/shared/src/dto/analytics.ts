@@ -46,6 +46,7 @@ export const DiscoverEntrySchema = z.object({
   trackName: z.string(),
   albumName: z.string(),
   primaryArtistName: z.string(),
+  imageUrl: z.string().url().nullable(),
   cooccurrenceCount: z.number().int(),
 });
 

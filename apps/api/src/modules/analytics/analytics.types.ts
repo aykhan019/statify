@@ -23,6 +23,7 @@ export interface DiscoverRow {
   track_name: string;
   album_name: string;
   primary_artist_name: string;
+  image_url: string | null;
   cooccurrence_count: number | bigint;
 }
 

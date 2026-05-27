@@ -111,6 +111,7 @@ describe('AnalyticsService', () => {
           track_name: 'Track A',
           album_name: 'Album A',
           primary_artist_name: 'Artist A',
+          image_url: 'https://cdn.example.com/a.jpg',
           cooccurrence_count: 8,
         },
       ];
@@ -125,6 +126,7 @@ describe('AnalyticsService', () => {
           trackName: 'Track A',
           albumName: 'Album A',
           primaryArtistName: 'Artist A',
+          imageUrl: 'https://cdn.example.com/a.jpg',
           cooccurrenceCount: 8,
         },
       ]);
