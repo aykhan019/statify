@@ -1,8 +1,7 @@
-import { Disc3 } from 'lucide-react';
 import Link from 'next/link';
 import type { ComponentPropsWithoutRef } from 'react';
 import { cn } from '@/lib/utils/cn';
-import { Icon } from './Icon';
+import { StatifyMark } from './StatifyMark';
 
 interface BrandMarkLinkProps extends Omit<ComponentPropsWithoutRef<typeof Link>, 'href'> {
   href?: string;
@@ -18,9 +17,7 @@ export function BrandMarkLink({ href = '/', className, ...props }: BrandMarkLink
       )}
       {...props}
     >
-      <span className="grid size-7 place-items-center rounded-(--radius-sm) bg-section-tint text-section-accent shadow-xs">
-        <Icon as={Disc3} size="sm" />
-      </span>
+      <StatifyMark className="size-7 shrink-0" />
       <span className="text-lg font-bold tracking-normal">Statify</span>
     </Link>
   );

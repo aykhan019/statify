@@ -11,6 +11,7 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Statify',
   description: 'Music streaming analytics built on the Spotify Million Playlist Dataset',
+  manifest: '/manifest.json',
 };
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
