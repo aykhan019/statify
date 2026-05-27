@@ -47,6 +47,8 @@ export interface MediaBackfillLogger {
 }
 
 export interface DeezerMediaBackfillOptions {
+  albumAfterId?: number;
+  artistAfterId?: number;
   artworkFetcher?: DeezerArtworkFetcher;
   batchSize?: number;
   deezerApiBaseUrl?: string;
@@ -78,6 +80,8 @@ export interface DeezerArtworkFetcher {
 }
 
 interface ResolvedDeezerMediaBackfillOptions {
+  albumAfterId: number;
+  artistAfterId: number;
   artworkFetcher: DeezerArtworkFetcher;
   batchSize: number;
   limit: number | null;
@@ -139,6 +143,8 @@ function resolveDeezerMediaBackfillOptions(
   options: DeezerMediaBackfillOptions,
 ): ResolvedDeezerMediaBackfillOptions {
   return {
+    albumAfterId: resolveNonNegativeInt(options.albumAfterId ?? 0, 'albumAfterId'),
+    artistAfterId: resolveNonNegativeInt(options.artistAfterId ?? 0, 'artistAfterId'),
     artworkFetcher: options.artworkFetcher ?? createDeezerArtworkFetcher(resolveDeezerEnv(options)),
     batchSize: resolvePositiveInt(options.batchSize ?? DEFAULT_BATCH_SIZE, 'batchSize'),
     limit: resolveLimit(options.limit),
@@ -222,6 +228,7 @@ async function backfillAlbums(
     options,
     resolveImage: (album) =>
       options.artworkFetcher.getAlbumImage(album.name, album.primaryArtist.name),
+    startAfterId: options.albumAfterId,
     update: (id, imageUrl) =>
       prisma.album.update({
         data: { imageUrl },
@@ -253,6 +260,7 @@ async function backfillArtists(
     },
     options,
     resolveImage: (artist) => options.artworkFetcher.getArtistImage(artist.name),
+    startAfterId: options.artistAfterId,
     update: (id, imageUrl) =>
       prisma.artist.update({
         data: { imageUrl },
@@ -271,13 +279,14 @@ async function backfillEntityImages<TRecord extends { id: number; imageUrl: stri
   onUpdated(): void;
   options: ResolvedDeezerMediaBackfillOptions;
   resolveImage(record: TRecord): Promise<string | null>;
+  startAfterId: number;
   update(id: number, imageUrl: string): Promise<unknown>;
 }): Promise<void> {
-  let lastId = 0;
+  let lastId = args.startAfterId;
   let remaining = args.options.limit;
 
   args.options.logger.info(
-    `${args.kind} backfill started. batchSize=${args.options.batchSize} limit=${remaining ?? 'all'}`,
+    `${args.kind} backfill started. batchSize=${args.options.batchSize} limit=${remaining ?? 'all'} afterId=${lastId}`,
   );
 
   while (remaining === null || remaining > 0) {
@@ -685,15 +694,28 @@ function delay(ms: number): Promise<void> {
   });
 }
 
-function parseArgs(
-  argv: string[],
-): Pick<DeezerMediaBackfillOptions, 'batchSize' | 'limit' | 'overwriteExisting'> {
-  const options: Pick<DeezerMediaBackfillOptions, 'batchSize' | 'limit' | 'overwriteExisting'> = {};
+type ParsedArgs = Pick<
+  DeezerMediaBackfillOptions,
+  'albumAfterId' | 'artistAfterId' | 'batchSize' | 'limit' | 'overwriteExisting'
+>;
+
+function parseArgs(argv: string[]): ParsedArgs {
+  const options: ParsedArgs = {};
 
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
 
     if (arg === '--') {
+      continue;
+    }
+
+    if (arg === '--album-after-id') {
+      options.albumAfterId = parseRequiredInt(argv, (index += 1), arg);
+      continue;
+    }
+
+    if (arg === '--artist-after-id') {
+      options.artistAfterId = parseRequiredInt(argv, (index += 1), arg);
       continue;
     }
 

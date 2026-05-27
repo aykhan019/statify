@@ -164,6 +164,23 @@ describe('deezer media backfill', () => {
     });
   });
 
+  it('starts the album scan after a given id while artists still scan from zero', async () => {
+    const artworkFetcher: DeezerArtworkFetcher = {
+      getAlbumImage: vi.fn(async () => 'https://cdn.deezer.com/album/x.jpg'),
+      getArtistImage: vi.fn(async () => 'https://cdn.deezer.com/artist/x.jpg'),
+    };
+    const prisma = createPrisma({ albums: [], artists: [] });
+
+    await runDeezerMediaBackfill(prisma, { albumAfterId: 30000, artworkFetcher });
+
+    expect(prisma.album.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { gt: 30000 }, imageUrl: null } }),
+    );
+    expect(prisma.artist.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: { id: { gt: 0 }, imageUrl: null } }),
+    );
+  });
+
   it('builds advanced album queries and plain artist queries', () => {
     expect(buildDeezerAlbumQuery('25', 'Adele')).toBe('artist:"Adele" album:"25"');
     expect(buildDeezerAlbumQuery('Untitled', '')).toBe('album:"Untitled"');
