@@ -61,6 +61,7 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
               trackId: track.id,
               trackName,
               artistName: primaryArtistName,
+              imageUrl: track.imageUrl ?? track.album.imageUrl,
               previewUrl: track.previewUrl,
               durationMs: track.durationMs,
             }}

@@ -229,6 +229,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                     trackId: entry.track.id,
                     trackName: entry.track.name,
                     artistName: entry.track.artists.map((artist) => artist.name).join(', '),
+                    imageUrl: entry.track.imageUrl ?? entry.track.album.imageUrl,
                     previewUrl: entry.track.previewUrl,
                     durationMs: entry.track.durationMs,
                   }}

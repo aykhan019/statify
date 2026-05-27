@@ -1,7 +1,10 @@
 'use client';
 
+import { Pause, Play, X } from 'lucide-react';
 import { useEffect, useRef, type ChangeEvent } from 'react';
 import { Button } from '@/components/ui/Button';
+import { Cover } from '@/components/ui/Cover';
+import { Icon } from '@/components/ui/Icon';
 import { formatTrackName } from '@/components/catalog';
 import { cn } from '@/lib/utils/cn';
 import { usePlayerStore } from './player-store';
@@ -23,6 +26,7 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
   const play = usePlayerStore((state) => state.play);
   const setVolume = usePlayerStore((state) => state.setVolume);
   const setMuted = usePlayerStore((state) => state.setMuted);
+  const reset = usePlayerStore((state) => state.reset);
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -61,7 +65,6 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
   }
 
   const isUnavailable = status === 'unavailable' || track.previewUrl === null;
-  const effectiveVolume = isMuted ? 0 : volume;
 
   return (
     <div
@@ -98,6 +101,15 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
         </>
       )}
 
+      <Cover
+        src={track.imageUrl ?? null}
+        name={formatTrackName(track.trackName)}
+        entity="track"
+        size="sm"
+        context="list-dense"
+        inSection={false}
+      />
+
       <div className="min-w-0 flex-1">
         <p className="truncate text-sm font-medium">{formatTrackName(track.trackName)}</p>
         <p className="text-muted-foreground truncate text-xs">{track.artistName}</p>
@@ -106,12 +118,12 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
       <Button
         variant="secondary"
         size="sm"
-        className="motion-player"
+        className="motion-player shrink-0"
         onClick={toggle}
         disabled={isUnavailable}
         aria-label={status === 'playing' ? 'Pause preview' : 'Play preview'}
       >
-        {status === 'playing' ? 'Pause' : 'Play'}
+        <Icon as={status === 'playing' ? Pause : Play} size="sm" />
       </Button>
 
       <label className="flex flex-1 items-center gap-2 text-xs">
@@ -130,43 +142,79 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
           aria-label="Seek position"
           aria-valuetext={`${formatPosition(positionMs)} of ${formatPosition(track.durationMs)}`}
         />
-        <span aria-live="polite">
+        <span
+          aria-live="polite"
+          className="shrink-0 whitespace-nowrap text-center font-mono tabular-nums"
+        >
           {formatPosition(positionMs)} / {formatPosition(track.durationMs)}
         </span>
       </label>
 
-      <label className="flex w-24 items-center gap-2 text-xs">
-        <span className="sr-only">Volume</span>
-        <button
-          type="button"
-          onClick={() => setMuted(!isMuted)}
-          className="rounded-(--radius-xs) motion-interactive hover:text-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
-          aria-pressed={isMuted}
-          aria-label={isMuted ? 'Unmute' : 'Mute'}
-        >
-          {isMuted ? 'Muted' : 'Vol'}
-        </button>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={effectiveVolume}
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            setVolume(Number.parseFloat(event.target.value))
-          }
-          className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
-          aria-label="Volume"
-          aria-valuetext={`${Math.round(effectiveVolume * 100)}%`}
-        />
-      </label>
+      <VolumeControl
+        volume={volume}
+        isMuted={isMuted}
+        onVolumeChange={setVolume}
+        onToggleMute={() => setMuted(!isMuted)}
+      />
 
       {isUnavailable && (
         <span className="text-muted-foreground text-xs" role="status">
           Preview unavailable
         </span>
       )}
+
+      <Button
+        variant="ghost"
+        size="sm"
+        className="shrink-0"
+        onClick={reset}
+        aria-label="Close player"
+      >
+        <Icon as={X} size="sm" />
+      </Button>
     </div>
+  );
+}
+
+function VolumeControl({
+  volume,
+  isMuted,
+  onVolumeChange,
+  onToggleMute,
+}: {
+  volume: number;
+  isMuted: boolean;
+  onVolumeChange: (value: number) => void;
+  onToggleMute: () => void;
+}) {
+  const effectiveVolume = isMuted ? 0 : volume;
+
+  return (
+    <label className="flex w-24 items-center gap-2 text-xs">
+      <span className="sr-only">Volume</span>
+      <button
+        type="button"
+        onClick={onToggleMute}
+        className="rounded-(--radius-xs) motion-interactive hover:text-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
+        aria-pressed={isMuted}
+        aria-label={isMuted ? 'Unmute' : 'Mute'}
+      >
+        {isMuted ? 'Muted' : 'Vol'}
+      </button>
+      <input
+        type="range"
+        min={0}
+        max={1}
+        step={0.01}
+        value={effectiveVolume}
+        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+          onVolumeChange(Number.parseFloat(event.target.value))
+        }
+        className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
+        aria-label="Volume"
+        aria-valuetext={`${Math.round(effectiveVolume * 100)}%`}
+      />
+    </label>
   );
 }
 

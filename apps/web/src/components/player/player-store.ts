@@ -4,6 +4,7 @@ export interface PlayerTrack {
   trackId: number;
   trackName: string;
   artistName: string;
+  imageUrl?: string | null;
   previewUrl: string | null;
   durationMs: number;
 }
