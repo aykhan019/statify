@@ -28,7 +28,7 @@ export interface AlbumControlsState {
 }
 
 const TRACK_SORTS = ['plays', '-plays', 'name', '-name', 'durationMs', '-durationMs'] as const;
-const ARTIST_SORTS = ['name', '-name', 'createdAt', '-createdAt'] as const;
+const ARTIST_SORTS = ['plays', '-plays', 'name', '-name', 'createdAt', '-createdAt'] as const;
 const ALBUM_SORTS = ['plays', '-plays', 'name', '-name', 'createdAt', '-createdAt'] as const;
 
 export function readTrackListQuery(params: CatalogSearchParams): {
@@ -66,7 +66,7 @@ export function readArtistListQuery(params: CatalogSearchParams): {
   controls: ArtistControlsState;
   query: Partial<ArtistsQuery>;
 } {
-  const sort = readAllowed(readSingle(params.sort), ARTIST_SORTS, 'name');
+  const sort = readAllowed(readSingle(params.sort), ARTIST_SORTS, '-plays');
   const q = readSearchTerm(params.q);
 
   return {

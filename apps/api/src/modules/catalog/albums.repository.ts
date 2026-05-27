@@ -82,6 +82,7 @@ export class AlbumsRepository extends BaseRepository {
       ${filters}
       GROUP BY a.id
       ORDER BY
+        (a.image_url IS NULL),
         COUNT(lh.id) ${direction},
         CASE WHEN a.name ~ '^[[:alnum:]]' THEN 0 ELSE 1 END,
         lower(a.name) ASC,

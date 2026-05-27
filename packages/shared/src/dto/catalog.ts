@@ -27,8 +27,8 @@ export const TrackSortSchema = z
   .enum(['plays', '-plays', 'name', '-name', 'durationMs', '-durationMs'])
   .default('-plays');
 export const ArtistSortSchema = z
-  .enum(['name', '-name', 'createdAt', '-createdAt'])
-  .default('name');
+  .enum(['plays', '-plays', 'name', '-name', 'createdAt', '-createdAt'])
+  .default('-plays');
 export const AlbumSortSchema = z
   .enum(['plays', '-plays', 'name', '-name', 'createdAt', '-createdAt'])
   .default('-plays');

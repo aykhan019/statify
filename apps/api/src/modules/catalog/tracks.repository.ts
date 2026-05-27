@@ -73,13 +73,17 @@ export class TracksRepository extends BaseRepository {
     const direction = query.sort === 'plays' ? Prisma.sql`ASC` : Prisma.sql`DESC`;
     const filters = buildTrackPlaysFilters(query);
 
+    // A track's displayed cover falls back to its album (track.image_url is usually null),
+    // so the no-image-last ordering keys off COALESCE(track, album).
     const rows = await this.client.$queryRaw<Array<{ id: number }>>(Prisma.sql`
       SELECT t.id
       FROM tracks t
+      JOIN albums alb ON alb.id = t.album_id
       LEFT JOIN listening_history lh ON lh.track_id = t.id
       ${filters}
-      GROUP BY t.id
+      GROUP BY t.id, alb.image_url
       ORDER BY
+        (COALESCE(t.image_url, alb.image_url) IS NULL),
         COUNT(lh.id) ${direction},
         CASE WHEN t.name ~ '^[[:alnum:]]' THEN 0 ELSE 1 END,
         lower(t.name) ASC,
