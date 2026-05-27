@@ -34,7 +34,7 @@ export function VisibilityToggle({ playlistId, isPublic }: VisibilityToggleProps
   };
 
   return (
-    <div className="flex flex-col items-start gap-1.5">
+    <div className="flex flex-col items-end gap-1.5">
       <Switch
         checked={optimistic}
         onCheckedChange={() => void toggle()}
