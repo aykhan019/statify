@@ -53,7 +53,6 @@ const BREADCRUMB_LABELS: Record<string, string> = {
   '/catalog': 'Catalog',
   '/catalog/albums': 'Albums',
   '/catalog/artists': 'Artists',
-  '/catalog/genres': 'Genres',
   '/catalog/playlists': 'Playlists',
   '/catalog/tracks': 'Tracks',
   '/community': 'Community',

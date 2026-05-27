@@ -16,7 +16,7 @@ export function TrackCatalogControls({ values }: { values: TrackControlsState })
       className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
       action="/catalog/tracks"
     >
-      <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-5">
         <Field label="Search">
           <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search tracks" />
         </Field>
@@ -52,16 +52,6 @@ export function TrackCatalogControls({ values }: { values: TrackControlsState })
             min={0}
             defaultValue={values.maxDurationSec ?? ''}
           />
-        </Field>
-        <Field label="Genre">
-          <select disabled className={CONTROL_BASE} defaultValue="">
-            <option value="">Unavailable</option>
-          </select>
-        </Field>
-        <Field label="Year">
-          <select disabled className={CONTROL_BASE} defaultValue="">
-            <option value="">Unavailable</option>
-          </select>
         </Field>
       </div>
       <ControlActions resetHref="/catalog/tracks" />

@@ -8,7 +8,6 @@ const TABS = [
   { href: '/catalog/artists', label: 'Artists' },
   { href: '/catalog/albums', label: 'Albums' },
   { href: '/catalog/playlists', label: 'Playlists' },
-  { href: '/catalog/genres', label: 'Genres' },
 ] as const;
 
 export default function CatalogLayout({ children }: { children: ReactNode }) {
