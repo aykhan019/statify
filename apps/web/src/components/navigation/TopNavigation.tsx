@@ -29,6 +29,9 @@ export function TopNavigation({ activePath, includeAdmin, user }: TopNavigationP
         <Stack as="div" direction="horizontal" gap="sm" align="center" className="min-w-0">
           <MobileNavigation activePath={activePath} includeAdmin={includeAdmin} />
           <BrandMarkLink href="/me" />
+          <div className="hidden sm:block">
+            <GlobalSearch />
+          </div>
         </Stack>
         <Stack
           as="div"
@@ -38,9 +41,6 @@ export function TopNavigation({ activePath, includeAdmin, user }: TopNavigationP
           justify="end"
           className="min-w-0"
         >
-          <div className="hidden sm:block">
-            <GlobalSearch />
-          </div>
           <ThemeToggle className="hidden sm:grid" />
           <UserMenu includeAdmin={includeAdmin} user={user} />
         </Stack>

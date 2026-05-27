@@ -46,7 +46,7 @@ export function GlobalSearch() {
   };
 
   return (
-    <div ref={wrapperRef} className="relative ml-auto w-72 lg:w-[28rem]">
+    <div ref={wrapperRef} className="relative w-72 lg:w-[28rem]">
       <form
         role="search"
         onSubmit={(event) => {
@@ -257,7 +257,7 @@ function PanelShell({ children, id }: { children: ReactNode; id: string }) {
       id={id}
       role="region"
       aria-label="Search results"
-      className="bg-surface border-border absolute right-0 top-11 z-40 flex max-h-[70vh] w-[min(28rem,calc(100vw-2rem))] flex-col overflow-y-auto rounded-lg border p-2 shadow-lg"
+      className="bg-surface border-border absolute left-0 top-11 z-40 flex max-h-[70vh] w-[min(28rem,calc(100vw-2rem))] flex-col overflow-y-auto rounded-lg border p-2 shadow-lg"
     >
       {children}
     </div>
