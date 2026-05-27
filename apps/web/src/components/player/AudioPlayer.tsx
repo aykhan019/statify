@@ -101,77 +101,80 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
         </>
       )}
 
-      <Cover
-        src={track.imageUrl ?? null}
-        name={formatTrackName(track.trackName)}
-        entity="track"
-        size="sm"
-        context="list-dense"
-        inSection={false}
-      />
-
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium">{formatTrackName(track.trackName)}</p>
-        <p className="text-muted-foreground truncate text-xs">{track.artistName}</p>
+      <div className="flex min-w-0 flex-1 items-center gap-3">
+        <Cover
+          src={track.imageUrl ?? null}
+          name={formatTrackName(track.trackName)}
+          entity="track"
+          size="sm"
+          context="list-dense"
+          inSection={false}
+        />
+        <div className="min-w-0">
+          <p className="truncate text-sm font-medium">{formatTrackName(track.trackName)}</p>
+          <p className="text-muted-foreground truncate text-xs">{track.artistName}</p>
+        </div>
       </div>
 
-      <Button
-        variant="secondary"
-        size="sm"
-        className="motion-player shrink-0"
-        onClick={toggle}
-        disabled={isUnavailable}
-        aria-label={status === 'playing' ? 'Pause preview' : 'Play preview'}
-      >
-        <Icon as={status === 'playing' ? Pause : Play} size="sm" />
-      </Button>
-
-      <label className="flex flex-1 items-center gap-2 text-xs">
-        <span className="sr-only">Seek</span>
-        <input
-          type="range"
-          min={0}
-          max={track.durationMs}
-          step={100}
-          value={positionMs}
+      <div className="flex flex-[2] items-center justify-center gap-3">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="motion-player shrink-0"
+          onClick={toggle}
           disabled={isUnavailable}
-          onChange={(event: ChangeEvent<HTMLInputElement>) =>
-            seek(Number.parseInt(event.target.value, 10))
-          }
-          className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
-          aria-label="Seek position"
-          aria-valuetext={`${formatPosition(positionMs)} of ${formatPosition(track.durationMs)}`}
-        />
-        <span
-          aria-live="polite"
-          className="shrink-0 whitespace-nowrap text-center font-mono tabular-nums"
+          aria-label={status === 'playing' ? 'Pause preview' : 'Play preview'}
         >
-          {formatPosition(positionMs)} / {formatPosition(track.durationMs)}
-        </span>
-      </label>
+          <Icon as={status === 'playing' ? Pause : Play} size="sm" />
+        </Button>
 
-      <VolumeControl
-        volume={volume}
-        isMuted={isMuted}
-        onVolumeChange={setVolume}
-        onToggleMute={() => setMuted(!isMuted)}
-      />
+        <label className="flex w-full items-center gap-2 text-xs">
+          <span className="sr-only">Seek</span>
+          <input
+            type="range"
+            min={0}
+            max={track.durationMs}
+            step={100}
+            value={positionMs}
+            disabled={isUnavailable}
+            onChange={(event: ChangeEvent<HTMLInputElement>) =>
+              seek(Number.parseInt(event.target.value, 10))
+            }
+            className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
+            aria-label="Seek position"
+            aria-valuetext={`${formatPosition(positionMs)} of ${formatPosition(track.durationMs)}`}
+          />
+          <span
+            aria-live="polite"
+            className="shrink-0 whitespace-nowrap text-center font-mono tabular-nums"
+          >
+            {formatPosition(positionMs)} / {formatPosition(track.durationMs)}
+          </span>
+        </label>
+      </div>
 
-      {isUnavailable && (
-        <span className="text-muted-foreground text-xs" role="status">
-          Preview unavailable
-        </span>
-      )}
-
-      <Button
-        variant="ghost"
-        size="sm"
-        className="shrink-0"
-        onClick={reset}
-        aria-label="Close player"
-      >
-        <Icon as={X} size="sm" />
-      </Button>
+      <div className="flex flex-1 items-center justify-end gap-2">
+        {isUnavailable && (
+          <span className="text-muted-foreground text-xs" role="status">
+            Preview unavailable
+          </span>
+        )}
+        <VolumeControl
+          volume={volume}
+          isMuted={isMuted}
+          onVolumeChange={setVolume}
+          onToggleMute={() => setMuted(!isMuted)}
+        />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="shrink-0"
+          onClick={reset}
+          aria-label="Close player"
+        >
+          <Icon as={X} size="sm" />
+        </Button>
+      </div>
     </div>
   );
 }
