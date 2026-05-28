@@ -41,6 +41,9 @@ export class AuditLogRepository extends BaseRepository {
     if (query.targetTable !== undefined) {
       where.targetTable = query.targetTable;
     }
+    if (query.targetId !== undefined) {
+      where.targetId = query.targetId;
+    }
 
     const [data, total] = await Promise.all([
       this.client.auditLog.findMany({

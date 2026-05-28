@@ -22,7 +22,7 @@ describe('ArtistsRepository', () => {
     });
 
     expect(artist.findMany).not.toHaveBeenCalled();
-    expect(artist.count).toHaveBeenCalledWith({ where: {} });
+    expect(artist.count).toHaveBeenCalledWith({ where: { hiddenAt: null } });
     expect(queryRaw).toHaveBeenCalledTimes(1);
     expect(isPrismaSql(queryRaw.mock.calls[0]?.[0])).toBe(true);
     expect((queryRaw.mock.calls[0]?.[0] as Prisma.Sql | undefined)?.sql).not.toContain(
@@ -45,6 +45,7 @@ describe('ArtistsRepository', () => {
     });
 
     const where = {
+      hiddenAt: null,
       name: { contains: 'radio', mode: 'insensitive' },
     };
 

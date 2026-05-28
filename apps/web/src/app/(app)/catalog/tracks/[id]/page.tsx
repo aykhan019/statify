@@ -8,6 +8,7 @@ import {
   formatTrackName,
   PreviewPlayerLauncher,
 } from '@/components/catalog';
+import { SectionContent } from '@/components/section';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Cover } from '@/components/ui/Cover';
 import { ApiClientError } from '@/lib/api-client';
@@ -50,7 +51,7 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
   const coverImage = track.imageUrl ?? track.album.imageUrl ?? track.album.primaryArtist.imageUrl;
 
   return (
-    <section className="flex flex-col gap-6">
+    <SectionContent className="flex flex-col gap-6">
       <CatalogDetailHero
         entity="track"
         eyebrow="Track"
@@ -132,6 +133,6 @@ export default async function TrackDetailPage({ params }: TrackDetailPageProps) 
           </CardContent>
         </Card>
       </div>
-    </section>
+    </SectionContent>
   );
 }

@@ -171,6 +171,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:2',
+    hiddenAt: null,
   };
 
   return {
@@ -182,6 +183,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
       primaryArtist: artist,
       primaryArtistId: artist.id,
       spotifyUri: 'spotify:album:3',
+      hiddenAt: null,
     },
     albumId: 3,
     durationMs: 180000,
@@ -192,6 +194,7 @@ function createTrack(overrides: Partial<ItunesTrackForPreview> = {}): ItunesTrac
     previewFetchedAt: null,
     previewUrl: null,
     spotifyUri: 'spotify:track:1',
+    hiddenAt: null,
     trackArtists: [
       {
         artist,

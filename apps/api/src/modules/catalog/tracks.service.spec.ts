@@ -83,6 +83,7 @@ function createTrackRecord(): TrackCatalogRecord {
     name: 'Primary Artist',
     normalizedName: 'primary artist',
     spotifyUri: 'spotify:artist:3',
+    hiddenAt: null,
   };
 
   return {
@@ -94,6 +95,7 @@ function createTrackRecord(): TrackCatalogRecord {
       primaryArtist: artist,
       primaryArtistId: artist.id,
       spotifyUri: 'spotify:album:2',
+      hiddenAt: null,
     },
     albumId: 2,
     durationMs: 180000,
@@ -104,6 +106,7 @@ function createTrackRecord(): TrackCatalogRecord {
     previewFetchedAt: null,
     previewUrl: 'https://example.com/preview.m4a',
     spotifyUri: 'spotify:track:1',
+    hiddenAt: null,
     trackArtists: [
       {
         artist,

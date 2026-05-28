@@ -22,6 +22,7 @@ export function toTopArtistEntry(row: TopArtistRow): TopArtistEntry {
     rank: toNumber(row.rank),
     artistId: row.artist_id,
     artistName: row.artist_name,
+    artistImageUrl: row.artist_image_url,
     listenCount: toNumber(row.listen_count),
     totalMinutes: toFloat(row.total_minutes),
   };
@@ -34,6 +35,9 @@ export function toTopTrackEntry(row: TopTrackRow): TopTrackEntry {
     trackName: row.track_name,
     primaryArtistName: row.primary_artist_name,
     albumName: row.album_name,
+    trackImageUrl: row.track_image_url,
+    albumImageUrl: row.album_image_url,
+    artistImageUrl: row.artist_image_url,
     listenCount: toNumber(row.listen_count),
     totalMinutes: toFloat(row.total_minutes),
   };
@@ -45,6 +49,9 @@ export function toDiscoverEntry(row: DiscoverRow): DiscoverEntry {
     trackName: row.track_name,
     albumName: row.album_name,
     primaryArtistName: row.primary_artist_name,
+    trackImageUrl: row.track_image_url,
+    albumImageUrl: row.album_image_url,
+    artistImageUrl: row.artist_image_url,
     cooccurrenceCount: toNumber(row.cooccurrence_count),
   };
 }
@@ -61,6 +68,7 @@ export function toTrendingArtistEntry(row: TrendingArtistRow): TrendingArtistEnt
   return {
     artistId: row.artist_id,
     artistName: row.artist_name,
+    artistImageUrl: row.artist_image_url,
     recentPlays: toNumber(row.recent_plays),
     priorPlays: toNumber(row.prior_plays),
     growth: toFloat(row.growth),
@@ -82,6 +90,9 @@ export function toHiddenGemEntry(row: HiddenGemRow): HiddenGemEntry {
     trackName: row.track_name,
     albumName: row.album_name,
     primaryArtistName: row.primary_artist_name,
+    trackImageUrl: row.track_image_url,
+    albumImageUrl: row.album_image_url,
+    artistImageUrl: row.artist_image_url,
     playlistCount: toNumber(row.playlist_count),
   };
 }

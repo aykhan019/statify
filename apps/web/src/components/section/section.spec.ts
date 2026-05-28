@@ -9,25 +9,30 @@ describe('section identity resolver', () => {
     expect(resolveSection('/me/stats/trending').id).toBe('trending');
   });
 
-  it('resolves app sections from their route prefixes', () => {
-    expect(getSectionHue('/catalog/tracks')).toBe('indigo');
-    expect(getSectionHue('/discover')).toBe('green');
-    expect(getSectionHue('/explore/hidden-gems')).toBe('teal');
-    expect(getSectionHue('/me/history')).toBe('vermilion');
+  it('resolves app sections from their route prefixes per the hue map', () => {
+    expect(getSectionHue('/catalog/tracks')).toBe('magenta');
+    expect(getSectionHue('/discover')).toBe('teal');
+    expect(getSectionHue('/explore/hidden-gems')).toBe('cyan');
+    expect(getSectionHue('/me/history')).toBe('coral');
+    expect(getSectionHue('/me/stats/top-artists')).toBe('azure');
     expect(getSectionHue('/me/playlists/12')).toBe('violet');
-    expect(getSectionHue('/community/playlists')).toBe('cyan');
-    expect(getSectionHue('/admin/users')).toBe('pink');
+    expect(getSectionHue('/community/playlists')).toBe('violet');
+    expect(getSectionHue('/admin/users')).toBe('amber');
   });
 
-  it('keeps account neutral while defaulting unmatched routes to Library', () => {
+  it('gives Overview indigo and Stats azure, and routes /me/account to account', () => {
     expect(resolveSection('/me/account')).toMatchObject({
       hue: 'indigo',
       id: 'account',
-      neutral: true,
+      neutral: false,
     });
     expect(resolveSection('/me/stats')).toMatchObject({
+      hue: 'azure',
+      id: 'stats',
+      neutral: false,
+    });
+    expect(resolveSection('/me')).toMatchObject({
       hue: 'indigo',
-      id: 'library',
       neutral: false,
     });
   });

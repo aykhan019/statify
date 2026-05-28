@@ -15,7 +15,7 @@ interface PageResult<T> {
 interface InfiniteScrollProps<T> {
   initial: PageResult<T>;
   loader: (page: number) => Promise<PageResult<T>>;
-  renderItem: (item: T) => ReactNode;
+  renderItem: (item: T, index: number) => ReactNode;
   itemKey: (item: T) => string | number;
   emptyText?: string;
   emptyState?: ReactNode;
@@ -90,8 +90,8 @@ export function InfiniteScroll<T>({
   return (
     <div className="flex flex-col gap-3">
       <ul className={cn('flex flex-col gap-3', listClassName)}>
-        {items.map((item) => (
-          <li key={itemKey(item)}>{renderItem(item)}</li>
+        {items.map((item, index) => (
+          <li key={itemKey(item)}>{renderItem(item, index)}</li>
         ))}
       </ul>
 

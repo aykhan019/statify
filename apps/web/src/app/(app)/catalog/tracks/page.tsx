@@ -1,5 +1,7 @@
-import { PageHeader } from '@/components/ui/PageHeader';
+import { Music2 } from 'lucide-react';
 import { TrackCatalogControls, TracksInfiniteList } from '@/components/catalog';
+import { SectionContent } from '@/components/section';
+import { P2GlassPanel, P2PageHero, P2Pill, P2Toolbar } from '@/components/p2';
 import { fetchTracks } from '@/lib/catalog/api';
 import { readTrackListQuery, type CatalogSearchParams } from '@/lib/catalog/query';
 
@@ -22,14 +24,31 @@ export default async function TracksPage({ searchParams }: TracksPageProps) {
       : `${initial.total.toLocaleString()} tracks match "${controls.q}".`;
 
   return (
-    <section className="flex flex-col gap-6">
-      <PageHeader headingLevel={2} title="Tracks" description={description} />
-      <TrackCatalogControls values={controls} />
-      <TracksInfiniteList
-        initial={initial}
-        baseQuery={query}
-        emptyText="No tracks match this view."
+    <>
+      <P2PageHero
+        eyebrow="/catalog/tracks"
+        icon={Music2}
+        title="Tracks, ready to inspect."
+        description={description}
+        actions={
+          <>
+            <P2Pill tone="on-block">{controls.q ? 'Query active' : 'All tracks'}</P2Pill>
+            <P2Pill tone="on-block">Has preview</P2Pill>
+          </>
+        }
       />
-    </section>
+      <SectionContent className="space-y-5">
+        <P2Toolbar>
+          <TrackCatalogControls values={controls} />
+        </P2Toolbar>
+        <P2GlassPanel className="p-3 sm:p-4">
+          <TracksInfiniteList
+            initial={initial}
+            baseQuery={query}
+            emptyText="No tracks match this view."
+          />
+        </P2GlassPanel>
+      </SectionContent>
+    </>
   );
 }

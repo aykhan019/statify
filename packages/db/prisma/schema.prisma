@@ -18,12 +18,13 @@ datasource db {
 // =============================================================
 
 model Artist {
-  id             Int      @id @default(autoincrement())
-  spotifyUri     String   @unique @map("spotify_uri")
+  id             Int       @id @default(autoincrement())
+  spotifyUri     String    @unique @map("spotify_uri")
   name           String
-  normalizedName String   @map("normalized_name")
-  imageUrl       String?  @map("image_url")
-  createdAt      DateTime @default(now()) @map("created_at")
+  normalizedName String    @map("normalized_name")
+  imageUrl       String?   @map("image_url")
+  hiddenAt       DateTime? @map("hidden_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
 
   albums       Album[]
   trackArtists TrackArtist[]
@@ -34,12 +35,13 @@ model Artist {
 }
 
 model Album {
-  id              Int      @id @default(autoincrement())
-  spotifyUri      String   @unique @map("spotify_uri")
+  id              Int       @id @default(autoincrement())
+  spotifyUri      String    @unique @map("spotify_uri")
   name            String
-  imageUrl        String?  @map("image_url")
-  primaryArtistId Int      @map("primary_artist_id")
-  createdAt       DateTime @default(now()) @map("created_at")
+  imageUrl        String?   @map("image_url")
+  primaryArtistId Int       @map("primary_artist_id")
+  hiddenAt        DateTime? @map("hidden_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
 
   primaryArtist Artist  @relation(fields: [primaryArtistId], references: [id])
   tracks        Track[]
@@ -59,6 +61,7 @@ model Track {
   itunesTrackId    BigInt?   @map("itunes_track_id")
   previewUrl       String?   @map("preview_url")
   previewFetchedAt DateTime? @map("preview_fetched_at")
+  hiddenAt         DateTime? @map("hidden_at")
 
   album              Album               @relation(fields: [albumId], references: [id])
   trackArtists       TrackArtist[]

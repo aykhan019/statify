@@ -19,6 +19,7 @@ describe('AlbumsRepository', () => {
     });
 
     const where = {
+      hiddenAt: null,
       name: { contains: 'blue', mode: 'insensitive' },
       primaryArtistId: 9,
     };

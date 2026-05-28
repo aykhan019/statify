@@ -144,28 +144,27 @@ export class ArtistsRepository extends BaseRepository {
     return { data, total };
   }
 
-  findById(id: number): Promise<ArtistDetailRecord | null> {
-    return this.client.artist.findUnique({
+  async findById(id: number): Promise<ArtistDetailRecord | null> {
+    const record = await this.client.artist.findUnique({
       include: ARTIST_DETAIL_INCLUDE,
       where: { id },
     });
+    return record === null || record.hiddenAt !== null ? null : record;
   }
 }
 
 function buildArtistWhere(query: ArtistsQuery): Prisma.ArtistWhereInput {
-  if (query.q === undefined) {
-    return {};
+  const where: Prisma.ArtistWhereInput = { hiddenAt: null };
+  if (query.q !== undefined) {
+    where.name = { contains: query.q, mode: 'insensitive' };
   }
-
-  return {
-    name: { contains: query.q, mode: 'insensitive' },
-  };
+  return where;
 }
 
 function buildArtistSqlFilters(query: ArtistsQuery): Prisma.Sql {
   if (query.q === undefined) {
-    return PrismaClient.empty;
+    return PrismaClient.sql`WHERE a.hidden_at IS NULL`;
   }
 
-  return PrismaClient.sql`WHERE a.name ILIKE ${`%${query.q}%`}`;
+  return PrismaClient.sql`WHERE a.hidden_at IS NULL AND a.name ILIKE ${`%${query.q}%`}`;
 }

@@ -10,14 +10,14 @@ export type NavigationLinkDemoState = 'default' | 'hover' | 'focus' | 'active' |
 type ResolvedNavigationState = NavigationLinkDemoState;
 
 const variantClassName: Record<NavigationLinkVariant, string> = {
-  side: 'w-full px-3 py-2',
+  side: 'w-full px-3 py-2.5',
   top: 'px-3 py-2',
   mobile: 'w-full px-4 py-3',
 };
 
 const stateClassName: Record<ResolvedNavigationState, string> = {
   active: 'bg-section-accent text-section-accent-fg',
-  default: 'text-fg-muted hover:bg-section-row-hover hover:text-fg-strong',
+  default: 'text-fg-default hover:bg-section-row-hover hover:text-fg-strong',
   disabled: 'pointer-events-none text-fg-faint opacity-50',
   focus: 'text-fg-default ring-2 ring-ring-focus ring-offset-2 ring-offset-surface-page',
   hover: 'bg-section-row-hover text-fg-strong',
@@ -61,14 +61,17 @@ export function NavigationLink({
         onNavigate?.();
       }}
       className={cn(
-        'group inline-flex min-w-0 items-center gap-3 rounded-(--radius-sm) text-sm font-medium motion-interactive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page',
+        'group relative inline-flex min-w-0 items-center gap-3 rounded-(--radius-sm) text-sm font-semibold motion-interactive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page',
         variantClassName[variant],
         stateClassName[resolvedState],
         className,
       )}
     >
-      <Icon as={item.icon} size="md" />
+      <Icon as={item.icon} size="sm" />
       <span className="truncate">{item.label}</span>
+      {isActive && variant === 'side' && (
+        <span aria-hidden className="ml-auto size-1.5 rounded-full bg-section-accent-fg" />
+      )}
     </Link>
   );
 }

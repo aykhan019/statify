@@ -152,16 +152,17 @@ export class AlbumsRepository extends BaseRepository {
     return { data, total };
   }
 
-  findById(id: number): Promise<AlbumDetailRecord | null> {
-    return this.client.album.findUnique({
+  async findById(id: number): Promise<AlbumDetailRecord | null> {
+    const record = await this.client.album.findUnique({
       include: ALBUM_DETAIL_INCLUDE,
       where: { id },
     });
+    return record === null || record.hiddenAt !== null ? null : record;
   }
 }
 
 function buildAlbumWhere(query: AlbumsQuery): Prisma.AlbumWhereInput {
-  const where: Prisma.AlbumWhereInput = {};
+  const where: Prisma.AlbumWhereInput = { hiddenAt: null };
 
   if (query.q !== undefined) {
     where.name = { contains: query.q, mode: 'insensitive' };
@@ -175,7 +176,7 @@ function buildAlbumWhere(query: AlbumsQuery): Prisma.AlbumWhereInput {
 }
 
 function buildAlbumSqlFilters(query: AlbumsQuery): Prisma.Sql {
-  const conditions: Prisma.Sql[] = [];
+  const conditions: Prisma.Sql[] = [Prisma.sql`a.hidden_at IS NULL`];
 
   if (query.q !== undefined) {
     conditions.push(Prisma.sql`a.name ILIKE ${`%${query.q}%`}`);
@@ -183,10 +184,6 @@ function buildAlbumSqlFilters(query: AlbumsQuery): Prisma.Sql {
 
   if (query.artistId !== undefined) {
     conditions.push(Prisma.sql`a.primary_artist_id = ${query.artistId}`);
-  }
-
-  if (conditions.length === 0) {
-    return Prisma.empty;
   }
 
   return Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`;

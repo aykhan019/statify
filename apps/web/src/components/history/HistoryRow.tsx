@@ -1,57 +1,66 @@
 import Link from 'next/link';
 import type { ListeningHistoryListItem } from '@statify/shared';
-import { Card } from '@/components/ui/Card';
-import { formatDurationMs, formatTrackArtists } from '@/components/catalog';
+import { formatTrackArtists } from '@/components/catalog';
+import { Cover } from '@/components/ui/Cover';
+import { P2Pill } from '@/components/p2';
+import { pickImageUrl } from '@/lib/utils/pickImageUrl';
 
 interface HistoryRowProps {
   item: ListeningHistoryListItem;
+  index?: number;
+  playCount?: number;
 }
 
-export function HistoryRow({ item }: HistoryRowProps) {
+export function HistoryRow({ item, playCount }: HistoryRowProps) {
   return (
-    <Card className="motion-colors motion-list-item hover:bg-section-row-hover">
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4">
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          <Link
-            href={`/catalog/tracks/${item.track.id}`}
-            className="truncate text-base font-medium hover:text-section-accent"
-          >
-            {item.track.name}
+    <div className="motion-list-item grid grid-cols-[88px_40px_minmax(0,1fr)_auto_auto] items-center gap-3 border-b border-border-default/50 px-2 py-3 motion-colors hover:bg-section-row-hover">
+      <time
+        dateTime={item.playedAt}
+        title={item.playedAt}
+        className="font-mono text-[11px] text-fg-muted tabular-nums"
+      >
+        {formatTimeShort(item.playedAt)}
+      </time>
+      <Cover
+        src={pickImageUrl(item.track.imageUrl, item.track.album.imageUrl)}
+        name={item.track.name}
+        entity="track"
+        size="xs"
+        context="list-dense"
+        inSection={true}
+      />
+      <div className="min-w-0">
+        <Link
+          href={`/catalog/tracks/${item.track.id}`}
+          className="block truncate text-sm font-semibold text-fg-strong hover:text-section-accent"
+        >
+          {item.track.name}
+        </Link>
+        <p className="truncate text-xs text-fg-muted">
+          {formatTrackArtists(item.track.artists)} ·{' '}
+          <Link href={`/catalog/albums/${item.track.album.id}`} className="hover:text-fg-strong">
+            {item.track.album.name}
           </Link>
-          <p className="text-muted-foreground truncate text-sm">
-            {formatTrackArtists(item.track.artists)} ·{' '}
-            <Link href={`/catalog/albums/${item.track.album.id}`} className="hover:text-foreground">
-              {item.track.album.name}
-            </Link>
-          </p>
-        </div>
-        <div className="flex items-center gap-3 text-sm">
-          <span className="text-muted-foreground tabular-nums">
-            {formatDurationMs(item.durationPlayedMs)} / {formatDurationMs(item.track.durationMs)}
-          </span>
-          <time
-            dateTime={item.playedAt}
-            className="text-muted-foreground text-xs"
-            title={item.playedAt}
-          >
-            {formatRelative(item.playedAt)}
-          </time>
-        </div>
+        </p>
       </div>
-    </Card>
+      {playCount !== undefined && playCount > 1 ? (
+        <P2Pill tone="section" className="font-mono tabular-nums">
+          ×{playCount}
+        </P2Pill>
+      ) : (
+        <span aria-hidden />
+      )}
+      <P2Pill tone="subtle">{item.source}</P2Pill>
+    </div>
   );
 }
 
-function formatRelative(iso: string): string {
-  const playedAt = new Date(iso).getTime();
-  if (Number.isNaN(playedAt)) {
-    return iso;
+function formatTimeShort(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const today = new Date();
+  if (d.toDateString() === today.toDateString()) {
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
-
-  const diffMs = Date.now() - playedAt;
-  if (diffMs < 60_000) return 'just now';
-  if (diffMs < 3_600_000) return `${Math.floor(diffMs / 60_000)}m ago`;
-  if (diffMs < 86_400_000) return `${Math.floor(diffMs / 3_600_000)}h ago`;
-  if (diffMs < 604_800_000) return `${Math.floor(diffMs / 86_400_000)}d ago`;
-  return new Date(iso).toLocaleDateString();
+  return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
 }

@@ -40,8 +40,11 @@ export class SearchRepository extends BaseRepository {
       FROM tracks t
       JOIN albums al ON al.id = t.album_id
       JOIN artists pa ON pa.id = al.primary_artist_id
-      WHERE t.name ILIKE ${`%${query.q}%`}
-        OR similarity(t.name, ${query.q}) >= ${MIN_SIMILARITY_SCORE}
+      WHERE t.hidden_at IS NULL
+        AND al.hidden_at IS NULL
+        AND pa.hidden_at IS NULL
+        AND (t.name ILIKE ${`%${query.q}%`}
+          OR similarity(t.name, ${query.q}) >= ${MIN_SIMILARITY_SCORE})
       ORDER BY score DESC, t.name ASC, t.id ASC
       LIMIT ${query.limit}
     `);
@@ -57,8 +60,9 @@ export class SearchRepository extends BaseRepository {
         similarity(a.name, ${query.q})::float8 AS score
       FROM artists a
       LEFT JOIN track_artists ta ON ta.artist_id = a.id
-      WHERE a.name ILIKE ${`%${query.q}%`}
-        OR similarity(a.name, ${query.q}) >= ${MIN_SIMILARITY_SCORE}
+      WHERE a.hidden_at IS NULL
+        AND (a.name ILIKE ${`%${query.q}%`}
+          OR similarity(a.name, ${query.q}) >= ${MIN_SIMILARITY_SCORE})
       GROUP BY a.id, a.name
       ORDER BY score DESC, a.name ASC, a.id ASC
       LIMIT ${query.limit}
@@ -75,8 +79,10 @@ export class SearchRepository extends BaseRepository {
         similarity(al.name, ${query.q})::float8 AS score
       FROM albums al
       JOIN artists pa ON pa.id = al.primary_artist_id
-      WHERE al.name ILIKE ${`%${query.q}%`}
-        OR similarity(al.name, ${query.q}) >= ${MIN_SIMILARITY_SCORE}
+      WHERE al.hidden_at IS NULL
+        AND pa.hidden_at IS NULL
+        AND (al.name ILIKE ${`%${query.q}%`}
+          OR similarity(al.name, ${query.q}) >= ${MIN_SIMILARITY_SCORE})
       ORDER BY score DESC, al.name ASC, al.id ASC
       LIMIT ${query.limit}
     `);

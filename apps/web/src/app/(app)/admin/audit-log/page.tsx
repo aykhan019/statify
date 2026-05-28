@@ -20,6 +20,7 @@ interface SearchParams {
   action?: string;
   actorUserId?: string;
   targetTable?: string;
+  targetId?: string;
 }
 
 const DEFAULT_LIMIT = 25;
@@ -50,6 +51,7 @@ export default async function AdminAuditLogPage({
           ? actorUserIdNumeric
           : undefined,
       targetTable: params.targetTable,
+      targetId: params.targetId,
     },
     { cookieHeader, cache: 'no-store' },
   );
@@ -75,6 +77,9 @@ export default async function AdminAuditLogPage({
                 <thead className="text-muted-foreground text-left text-xs uppercase tracking-wide">
                   <tr>
                     <th scope="col" className="px-3 py-2">
+                      Id
+                    </th>
+                    <th scope="col" className="px-3 py-2">
                       When
                     </th>
                     <th scope="col" className="px-3 py-2">
@@ -97,6 +102,9 @@ export default async function AdminAuditLogPage({
                       key={entry.id}
                       className="border-t align-top motion-colors motion-list-item hover:bg-section-row-hover"
                     >
+                      <td className="px-3 py-2 text-xs text-muted-foreground tabular-nums">
+                        {entry.id}
+                      </td>
                       <th
                         scope="row"
                         className="px-3 py-2 text-left text-xs whitespace-nowrap text-muted-foreground"
@@ -156,6 +164,7 @@ function buildFilterQuery(params: SearchParams): string {
   if (params.action) usp.set('action', params.action);
   if (params.actorUserId) usp.set('actorUserId', params.actorUserId);
   if (params.targetTable) usp.set('targetTable', params.targetTable);
+  if (params.targetId) usp.set('targetId', params.targetId);
   const serialized = usp.toString();
   return serialized.length === 0 ? '' : `&${serialized}`;
 }

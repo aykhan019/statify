@@ -11,6 +11,7 @@ export const TopArtistEntrySchema = z.object({
   rank: z.number().int(),
   artistId: z.number().int(),
   artistName: z.string(),
+  artistImageUrl: z.string().nullable(),
   listenCount: z.number().int(),
   totalMinutes: z.number(),
 });
@@ -29,6 +30,9 @@ export const TopTrackEntrySchema = z.object({
   trackName: z.string(),
   primaryArtistName: z.string(),
   albumName: z.string(),
+  trackImageUrl: z.string().nullable(),
+  albumImageUrl: z.string().nullable(),
+  artistImageUrl: z.string().nullable(),
   listenCount: z.number().int(),
   totalMinutes: z.number(),
 });
@@ -46,6 +50,9 @@ export const DiscoverEntrySchema = z.object({
   trackName: z.string(),
   albumName: z.string(),
   primaryArtistName: z.string(),
+  trackImageUrl: z.string().nullable(),
+  albumImageUrl: z.string().nullable(),
+  artistImageUrl: z.string().nullable(),
   cooccurrenceCount: z.number().int(),
 });
 
@@ -74,6 +81,7 @@ export const TrendingQuerySchema = z.object({
 export const TrendingArtistEntrySchema = z.object({
   artistId: z.number().int(),
   artistName: z.string(),
+  artistImageUrl: z.string().nullable(),
   recentPlays: z.number().int(),
   priorPlays: z.number().int(),
   growth: z.number(),
@@ -108,6 +116,9 @@ export const HiddenGemEntrySchema = z.object({
   trackName: z.string(),
   albumName: z.string(),
   primaryArtistName: z.string(),
+  trackImageUrl: z.string().nullable(),
+  albumImageUrl: z.string().nullable(),
+  artistImageUrl: z.string().nullable(),
   playlistCount: z.number().int(),
 });
 

@@ -32,7 +32,10 @@ function HeaderSkeleton() {
  */
 export function ListSkeleton({ rows = 8 }: { rows?: number }) {
   return (
-    <section aria-hidden="true" className="flex flex-col gap-6">
+    <section
+      aria-hidden="true"
+      className="flex flex-col gap-6 px-4 py-6 sm:px-5 md:px-6 lg:px-8 xl:px-10"
+    >
       <HeaderSkeleton />
       <ul className="flex flex-col gap-3">
         {Array.from({ length: rows }).map((_, index) => (
@@ -59,7 +62,10 @@ export function ListSkeleton({ rows = 8 }: { rows?: number }) {
  */
 export function CardGridSkeleton({ count = 12 }: { count?: number }) {
   return (
-    <section aria-hidden="true" className="flex flex-col gap-6">
+    <section
+      aria-hidden="true"
+      className="flex flex-col gap-6 px-4 py-6 sm:px-5 md:px-6 lg:px-8 xl:px-10"
+    >
       <HeaderSkeleton />
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {Array.from({ length: count }).map((_, index) => (
@@ -80,7 +86,10 @@ export function CardGridSkeleton({ count = 12 }: { count?: number }) {
  */
 export function DetailSkeleton() {
   return (
-    <section aria-hidden="true" className="flex flex-col gap-6">
+    <section
+      aria-hidden="true"
+      className="flex flex-col gap-6 px-4 py-6 sm:px-5 md:px-6 lg:px-8 xl:px-10"
+    >
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
         <Skeleton className="size-40 rounded-(--radius-lg)" />
         <div className="flex flex-1 flex-col gap-3">
@@ -103,7 +112,10 @@ export function DetailSkeleton() {
  */
 export function ChartSkeleton({ tiles = 4 }: { tiles?: number }) {
   return (
-    <section aria-hidden="true" className="flex flex-col gap-6">
+    <section
+      aria-hidden="true"
+      className="flex flex-col gap-6 px-4 py-6 sm:px-5 md:px-6 lg:px-8 xl:px-10"
+    >
       <HeaderSkeleton />
       <Skeleton className="h-72 w-full rounded-(--radius-md)" />
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

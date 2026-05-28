@@ -47,7 +47,7 @@ export function fetchHistory(
 ): Promise<ListeningHistoryListResponse> {
   return apiFetch<ListeningHistoryListResponse>(
     `/api/v1/me/history${toQueryString({ ...query })}`,
-    options,
+    { credentials: 'include', ...options },
   );
 }
 

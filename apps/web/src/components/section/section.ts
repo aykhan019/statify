@@ -20,6 +20,7 @@ export type SectionId =
   | 'history'
   | 'library'
   | 'playlists'
+  | 'stats'
   | 'top-artists'
   | 'top-tracks'
   | 'trending'
@@ -35,17 +36,29 @@ export interface SectionDefinition {
 
 export const DEFAULT_SECTION_ID: SectionId = 'library';
 
+/**
+ * Hue map:
+ *   /me (Overview)                           → indigo
+ *   /me/history                              → coral
+ *   /me/stats + subroutes                    → azure
+ *   /me/playlists                            → violet
+ *   /community                               → violet
+ *   /discover                                → teal
+ *   /explore/hidden-gems                     → cyan
+ *   /catalog + children                      → magenta
+ *   /admin                                   → amber
+ */
 export const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     id: 'top-artists',
     label: 'Top Artists',
-    hue: 'coral',
+    hue: 'azure',
     routePrefixes: ['/me/stats/top-artists'],
   },
   {
     id: 'top-tracks',
     label: 'Top Tracks',
-    hue: 'magenta',
+    hue: 'azure',
     routePrefixes: ['/me/stats/top-tracks'],
   },
   {
@@ -57,13 +70,19 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     id: 'trending',
     label: 'Trending',
-    hue: 'amber',
+    hue: 'azure',
     routePrefixes: ['/me/stats/trending'],
+  },
+  {
+    id: 'stats',
+    label: 'Stats',
+    hue: 'azure',
+    routePrefixes: ['/me/stats'],
   },
   {
     id: 'hidden-gems',
     label: 'Hidden Gems',
-    hue: 'teal',
+    hue: 'cyan',
     routePrefixes: ['/explore/hidden-gems', '/me/stats/hidden-gems'],
   },
   {
@@ -71,12 +90,11 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
     label: 'Account',
     hue: 'indigo',
     routePrefixes: ['/me/account'],
-    neutral: true,
   },
   {
     id: 'history',
     label: 'History',
-    hue: 'vermilion',
+    hue: 'coral',
     routePrefixes: ['/me/history'],
   },
   {
@@ -88,26 +106,33 @@ export const SECTION_DEFINITIONS: SectionDefinition[] = [
   {
     id: 'community',
     label: 'Community',
-    hue: 'cyan',
+    hue: 'violet',
     routePrefixes: ['/community'],
   },
   {
     id: 'discover',
     label: 'Discover',
-    hue: 'green',
+    hue: 'teal',
     routePrefixes: ['/discover'],
   },
   {
     id: 'admin',
     label: 'Admin',
-    hue: 'pink',
+    hue: 'amber',
     routePrefixes: ['/admin'],
   },
   {
     id: 'library',
     label: 'Library',
-    hue: 'indigo',
+    hue: 'magenta',
     routePrefixes: ['/catalog'],
+  },
+  // Catch-all for /me roots (Overview, Stats hub, anything under /me not matched above)
+  {
+    id: 'account',
+    label: 'Overview',
+    hue: 'indigo',
+    routePrefixes: ['/me'],
   },
 ];
 

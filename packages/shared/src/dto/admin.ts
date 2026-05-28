@@ -32,6 +32,7 @@ export const AuditLogListQuerySchema = OffsetPaginationQuerySchema.extend({
   action: z.string().trim().min(1).max(100).optional(),
   actorUserId: z.coerce.number().int().positive().optional(),
   targetTable: z.string().trim().min(1).max(63).optional(),
+  targetId: z.string().trim().min(1).max(255).optional(),
 });
 
 export const AuditLogListResponseSchema = z.object({
@@ -94,6 +95,126 @@ export type AdminUsersListQuery = z.infer<typeof AdminUsersListQuerySchema>;
 export type AdminUserListResponse = z.infer<typeof AdminUserListResponseSchema>;
 export type UpdateUserRoleRequest = z.infer<typeof UpdateUserRoleRequestSchema>;
 export type UpdateUserBanRequest = z.infer<typeof UpdateUserBanRequestSchema>;
+
+// --- Admin catalog: shared shapes ---
+
+const CatalogAdminListQuerySchema = OffsetPaginationQuerySchema.extend({
+  q: z.string().trim().min(1).max(100).optional(),
+  includeHidden: z.coerce.boolean().default(true),
+});
+
+const UpdateHiddenRequestSchema = z.object({
+  hidden: z.boolean(),
+});
+
+// --- Artists ---
+
+export const AdminArtistListItemSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  imageUrl: z.string().url().nullable(),
+  hiddenAt: z.string().datetime().nullable(),
+  createdAt: z.string().datetime(),
+  albumCount: z.number().int(),
+  trackCount: z.number().int(),
+});
+
+export const AdminArtistsListQuerySchema = CatalogAdminListQuerySchema;
+
+export const AdminArtistListResponseSchema = z.object({
+  data: z.array(AdminArtistListItemSchema),
+  limit: z.number().int(),
+  page: z.number().int(),
+  total: z.number().int(),
+  totalPages: z.number().int(),
+});
+
+export const UpdateAdminArtistRequestSchema = z.object({
+  name: z.string().trim().min(1).max(255),
+  imageUrl: z.string().url().max(2048).nullable(),
+});
+
+export const UpdateAdminArtistHiddenRequestSchema = UpdateHiddenRequestSchema;
+
+export type AdminArtistListItem = z.infer<typeof AdminArtistListItemSchema>;
+export type AdminArtistsListQuery = z.infer<typeof AdminArtistsListQuerySchema>;
+export type AdminArtistListResponse = z.infer<typeof AdminArtistListResponseSchema>;
+export type UpdateAdminArtistRequest = z.infer<typeof UpdateAdminArtistRequestSchema>;
+export type UpdateAdminArtistHiddenRequest = z.infer<typeof UpdateAdminArtistHiddenRequestSchema>;
+
+// --- Albums ---
+
+export const AdminAlbumListItemSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  imageUrl: z.string().url().nullable(),
+  hiddenAt: z.string().datetime().nullable(),
+  createdAt: z.string().datetime(),
+  primaryArtistId: z.number().int(),
+  primaryArtistName: z.string(),
+  trackCount: z.number().int(),
+});
+
+export const AdminAlbumsListQuerySchema = CatalogAdminListQuerySchema;
+
+export const AdminAlbumListResponseSchema = z.object({
+  data: z.array(AdminAlbumListItemSchema),
+  limit: z.number().int(),
+  page: z.number().int(),
+  total: z.number().int(),
+  totalPages: z.number().int(),
+});
+
+export const UpdateAdminAlbumRequestSchema = z.object({
+  name: z.string().trim().min(1).max(255),
+  imageUrl: z.string().url().max(2048).nullable(),
+});
+
+export const UpdateAdminAlbumHiddenRequestSchema = UpdateHiddenRequestSchema;
+
+export type AdminAlbumListItem = z.infer<typeof AdminAlbumListItemSchema>;
+export type AdminAlbumsListQuery = z.infer<typeof AdminAlbumsListQuerySchema>;
+export type AdminAlbumListResponse = z.infer<typeof AdminAlbumListResponseSchema>;
+export type UpdateAdminAlbumRequest = z.infer<typeof UpdateAdminAlbumRequestSchema>;
+export type UpdateAdminAlbumHiddenRequest = z.infer<typeof UpdateAdminAlbumHiddenRequestSchema>;
+
+// --- Tracks ---
+
+export const AdminTrackListItemSchema = z.object({
+  id: z.number().int(),
+  name: z.string(),
+  imageUrl: z.string().url().nullable(),
+  hiddenAt: z.string().datetime().nullable(),
+  durationMs: z.number().int(),
+  albumId: z.number().int(),
+  albumName: z.string(),
+  primaryArtistId: z.number().int(),
+  primaryArtistName: z.string(),
+  playCount: z.number().int(),
+});
+
+export const AdminTracksListQuerySchema = CatalogAdminListQuerySchema;
+
+export const AdminTrackListResponseSchema = z.object({
+  data: z.array(AdminTrackListItemSchema),
+  limit: z.number().int(),
+  page: z.number().int(),
+  total: z.number().int(),
+  totalPages: z.number().int(),
+});
+
+export const UpdateAdminTrackRequestSchema = z.object({
+  name: z.string().trim().min(1).max(255),
+  imageUrl: z.string().url().max(2048).nullable(),
+});
+
+export const UpdateAdminTrackHiddenRequestSchema = UpdateHiddenRequestSchema;
+
+export type AdminTrackListItem = z.infer<typeof AdminTrackListItemSchema>;
+export type AdminTracksListQuery = z.infer<typeof AdminTracksListQuerySchema>;
+export type AdminTrackListResponse = z.infer<typeof AdminTrackListResponseSchema>;
+export type UpdateAdminTrackRequest = z.infer<typeof UpdateAdminTrackRequestSchema>;
+export type UpdateAdminTrackHiddenRequest = z.infer<typeof UpdateAdminTrackHiddenRequestSchema>;
 
 export const IngestCheckpointSchema = z.object({
   id: z.number().int(),

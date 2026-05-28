@@ -10,6 +10,7 @@ import {
   type UserPlaylistTracksResponse,
   type UserPlaylistsListQuery,
 } from '@statify/shared';
+import { AuditLogService } from '../admin/audit-log.service';
 import { toOffsetPage } from '../catalog/catalog.pagination';
 import {
   toUserPlaylistDetail,
@@ -20,7 +21,10 @@ import { UserPlaylistsRepository } from './user-playlists.repository';
 
 @Injectable()
 export class UserPlaylistsService {
-  constructor(private readonly repository: UserPlaylistsRepository) {}
+  constructor(
+    private readonly repository: UserPlaylistsRepository,
+    private readonly auditLog: AuditLogService,
+  ) {}
 
   async create(userId: number, input: CreateUserPlaylistRequest): Promise<UserPlaylistDetail> {
     const record = await this.repository.create({
@@ -28,6 +32,13 @@ export class UserPlaylistsService {
       name: input.name,
       description: input.description,
       isPublic: input.isPublic,
+    });
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'playlist.create',
+      targetTable: 'user_playlists',
+      targetId: String(record.id),
+      metadata: { name: input.name, isPublic: input.isPublic },
     });
     return toUserPlaylistDetail(record);
   }
@@ -85,6 +96,13 @@ export class UserPlaylistsService {
       name: input.name,
       description,
     });
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'playlist.rename',
+      targetTable: 'user_playlists',
+      targetId: String(playlistId),
+      metadata: { name: input.name },
+    });
     return toUserPlaylistDetail(record);
   }
 
@@ -94,11 +112,25 @@ export class UserPlaylistsService {
     isPublic: boolean,
   ): Promise<UserPlaylistDetail> {
     const record = await this.repository.setVisibility(userId, playlistId, isPublic);
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'playlist.visibility',
+      targetTable: 'user_playlists',
+      targetId: String(playlistId),
+      metadata: { isPublic },
+    });
     return toUserPlaylistDetail(record);
   }
 
   async addTrack(userId: number, playlistId: number, trackId: number): Promise<UserPlaylistDetail> {
     const record = await this.repository.addTrack(userId, playlistId, trackId);
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'playlist.track_add',
+      targetTable: 'user_playlists',
+      targetId: String(playlistId),
+      metadata: { trackId },
+    });
     return toUserPlaylistDetail(record);
   }
 
@@ -108,6 +140,13 @@ export class UserPlaylistsService {
     trackId: number,
   ): Promise<UserPlaylistDetail> {
     const record = await this.repository.removeTrack(userId, playlistId, trackId);
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'playlist.track_remove',
+      targetTable: 'user_playlists',
+      targetId: String(playlistId),
+      metadata: { trackId },
+    });
     return toUserPlaylistDetail(record);
   }
 
@@ -117,6 +156,13 @@ export class UserPlaylistsService {
     trackIds: number[],
   ): Promise<UserPlaylistDetail> {
     const record = await this.repository.reorderTracks(userId, playlistId, trackIds);
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'playlist.track_reorder',
+      targetTable: 'user_playlists',
+      targetId: String(playlistId),
+      metadata: { trackCount: trackIds.length },
+    });
     return toUserPlaylistDetail(record);
   }
 

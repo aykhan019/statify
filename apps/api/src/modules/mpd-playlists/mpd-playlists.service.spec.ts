@@ -128,6 +128,7 @@ function createTrackRecord(): MpdPlaylistTrackRecord {
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:7',
+    hiddenAt: null,
   };
   const album = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
@@ -137,6 +138,7 @@ function createTrackRecord(): MpdPlaylistTrackRecord {
     primaryArtist: artist,
     primaryArtistId: artist.id,
     spotifyUri: 'spotify:album:9',
+    hiddenAt: null,
   };
 
   return {
@@ -153,6 +155,7 @@ function createTrackRecord(): MpdPlaylistTrackRecord {
       previewFetchedAt: null,
       previewUrl: null,
       spotifyUri: 'spotify:track:100',
+      hiddenAt: null,
       trackArtists: [{ artist, artistId: artist.id, role: 'primary' as const, trackId: 100 }],
     },
     trackId: 100,

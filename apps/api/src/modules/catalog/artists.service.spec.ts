@@ -18,6 +18,7 @@ describe('ArtistsService', () => {
             name: 'Artist',
             normalizedName: 'artist',
             spotifyUri: 'spotify:artist:1',
+            hiddenAt: null,
           },
         ],
         total: 1,
@@ -84,5 +85,6 @@ function createArtistDetailRecord(): ArtistDetailRecord {
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:1',
+    hiddenAt: null,
   };
 }

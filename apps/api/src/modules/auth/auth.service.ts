@@ -38,21 +38,51 @@ export class AuthService {
       passwordHash: await this.passwordService.hash(input.password),
     });
 
+    await this.auditLog.record({
+      actorUserId: user.id,
+      action: 'auth.register',
+      targetTable: 'users',
+      targetId: String(user.id),
+      metadata: clientMetadata(context),
+    });
+
     return this.issueSession(user, context);
   }
 
   async login(input: LoginRequest, context: AuthRequestContext): Promise<AuthSession> {
     const user = await this.repository.findUserByEmail(input.email);
     if (user === null) {
+      await this.auditLog.record({
+        actorUserId: null,
+        action: 'auth.login_failed',
+        targetTable: 'users',
+        targetId: null,
+        metadata: { reason: 'unknown_email', email: input.email, ...clientMetadata(context) },
+      });
       throw invalidCredentialsError();
     }
 
     const isValidPassword = await this.passwordService.verify(user.passwordHash, input.password);
     if (!isValidPassword) {
+      await this.auditLog.record({
+        actorUserId: user.id,
+        action: 'auth.login_failed',
+        targetTable: 'users',
+        targetId: String(user.id),
+        metadata: { reason: 'wrong_password', email: input.email, ...clientMetadata(context) },
+      });
       throw invalidCredentialsError();
     }
 
     await this.repository.updateLastLoginAt(user.id);
+
+    await this.auditLog.record({
+      actorUserId: user.id,
+      action: 'auth.login',
+      targetTable: 'users',
+      targetId: String(user.id),
+      metadata: clientMetadata(context),
+    });
 
     return this.issueSession(user, context);
   }
@@ -62,15 +92,28 @@ export class AuthService {
     context: AuthRequestContext,
   ): Promise<AuthSession> {
     if (refreshToken === undefined) {
+      await this.recordRefreshInvalid(null, 'missing_token', context);
       throw tokenInvalidError();
     }
 
-    const payload = await this.verifyRefreshToken(refreshToken);
+    const payload = await this.verifyRefreshToken(refreshToken).catch(async (error: unknown) => {
+      await this.recordRefreshInvalid(null, 'signature_invalid', context);
+      throw error;
+    });
     const storedToken = await this.repository.findRefreshTokenByHash(
       this.tokenService.hashRefreshToken(refreshToken),
     );
 
     if (!isUsableRefreshToken(storedToken) || storedToken.userId !== payload.sub) {
+      const reason =
+        storedToken === null
+          ? 'token_not_found'
+          : storedToken.revokedAt !== null
+            ? 'token_revoked'
+            : storedToken.userId !== payload.sub
+              ? 'subject_mismatch'
+              : 'token_expired';
+      await this.recordRefreshInvalid(payload.sub ?? null, reason, context);
       throw tokenInvalidError();
     }
 
@@ -105,6 +148,13 @@ export class AuthService {
 
     const isValid = await this.passwordService.verify(user.passwordHash, input.currentPassword);
     if (!isValid) {
+      await this.auditLog.record({
+        actorUserId: userId,
+        action: 'auth.password_change_failed',
+        targetTable: 'users',
+        targetId: String(userId),
+        metadata: { reason: 'wrong_current_password' },
+      });
       throw invalidCredentialsError();
     }
 
@@ -128,6 +178,13 @@ export class AuthService {
 
     const isValid = await this.passwordService.verify(user.passwordHash, currentPassword);
     if (!isValid) {
+      await this.auditLog.record({
+        actorUserId: userId,
+        action: 'auth.account_delete_failed',
+        targetTable: 'users',
+        targetId: String(userId),
+        metadata: { reason: 'wrong_current_password' },
+      });
       throw invalidCredentialsError();
     }
 
@@ -139,6 +196,20 @@ export class AuthService {
       targetTable: 'users',
       targetId: String(userId),
       metadata: null,
+    });
+  }
+
+  private async recordRefreshInvalid(
+    actorUserId: number | null,
+    reason: string,
+    context: AuthRequestContext,
+  ): Promise<void> {
+    await this.auditLog.record({
+      actorUserId,
+      action: 'auth.refresh_invalid',
+      targetTable: 'refresh_tokens',
+      targetId: actorUserId === null ? null : String(actorUserId),
+      metadata: { reason, ...clientMetadata(context) },
     });
   }
 
@@ -189,4 +260,13 @@ function tokenInvalidError(): AppError {
 
 function isUsableRefreshToken(token: RefreshTokenWithUser | null): token is RefreshTokenWithUser {
   return token !== null && token.revokedAt === null && token.expiresAt > new Date();
+}
+
+function clientMetadata(context: AuthRequestContext): Record<string, string> {
+  const meta: Record<string, string> = {};
+  if (context.ipAddr !== undefined && context.ipAddr.length > 0) meta.ip = context.ipAddr;
+  if (context.userAgent !== undefined && context.userAgent.length > 0) {
+    meta.userAgent = context.userAgent.slice(0, 256);
+  }
+  return meta;
 }

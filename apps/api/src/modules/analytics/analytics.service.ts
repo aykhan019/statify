@@ -51,6 +51,7 @@ export class AnalyticsService {
         DENSE_RANK() OVER (ORDER BY COUNT(*) DESC, SUM(lh.duration_played_ms) DESC) AS rank,
         a.id AS artist_id,
         a.name AS artist_name,
+        a.image_url AS artist_image_url,
         COUNT(*)::int AS listen_count,
         ROUND(SUM(lh.duration_played_ms)::numeric / 60000.0, 2) AS total_minutes
       FROM listening_history lh
@@ -58,7 +59,9 @@ export class AnalyticsService {
       JOIN track_artists ta ON ta.track_id = t.id
       JOIN artists a ON a.id = ta.artist_id
       WHERE lh.user_id = ${userId}
-      GROUP BY a.id, a.name
+        AND t.hidden_at IS NULL
+        AND a.hidden_at IS NULL
+      GROUP BY a.id, a.name, a.image_url
       HAVING COUNT(*) > 1
       ORDER BY rank ASC, artist_name ASC
       LIMIT ${query.limit}
@@ -75,6 +78,9 @@ export class AnalyticsService {
         t.name AS track_name,
         pa.name AS primary_artist_name,
         al.name AS album_name,
+        t.image_url AS track_image_url,
+        al.image_url AS album_image_url,
+        pa.image_url AS artist_image_url,
         COUNT(*)::int AS listen_count,
         ROUND(SUM(lh.duration_played_ms)::numeric / 60000.0, 2) AS total_minutes
       FROM listening_history lh
@@ -82,7 +88,10 @@ export class AnalyticsService {
       JOIN albums al ON al.id = t.album_id
       JOIN artists pa ON pa.id = al.primary_artist_id
       WHERE lh.user_id = ${userId}
-      GROUP BY t.id, t.name, pa.name, al.name
+        AND t.hidden_at IS NULL
+        AND al.hidden_at IS NULL
+        AND pa.hidden_at IS NULL
+      GROUP BY t.id, t.name, pa.name, al.name, t.image_url, al.image_url, pa.image_url
       ORDER BY rank ASC, track_name ASC
       LIMIT ${query.limit}
     `);
@@ -115,6 +124,9 @@ export class AnalyticsService {
           t.name AS track_name,
           al.name AS album_name,
           pa.name AS primary_artist_name,
+          t.image_url AS track_image_url,
+          al.image_url AS album_image_url,
+          pa.image_url AS artist_image_url,
           COUNT(*)::int AS cooccurrence_count
         FROM mpd_playlist_tracks mpt
         JOIN tracks t ON t.id = mpt.track_id
@@ -122,15 +134,19 @@ export class AnalyticsService {
         JOIN artists pa ON pa.id = al.primary_artist_id
         WHERE mpt.playlist_id IN (SELECT playlist_id FROM cohort_playlists)
           AND mpt.track_id <> (SELECT track_id FROM top_track)
+          AND t.hidden_at IS NULL
+          AND al.hidden_at IS NULL
+          AND pa.hidden_at IS NULL
           AND NOT EXISTS (
             SELECT 1 FROM listening_history lh
             WHERE lh.user_id = ${userId} AND lh.track_id = t.id
           )
-        GROUP BY t.id, t.name, al.name, pa.name
+        GROUP BY t.id, t.name, al.name, pa.name, t.image_url, al.image_url, pa.image_url
         ORDER BY cooccurrence_count DESC, track_name ASC
         LIMIT ${poolSize}
       )
-      SELECT track_id, track_name, album_name, primary_artist_name, cooccurrence_count
+      SELECT track_id, track_name, album_name, primary_artist_name,
+             track_image_url, album_image_url, artist_image_url, cooccurrence_count
       FROM candidates
       ORDER BY random()
       LIMIT ${query.limit}
@@ -146,7 +162,9 @@ export class AnalyticsService {
         EXTRACT(HOUR FROM lh.played_at)::int AS hour_of_day,
         COUNT(*)::int AS listen_count
       FROM listening_history lh
+      JOIN tracks t ON t.id = lh.track_id
       WHERE lh.user_id = ${userId}
+        AND t.hidden_at IS NULL
       GROUP BY day_of_week, hour_of_day
       ORDER BY day_of_week ASC, hour_of_day ASC
     `);
@@ -157,27 +175,34 @@ export class AnalyticsService {
   async trending(userId: number, query: TrendingQuery): Promise<TrendingResponse> {
     const rows = await this.prisma.$queryRaw<TrendingArtistRow[]>(Prisma.sql`
       WITH recent AS (
-        SELECT a.id AS artist_id, a.name AS artist_name, COUNT(*)::int AS plays
+        SELECT a.id AS artist_id, a.name AS artist_name, a.image_url AS artist_image_url, COUNT(*)::int AS plays
         FROM listening_history lh
+        JOIN tracks t ON t.id = lh.track_id
         JOIN track_artists ta ON ta.track_id = lh.track_id
         JOIN artists a ON a.id = ta.artist_id
         WHERE lh.user_id = ${userId}
           AND lh.played_at >= NOW() - INTERVAL '${Prisma.raw(String(TRENDING_WINDOW_DAYS))} days'
-        GROUP BY a.id, a.name
+          AND t.hidden_at IS NULL
+          AND a.hidden_at IS NULL
+        GROUP BY a.id, a.name, a.image_url
       ),
       prior AS (
         SELECT a.id AS artist_id, COUNT(*)::int AS plays
         FROM listening_history lh
+        JOIN tracks t ON t.id = lh.track_id
         JOIN track_artists ta ON ta.track_id = lh.track_id
         JOIN artists a ON a.id = ta.artist_id
         WHERE lh.user_id = ${userId}
           AND lh.played_at >= NOW() - INTERVAL '${Prisma.raw(String(TRENDING_WINDOW_DAYS * 2))} days'
           AND lh.played_at < NOW() - INTERVAL '${Prisma.raw(String(TRENDING_WINDOW_DAYS))} days'
+          AND t.hidden_at IS NULL
+          AND a.hidden_at IS NULL
         GROUP BY a.id
       )
       SELECT
         recent.artist_id,
         recent.artist_name,
+        recent.artist_image_url,
         recent.plays AS recent_plays,
         COALESCE(prior.plays, 0) AS prior_plays,
         CASE
@@ -204,7 +229,11 @@ export class AnalyticsService {
   ): Promise<SimilarPlaylistsResponse> {
     const rows = await this.prisma.$queryRaw<SimilarPlaylistRow[]>(Prisma.sql`
       WITH source AS (
-        SELECT track_id FROM mpd_playlist_tracks WHERE playlist_id = ${playlistId}
+        SELECT mpt.track_id
+        FROM mpd_playlist_tracks mpt
+        JOIN tracks st ON st.id = mpt.track_id
+        WHERE mpt.playlist_id = ${playlistId}
+          AND st.hidden_at IS NULL
       )
       SELECT
         mp.id AS playlist_id,
@@ -215,7 +244,11 @@ export class AnalyticsService {
             SELECT COUNT(*) FROM (
               SELECT track_id FROM source
               UNION
-              SELECT track_id FROM mpd_playlist_tracks WHERE playlist_id = mp.id
+              SELECT mpt2.track_id
+              FROM mpd_playlist_tracks mpt2
+              JOIN tracks ut ON ut.id = mpt2.track_id
+              WHERE mpt2.playlist_id = mp.id
+                AND ut.hidden_at IS NULL
             ) u
           ), 0)::numeric,
           4
@@ -223,7 +256,9 @@ export class AnalyticsService {
         COUNT(*) FILTER (WHERE other.track_id IN (SELECT track_id FROM source))::int AS shared_tracks
       FROM mpd_playlists mp
       JOIN mpd_playlist_tracks other ON other.playlist_id = mp.id
+      JOIN tracks ot ON ot.id = other.track_id
       WHERE mp.id <> ${playlistId}
+        AND ot.hidden_at IS NULL
       GROUP BY mp.id, mp.name
       HAVING COUNT(*) FILTER (WHERE other.track_id IN (SELECT track_id FROM source)) > 0
       ORDER BY jaccard DESC, shared_tracks DESC, mp.name ASC
@@ -245,6 +280,9 @@ export class AnalyticsService {
           t.name AS track_name,
           al.name AS album_name,
           pa.name AS primary_artist_name,
+          t.image_url AS track_image_url,
+          al.image_url AS album_image_url,
+          pa.image_url AS artist_image_url,
           COUNT(DISTINCT mpt.playlist_id)::int AS playlist_count
         FROM tracks t
         JOIN albums al ON al.id = t.album_id
@@ -252,12 +290,16 @@ export class AnalyticsService {
         JOIN mpd_playlist_tracks mpt ON mpt.track_id = t.id
         LEFT JOIN listening_history lh ON lh.track_id = t.id
         WHERE lh.id IS NULL
-        GROUP BY t.id, t.name, al.name, pa.name
+          AND t.hidden_at IS NULL
+          AND al.hidden_at IS NULL
+          AND pa.hidden_at IS NULL
+        GROUP BY t.id, t.name, al.name, pa.name, t.image_url, al.image_url, pa.image_url
         HAVING COUNT(DISTINCT mpt.playlist_id) >= ${query.minPlaylistCount}
         ORDER BY playlist_count DESC, track_name ASC
         LIMIT ${poolSize}
       )
-      SELECT track_id, track_name, album_name, primary_artist_name, playlist_count
+      SELECT track_id, track_name, album_name, primary_artist_name,
+             track_image_url, album_image_url, artist_image_url, playlist_count
       FROM gems
       ORDER BY random()
       LIMIT ${query.limit}

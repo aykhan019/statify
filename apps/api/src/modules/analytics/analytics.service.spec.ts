@@ -48,10 +48,18 @@ describe('AnalyticsService', () => {
           rank: 1n,
           artist_id: 10,
           artist_name: 'Alpha',
+          artist_image_url: 'https://img/alpha.jpg',
           listen_count: 5n,
           total_minutes: { toString: () => '12.50' },
         },
-        { rank: 2n, artist_id: 11, artist_name: 'Beta', listen_count: 3, total_minutes: 7.5 },
+        {
+          rank: 2n,
+          artist_id: 11,
+          artist_name: 'Beta',
+          artist_image_url: null,
+          listen_count: 3,
+          total_minutes: 7.5,
+        },
       ];
       const { prisma, calls } = createPrisma(rows);
       const service = new AnalyticsService(prisma);
@@ -59,11 +67,27 @@ describe('AnalyticsService', () => {
       const result = await service.topArtists(7, { limit: 10 });
 
       expect(result.entries).toEqual([
-        { rank: 1, artistId: 10, artistName: 'Alpha', listenCount: 5, totalMinutes: 12.5 },
-        { rank: 2, artistId: 11, artistName: 'Beta', listenCount: 3, totalMinutes: 7.5 },
+        {
+          rank: 1,
+          artistId: 10,
+          artistName: 'Alpha',
+          artistImageUrl: 'https://img/alpha.jpg',
+          listenCount: 5,
+          totalMinutes: 12.5,
+        },
+        {
+          rank: 2,
+          artistId: 11,
+          artistName: 'Beta',
+          artistImageUrl: null,
+          listenCount: 3,
+          totalMinutes: 7.5,
+        },
       ]);
       expect(calls[0]?.sql).toContain('DENSE_RANK()');
       expect(calls[0]?.sql).toContain('HAVING COUNT(*) > 1');
+      expect(calls[0]?.sql).toContain('t.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('a.hidden_at IS NULL');
       expect(calls[0]?.values).toEqual([7, 10]);
     });
   });
@@ -77,6 +101,9 @@ describe('AnalyticsService', () => {
           track_name: 'Track A',
           primary_artist_name: 'Artist A',
           album_name: 'Album A',
+          track_image_url: 'https://img/track.jpg',
+          album_image_url: 'https://img/album.jpg',
+          artist_image_url: null,
           listen_count: 9n,
           total_minutes: '22.50',
         },
@@ -93,12 +120,18 @@ describe('AnalyticsService', () => {
           trackName: 'Track A',
           primaryArtistName: 'Artist A',
           albumName: 'Album A',
+          trackImageUrl: 'https://img/track.jpg',
+          albumImageUrl: 'https://img/album.jpg',
+          artistImageUrl: null,
           listenCount: 9,
           totalMinutes: 22.5,
         },
       ]);
       expect(calls[0]?.sql).toContain('DENSE_RANK()');
       expect(calls[0]?.sql).toContain('FROM listening_history lh');
+      expect(calls[0]?.sql).toContain('t.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('al.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('pa.hidden_at IS NULL');
       expect(calls[0]?.values).toEqual([7, 10]);
     });
   });
@@ -111,6 +144,9 @@ describe('AnalyticsService', () => {
           track_name: 'Track A',
           album_name: 'Album A',
           primary_artist_name: 'Artist A',
+          track_image_url: null,
+          album_image_url: 'https://img/album.jpg',
+          artist_image_url: null,
           cooccurrence_count: 8,
         },
       ];
@@ -125,11 +161,17 @@ describe('AnalyticsService', () => {
           trackName: 'Track A',
           albumName: 'Album A',
           primaryArtistName: 'Artist A',
+          trackImageUrl: null,
+          albumImageUrl: 'https://img/album.jpg',
+          artistImageUrl: null,
           cooccurrenceCount: 8,
         },
       ]);
       expect(calls[0]?.sql).toContain('NOT EXISTS');
       expect(calls[0]?.sql).toContain('random()');
+      expect(calls[0]?.sql).toContain('t.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('al.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('pa.hidden_at IS NULL');
       // userId, userId, pool size (limit * 5), final limit
       expect(calls[0]?.values).toEqual([7, 7, 100, 20]);
     });
@@ -152,6 +194,7 @@ describe('AnalyticsService', () => {
       ]);
       expect(calls[0]?.sql).toContain('EXTRACT(DOW');
       expect(calls[0]?.sql).toContain('EXTRACT(HOUR');
+      expect(calls[0]?.sql).toContain('t.hidden_at IS NULL');
       expect(calls[0]?.values).toEqual([7]);
     });
   });
@@ -162,6 +205,7 @@ describe('AnalyticsService', () => {
         {
           artist_id: 20,
           artist_name: 'Gamma',
+          artist_image_url: 'https://img/gamma.jpg',
           recent_plays: 10,
           prior_plays: 4,
           growth: '1.5000',
@@ -176,6 +220,7 @@ describe('AnalyticsService', () => {
         {
           artistId: 20,
           artistName: 'Gamma',
+          artistImageUrl: 'https://img/gamma.jpg',
           recentPlays: 10,
           priorPlays: 4,
           growth: 1.5,
@@ -185,6 +230,8 @@ describe('AnalyticsService', () => {
       expect(calls[0]?.sql).toContain('LEFT JOIN prior');
       expect(calls[0]?.sql).toContain("INTERVAL '7 days'");
       expect(calls[0]?.sql).toContain("INTERVAL '14 days'");
+      expect(calls[0]?.sql).toContain('t.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('a.hidden_at IS NULL');
       expect(calls[0]?.values).toEqual([7, 7, 0.25, 10]);
     });
   });
@@ -204,6 +251,9 @@ describe('AnalyticsService', () => {
       ]);
       expect(calls[0]?.sql).toContain('WITH source');
       expect(calls[0]?.sql).toContain('UNION');
+      expect(calls[0]?.sql).toContain('st.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('ot.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('ut.hidden_at IS NULL');
       expect(calls[0]?.values).toEqual([42, 42, 10]);
     });
   });
@@ -216,6 +266,9 @@ describe('AnalyticsService', () => {
           track_name: 'Track Z',
           album_name: 'Album Z',
           primary_artist_name: 'Artist Z',
+          track_image_url: null,
+          album_image_url: null,
+          artist_image_url: null,
           playlist_count: 12n,
         },
       ];
@@ -230,12 +283,18 @@ describe('AnalyticsService', () => {
           trackName: 'Track Z',
           albumName: 'Album Z',
           primaryArtistName: 'Artist Z',
+          trackImageUrl: null,
+          albumImageUrl: null,
+          artistImageUrl: null,
           playlistCount: 12,
         },
       ]);
       expect(calls[0]?.sql).toContain('LEFT JOIN listening_history');
       expect(calls[0]?.sql).toContain('WHERE lh.id IS NULL');
       expect(calls[0]?.sql).toContain('random()');
+      expect(calls[0]?.sql).toContain('t.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('al.hidden_at IS NULL');
+      expect(calls[0]?.sql).toContain('pa.hidden_at IS NULL');
       // minPlaylistCount, pool size (limit * 5), final limit
       expect(calls[0]?.values).toEqual([3, 100, 20]);
     });

@@ -1,5 +1,6 @@
 import { ErrorCode } from '@statify/shared';
 import { describe, expect, it, vi } from 'vitest';
+import type { AuditLogService } from '../admin/audit-log.service';
 import {
   UserPlaylistsRepository,
   type UserPlaylistRecord,
@@ -7,11 +8,16 @@ import {
 } from './user-playlists.repository';
 import { UserPlaylistsService } from './user-playlists.service';
 
+function stubAuditLog(): AuditLogService {
+  return { record: vi.fn().mockResolvedValue(undefined) } as unknown as AuditLogService;
+}
+
 describe('UserPlaylistsService', () => {
   it('creates a playlist and returns the mapped detail', async () => {
     const record = createRecord({ name: 'Morning Run' });
     const service = new UserPlaylistsService(
       mockRepository({ create: vi.fn().mockResolvedValue(record) }),
+      stubAuditLog(),
     );
 
     const result = await service.create(42, {
@@ -36,7 +42,7 @@ describe('UserPlaylistsService', () => {
         total: 2,
       }),
     });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     const response = await service.listForOwner(42, { page: 1, limit: 20 });
 
@@ -48,7 +54,7 @@ describe('UserPlaylistsService', () => {
   it('returns the playlist detail when the owner requests it', async () => {
     const record = createRecord({ id: 7 });
     const repository = mockRepository({ findOwnedById: vi.fn().mockResolvedValue(record) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.getOwnedById(42, 7)).resolves.toMatchObject({ id: 7 });
     expect(repository.findOwnedById).toHaveBeenCalledWith(42, 7);
@@ -56,7 +62,7 @@ describe('UserPlaylistsService', () => {
 
   it('throws PLAYLIST_NOT_FOUND when the owner check fails', async () => {
     const repository = mockRepository({ findOwnedById: vi.fn().mockResolvedValue(null) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.getOwnedById(42, 7)).rejects.toMatchObject({
       code: ErrorCode.PLAYLIST_NOT_FOUND,
@@ -68,7 +74,7 @@ describe('UserPlaylistsService', () => {
       findOwnedById: vi.fn().mockResolvedValue(createRecord()),
       listTracks: vi.fn().mockResolvedValue({ data: [createTrackRecord()], total: 1 }),
     });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     const response = await service.listTracks(42, 1, { page: 1, limit: 30 });
 
@@ -81,7 +87,7 @@ describe('UserPlaylistsService', () => {
   it('forwards addTrack to the repository', async () => {
     const updated = createRecord({ _count: { tracks: 1 } });
     const repository = mockRepository({ addTrack: vi.fn().mockResolvedValue(updated) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.addTrack(42, 1, 100)).resolves.toMatchObject({ trackCount: 1 });
     expect(repository.addTrack).toHaveBeenCalledWith(42, 1, 100);
@@ -90,7 +96,7 @@ describe('UserPlaylistsService', () => {
   it('forwards removeTrack to the repository', async () => {
     const updated = createRecord({ _count: { tracks: 0 } });
     const repository = mockRepository({ removeTrack: vi.fn().mockResolvedValue(updated) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.removeTrack(42, 1, 100)).resolves.toMatchObject({ trackCount: 0 });
     expect(repository.removeTrack).toHaveBeenCalledWith(42, 1, 100);
@@ -99,7 +105,7 @@ describe('UserPlaylistsService', () => {
   it('forwards reorderTracks to the repository', async () => {
     const updated = createRecord();
     const repository = mockRepository({ reorderTracks: vi.fn().mockResolvedValue(updated) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await service.reorderTracks(42, 1, [3, 2, 1]);
     expect(repository.reorderTracks).toHaveBeenCalledWith(42, 1, [3, 2, 1]);
@@ -108,7 +114,7 @@ describe('UserPlaylistsService', () => {
   it('forwards setVisibility to the repository and returns the updated detail', async () => {
     const updated = createRecord({ isPublic: true });
     const repository = mockRepository({ setVisibility: vi.fn().mockResolvedValue(updated) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.setVisibility(42, 1, true)).resolves.toMatchObject({ isPublic: true });
     expect(repository.setVisibility).toHaveBeenCalledWith(42, 1, true);
@@ -117,7 +123,7 @@ describe('UserPlaylistsService', () => {
   it('forwards update to the repository, normalizing an empty description to null', async () => {
     const updated = createRecord({ name: 'Renamed' });
     const repository = mockRepository({ update: vi.fn().mockResolvedValue(updated) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(
       service.update(42, 1, { name: 'Renamed', description: '' }),
@@ -132,7 +138,7 @@ describe('UserPlaylistsService', () => {
         total: 1,
       }),
     });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     const response = await service.listPublic({ page: 1, limit: 24 });
 
@@ -145,7 +151,7 @@ describe('UserPlaylistsService', () => {
     const repository = mockRepository({
       findPublicById: vi.fn().mockResolvedValue(createRecord({ id: 9, isPublic: true })),
     });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.getPublicById(9)).resolves.toMatchObject({ id: 9, isPublic: true });
     expect(repository.findPublicById).toHaveBeenCalledWith(9);
@@ -153,7 +159,7 @@ describe('UserPlaylistsService', () => {
 
   it('throws PLAYLIST_NOT_FOUND when the requested playlist is not public', async () => {
     const repository = mockRepository({ findPublicById: vi.fn().mockResolvedValue(null) });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     await expect(service.getPublicById(9)).rejects.toMatchObject({
       code: ErrorCode.PLAYLIST_NOT_FOUND,
@@ -165,7 +171,7 @@ describe('UserPlaylistsService', () => {
       findPublicById: vi.fn().mockResolvedValue(createRecord({ id: 9, isPublic: true })),
       listTracks: vi.fn().mockResolvedValue({ data: [createTrackRecord()], total: 1 }),
     });
-    const service = new UserPlaylistsService(repository);
+    const service = new UserPlaylistsService(repository, stubAuditLog());
 
     const response = await service.listPublicTracks(9, { page: 1, limit: 100 });
 
@@ -215,6 +221,7 @@ function createTrackRecord(): UserPlaylistTrackRecord {
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:7',
+    hiddenAt: null,
   };
   const album = {
     createdAt: new Date('2026-01-01T00:00:00.000Z'),
@@ -224,6 +231,7 @@ function createTrackRecord(): UserPlaylistTrackRecord {
     primaryArtist: artist,
     primaryArtistId: artist.id,
     spotifyUri: 'spotify:album:9',
+    hiddenAt: null,
   };
 
   return {
@@ -242,6 +250,7 @@ function createTrackRecord(): UserPlaylistTrackRecord {
       previewFetchedAt: null,
       previewUrl: null,
       spotifyUri: 'spotify:track:100',
+      hiddenAt: null,
       trackArtists: [{ artist, artistId: artist.id, role: 'primary' as const, trackId: 100 }],
     },
   };

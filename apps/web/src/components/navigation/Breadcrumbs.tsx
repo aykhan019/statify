@@ -17,13 +17,16 @@ export function Breadcrumbs({ activePath, className }: BreadcrumbsProps) {
   const items = getBreadcrumbItems(activePath ?? pathname);
 
   return (
-    <nav aria-label="Breadcrumb" className={cn('mb-6', className)}>
-      <ol className="flex flex-wrap items-center gap-1 text-sm">
-        {items.map((item, index) => (
-          <li key={item.href} className="flex min-w-0 items-center gap-1">
-            {index > 0 && <Icon as={ChevronRight} size="xs" className="text-fg-faint" />}
+    <nav aria-label="Breadcrumb" className={cn('font-mono', className)}>
+      <ol className="flex flex-wrap items-center gap-1.5 text-xs">
+        <li aria-hidden className="text-fg-faint">
+          ~
+        </li>
+        {items.map((item) => (
+          <li key={item.href} className="flex min-w-0 items-center gap-1.5">
+            <Icon as={ChevronRight} size="xs" className="text-fg-faint" />
             {item.current ? (
-              <span aria-current="page" className="truncate font-medium text-fg-strong">
+              <span aria-current="page" className="truncate font-semibold text-fg-strong">
                 {item.label}
               </span>
             ) : (

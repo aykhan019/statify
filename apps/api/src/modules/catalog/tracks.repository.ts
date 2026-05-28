@@ -152,16 +152,17 @@ export class TracksRepository extends BaseRepository {
     return { data, total };
   }
 
-  findById(id: number): Promise<TrackCatalogRecord | null> {
-    return this.client.track.findUnique({
+  async findById(id: number): Promise<TrackCatalogRecord | null> {
+    const record = await this.client.track.findUnique({
       include: TRACK_CATALOG_INCLUDE,
       where: { id },
     });
+    return record === null || record.hiddenAt !== null ? null : record;
   }
 }
 
 function buildTrackWhere(query: TracksQuery): Prisma.TrackWhereInput {
-  const where: Prisma.TrackWhereInput = {};
+  const where: Prisma.TrackWhereInput = { hiddenAt: null };
 
   if (query.q !== undefined) {
     where.name = { contains: query.q, mode: 'insensitive' };
@@ -190,7 +191,7 @@ function buildTrackWhere(query: TracksQuery): Prisma.TrackWhereInput {
 }
 
 function buildTrackSqlFilters(query: TracksQuery): Prisma.Sql {
-  const conditions: Prisma.Sql[] = [];
+  const conditions: Prisma.Sql[] = [Prisma.sql`t.hidden_at IS NULL`];
 
   if (query.q !== undefined) {
     conditions.push(Prisma.sql`t.name ILIKE ${`%${query.q}%`}`);
@@ -218,10 +219,6 @@ function buildTrackSqlFilters(query: TracksQuery): Prisma.Sql {
 
   if (query.maxDurationMs !== undefined) {
     conditions.push(Prisma.sql`t.duration_ms <= ${query.maxDurationMs}`);
-  }
-
-  if (conditions.length === 0) {
-    return Prisma.empty;
   }
 
   return Prisma.sql`WHERE ${Prisma.join(conditions, ' AND ')}`;

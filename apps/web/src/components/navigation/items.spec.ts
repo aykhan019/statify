@@ -35,9 +35,11 @@ describe('navigation items', () => {
     ]);
   });
 
-  it('resolves the section hue from the most specific route prefix', () => {
-    expect(getSectionHue('/me/stats/top-tracks')).toBe('magenta');
-    expect(getSectionHue('/me/stats')).toBe('indigo');
-    expect(getSectionHue('/admin/users')).toBe('pink');
+  it('resolves the section hue from the most specific route prefix per the hue map', () => {
+    // Stats hub and all /me/stats children share azure; /admin is amber.
+    expect(getSectionHue('/me/stats/top-tracks')).toBe('azure');
+    expect(getSectionHue('/me/stats')).toBe('azure');
+    expect(getSectionHue('/me/history')).toBe('coral');
+    expect(getSectionHue('/admin/users')).toBe('amber');
   });
 });

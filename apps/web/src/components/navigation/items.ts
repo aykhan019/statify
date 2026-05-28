@@ -34,13 +34,13 @@ export interface BreadcrumbItem {
 
 const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: '/me', label: 'Overview', icon: Home, exact: true, topLevel: true },
-  { href: '/me/history', label: 'History', icon: History },
   { href: '/me/stats', label: 'Stats', icon: BarChart3, topLevel: true },
+  { href: '/me/history', label: 'History', icon: History },
+  { href: '/me/playlists', label: 'Playlists', icon: ListMusic, topLevel: true },
+  { href: '/catalog', label: 'Catalog', icon: Disc3, topLevel: true },
   { href: '/discover', label: 'Discover', icon: Compass, exact: true, topLevel: true },
   { href: '/explore/hidden-gems', label: 'Hidden gems', icon: Gem, exact: true },
-  { href: '/me/playlists', label: 'Playlists', icon: ListMusic, topLevel: true },
   { href: '/community/playlists', label: 'Community', icon: Users },
-  { href: '/catalog', label: 'Catalog', icon: Disc3, topLevel: true },
   { href: '/me/account', label: 'Account', icon: User, exact: true },
   { href: '/admin', label: 'Admin', icon: Shield, adminOnly: true },
 ];

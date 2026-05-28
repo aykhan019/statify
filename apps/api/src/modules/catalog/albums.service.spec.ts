@@ -78,6 +78,7 @@ function createAlbumDetailRecord(): AlbumDetailRecord {
     name: 'Artist',
     normalizedName: 'artist',
     spotifyUri: 'spotify:artist:1',
+    hiddenAt: null,
   };
 
   return {
@@ -91,5 +92,6 @@ function createAlbumDetailRecord(): AlbumDetailRecord {
     primaryArtist,
     primaryArtistId: primaryArtist.id,
     spotifyUri: 'spotify:album:2',
+    hiddenAt: null,
   };
 }

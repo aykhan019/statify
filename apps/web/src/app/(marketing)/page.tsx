@@ -9,7 +9,7 @@ import { CTA } from '@/components/marketing/CTA';
 import { Footer } from '@/components/marketing/Footer';
 
 export const metadata: Metadata = {
-  title: 'Statify — Music streaming analytics',
+  title: 'Statify: Music streaming analytics',
   description:
     'Statify turns a playlist-scale catalog and your own listening history into top artists, trend deltas, heatmaps, and discovery paths.',
 };

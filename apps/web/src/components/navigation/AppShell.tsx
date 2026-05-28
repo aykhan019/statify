@@ -13,10 +13,11 @@ import { TopNavigation } from './TopNavigation';
 export interface AppShellProps {
   children: ReactNode;
   includeAdmin: boolean;
+  stats24h?: { minutes: number; trackCount: number } | null;
   user: AuthUser;
 }
 
-export function AppShell({ children, includeAdmin, user }: AppShellProps) {
+export function AppShell({ children, includeAdmin, stats24h, user }: AppShellProps) {
   const pathname = usePathname();
 
   return (
@@ -37,6 +38,7 @@ export function AppShell({ children, includeAdmin, user }: AppShellProps) {
         <SideNavigation
           activePath={pathname}
           includeAdmin={includeAdmin}
+          stats24h={stats24h ?? null}
           className="sticky top-16 z-20 h-[calc(100dvh-4rem)] self-start overflow-y-auto"
         />
         <Surface
@@ -46,9 +48,25 @@ export function AppShell({ children, includeAdmin, user }: AppShellProps) {
           radius="none"
           shadow="none"
           padding="none"
-          className="min-w-0 flex-1"
+          className="relative min-w-0 flex-1 overflow-hidden bg-surface-page"
         >
-          <Stack as="div" gap="none" className="min-h-full">
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage: `
+                linear-gradient(color-mix(in oklch, var(--border-default) 60%, transparent) 1px, transparent 1px),
+                linear-gradient(90deg, color-mix(in oklch, var(--border-default) 60%, transparent) 1px, transparent 1px)
+              `,
+              backgroundSize: '36px 36px',
+              opacity: 0.45,
+            }}
+          />
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-80 [background:radial-gradient(60%_42%_at_10%_0%,color-mix(in_oklch,var(--section-accent)_14%,transparent),transparent_68%),radial-gradient(45%_35%_at_94%_8%,color-mix(in_oklch,var(--section-hue-500)_12%,transparent),transparent_70%)]"
+          />
+          <Stack as="div" gap="none" className="relative z-10 min-h-full">
             <Container size="wide" gutter="page" className="pt-4 pb-2">
               <Breadcrumbs activePath={pathname} />
             </Container>

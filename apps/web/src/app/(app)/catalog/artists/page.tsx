@@ -1,5 +1,6 @@
 import { PageHeader } from '@/components/ui/PageHeader';
 import { ArtistCatalogControls, ArtistsInfiniteList } from '@/components/catalog';
+import { SectionContent } from '@/components/section';
 import { fetchArtists } from '@/lib/catalog/api';
 import { readArtistListQuery, type CatalogSearchParams } from '@/lib/catalog/query';
 
@@ -22,10 +23,10 @@ export default async function ArtistsPage({ searchParams }: ArtistsPageProps) {
       : `${initial.total.toLocaleString()} artists match "${controls.q}".`;
 
   return (
-    <section className="flex flex-col gap-6">
+    <SectionContent className="flex flex-col gap-6">
       <PageHeader headingLevel={2} title="Artists" description={description} />
       <ArtistCatalogControls values={controls} />
       <ArtistsInfiniteList initial={initial} baseQuery={query} emptyText="No artists yet." />
-    </section>
+    </SectionContent>
   );
 }

@@ -12,6 +12,21 @@ const ADMIN_LINKS = [
     description: 'Search accounts, change roles, ban or unban users.',
   },
   {
+    href: '/admin/artists',
+    title: 'Artists',
+    description: 'Search artists, edit names and images, hide from the catalog.',
+  },
+  {
+    href: '/admin/albums',
+    title: 'Albums',
+    description: 'Search albums, edit names and images, hide from the catalog.',
+  },
+  {
+    href: '/admin/tracks',
+    title: 'Tracks',
+    description: 'Search tracks, edit names and images, hide from the catalog.',
+  },
+  {
     href: '/admin/ingest',
     title: 'Ingestion',
     description: 'Trigger MPD ingestion runs and inspect checkpoints.',
@@ -25,22 +40,20 @@ const ADMIN_LINKS = [
 
 export default function AdminHomePage() {
   return (
-    <div className="flex flex-col gap-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {ADMIN_LINKS.map((link) => (
-          <Link key={link.href} href={link.href} className="block motion-list-item">
-            <Card className="motion-colors hover:bg-section-row-hover">
-              <CardHeader>
-                <CardTitle>{link.title}</CardTitle>
-                <CardDescription>{link.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <span className="text-sm font-medium text-section-accent">Open →</span>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+    <div className="grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {ADMIN_LINKS.map((link) => (
+        <Link key={link.href} href={link.href} className="block h-full motion-list-item">
+          <Card className="flex h-full flex-col motion-colors hover:bg-section-row-hover">
+            <CardHeader>
+              <CardTitle>{link.title}</CardTitle>
+              <CardDescription>{link.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="mt-auto">
+              <span className="text-sm font-medium text-section-accent">Open →</span>
+            </CardContent>
+          </Card>
+        </Link>
+      ))}
     </div>
   );
 }

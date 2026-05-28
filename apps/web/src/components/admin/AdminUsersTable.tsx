@@ -66,6 +66,9 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
           <thead className="text-muted-foreground text-left text-xs uppercase tracking-wide">
             <tr>
               <th scope="col" className="px-3 py-2">
+                Id
+              </th>
+              <th scope="col" className="px-3 py-2">
                 User
               </th>
               <th scope="col" className="px-3 py-2">
@@ -77,7 +80,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
               <th scope="col" className="px-3 py-2">
                 Joined
               </th>
-              <th scope="col" className="px-3 py-2">
+              <th scope="col" className="px-3 py-2 text-right">
                 Actions
               </th>
             </tr>
@@ -93,6 +96,9 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                   key={user.id}
                   className="border-t motion-colors motion-list-item hover:bg-section-row-hover"
                 >
+                  <td className="px-3 py-3 text-xs text-muted-foreground tabular-nums">
+                    {user.id}
+                  </td>
                   <th scope="row" className="px-3 py-3 text-left">
                     <div className="flex flex-col">
                       <span className="font-medium">{user.displayName}</span>
@@ -112,8 +118,8 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                   <td className="px-3 py-3 text-xs text-muted-foreground">
                     {formatDate(user.createdAt)}
                   </td>
-                  <td className="px-3 py-3">
-                    <div className="flex flex-wrap gap-2">
+                  <td className="px-3 py-3 text-right">
+                    <div className="flex flex-wrap justify-end gap-2 whitespace-nowrap">
                       <Button
                         size="sm"
                         variant="secondary"
@@ -130,6 +136,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                           disabled={isSelf || isBusy || user.deletedAt !== null}
                           aria-label={`Ban ${user.displayName}`}
                           onClick={() => applyBan(user.id, true)}
+                          className="w-20 justify-center"
                         >
                           Ban
                         </Button>
@@ -140,6 +147,7 @@ export function AdminUsersTable({ currentUserId, initialUsers }: AdminUsersTable
                           disabled={isSelf || isBusy}
                           aria-label={`Unban ${user.displayName}`}
                           onClick={() => applyBan(user.id, false)}
+                          className="w-20 justify-center"
                         >
                           Unban
                         </Button>

@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { CatalogDetailHero, TracksInfiniteList } from '@/components/catalog';
+import { SectionContent } from '@/components/section';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ApiClientError } from '@/lib/api-client';
 import { fetchArtistById, fetchTracks } from '@/lib/catalog/api';
@@ -31,7 +32,7 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
   const discography = await fetchTracks({ artistId, page: 1 });
 
   return (
-    <section className="flex flex-col gap-6">
+    <SectionContent className="flex flex-col gap-6">
       <CatalogDetailHero
         entity="artist"
         eyebrow="Artist"
@@ -53,6 +54,6 @@ export default async function ArtistDetailPage({ params }: ArtistDetailPageProps
           />
         </CardContent>
       </Card>
-    </section>
+    </SectionContent>
   );
 }

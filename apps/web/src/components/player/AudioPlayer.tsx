@@ -1,8 +1,7 @@
 'use client';
 
-import { Pause, Play, X } from 'lucide-react';
+import { Pause, Play, Volume2, VolumeX, X } from 'lucide-react';
 import { useEffect, useRef, type ChangeEvent } from 'react';
-import { Button } from '@/components/ui/Button';
 import { Cover } from '@/components/ui/Cover';
 import { Icon } from '@/components/ui/Icon';
 import { formatTrackName } from '@/components/catalog';
@@ -13,6 +12,7 @@ interface AudioPlayerProps {
   className?: string;
 }
 
+// eslint-disable-next-line complexity
 export function AudioPlayer({ className }: AudioPlayerProps) {
   const track = usePlayerStore((state) => state.track);
   const status = usePlayerStore((state) => state.status);
@@ -31,17 +31,13 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
-    if (audioRef.current === null) {
-      return;
-    }
+    if (audioRef.current === null) return;
     audioRef.current.volume = isMuted ? 0 : volume;
   }, [volume, isMuted]);
 
   useEffect(() => {
     const node = audioRef.current;
-    if (node === null || track === null || track.previewUrl === null) {
-      return;
-    }
+    if (node === null || track === null || track.previewUrl === null) return;
     if (status === 'playing') {
       void node.play().catch(() => pause());
     } else {
@@ -51,173 +47,177 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
 
   useEffect(() => {
     const node = audioRef.current;
-    if (node === null) {
-      return;
-    }
+    if (node === null) return;
     const target = positionMs / 1000;
     if (Math.abs(node.currentTime - target) > 0.5) {
       node.currentTime = target;
     }
   }, [positionMs]);
 
-  if (track === null) {
-    return null;
-  }
+  if (track === null) return null;
 
   const isUnavailable = status === 'unavailable' || track.previewUrl === null;
+  const isPlaying = status === 'playing';
+  const progress = track.durationMs > 0 ? positionMs / track.durationMs : 0;
 
   return (
     <div
       className={cn(
-        'motion-player bg-surface text-surface-foreground flex items-center gap-4 rounded-lg border p-3 shadow-sm',
+        'motion-player relative overflow-hidden rounded-(--radius-xl)',
+        'border border-border-default/70 shadow-xl',
+        'bg-surface-work/88 backdrop-blur supports-[backdrop-filter]:bg-surface-work/76',
         className,
       )}
       role="region"
       aria-label="Audio preview player"
     >
       {track.previewUrl !== null && (
-        <>
-          {/* eslint-disable-next-line jsx-a11y/media-has-caption -- Music preview snippets have no spoken caption track. */}
-          <audio
-            ref={audioRef}
-            src={track.previewUrl}
-            preload="metadata"
-            onLoadedMetadata={() => {
-              if (status === 'loading') {
-                play();
-              }
-            }}
-            onEnded={() => {
-              pause();
-              seek(track.durationMs);
-            }}
-            onTimeUpdate={() => {
-              if (audioRef.current === null) {
-                return;
-              }
-              tick(Math.round(audioRef.current.currentTime * 1000));
-            }}
-          />
-        </>
+        // eslint-disable-next-line jsx-a11y/media-has-caption
+        <audio
+          ref={audioRef}
+          src={track.previewUrl}
+          preload="metadata"
+          onLoadedMetadata={() => {
+            if (status === 'loading') play();
+          }}
+          onEnded={() => {
+            pause();
+            seek(track.durationMs);
+          }}
+          onTimeUpdate={() => {
+            if (audioRef.current === null) return;
+            tick(Math.round(audioRef.current.currentTime * 1000));
+          }}
+        />
       )}
 
-      <div className="flex min-w-0 flex-1 items-center gap-3">
+      {/* Accent glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-px"
+        style={{
+          background: 'linear-gradient(90deg, transparent, var(--section-accent), transparent)',
+        }}
+      />
+
+      <div className="flex items-center gap-3 px-4 py-3">
+        {/* Cover art */}
         <Cover
           src={track.imageUrl ?? null}
           name={formatTrackName(track.trackName)}
           entity="track"
-          size="sm"
+          size="xs"
           context="list-dense"
           inSection={false}
+          className="shrink-0"
         />
-        <div className="min-w-0">
-          <p className="truncate text-sm font-medium">{formatTrackName(track.trackName)}</p>
-          <p className="text-muted-foreground truncate text-xs">{track.artistName}</p>
-        </div>
-      </div>
 
-      <div className="flex flex-[2] items-center justify-center gap-3">
-        <Button
-          variant="secondary"
-          size="sm"
-          className="motion-player shrink-0"
+        {/* Track info */}
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-semibold text-fg-strong leading-tight">
+            {formatTrackName(track.trackName)}
+          </p>
+          <p className="truncate text-xs text-fg-muted leading-tight mt-0.5">{track.artistName}</p>
+        </div>
+
+        {/* Play / pause */}
+        <button
+          type="button"
           onClick={toggle}
           disabled={isUnavailable}
-          aria-label={status === 'playing' ? 'Pause preview' : 'Play preview'}
+          aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
+          className={cn(
+            'grid size-9 shrink-0 place-items-center rounded-full motion-interactive',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus',
+            isUnavailable
+              ? 'cursor-not-allowed opacity-40 bg-surface-sunken'
+              : 'bg-section-accent text-section-accent-fg hover:opacity-90',
+          )}
         >
-          <Icon as={status === 'playing' ? Pause : Play} size="sm" />
-        </Button>
+          <Icon as={isPlaying ? Pause : Play} size="sm" />
+        </button>
 
-        <label className="flex w-full items-center gap-2 text-xs">
-          <span className="sr-only">Seek</span>
-          <input
-            type="range"
-            min={0}
-            max={track.durationMs}
-            step={100}
-            value={positionMs}
-            disabled={isUnavailable}
-            onChange={(event: ChangeEvent<HTMLInputElement>) =>
-              seek(Number.parseInt(event.target.value, 10))
-            }
-            className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
-            aria-label="Seek position"
-            aria-valuetext={`${formatPosition(positionMs)} of ${formatPosition(track.durationMs)}`}
+        {/* Seek + time */}
+        <div className="hidden min-w-0 flex-[2] flex-col gap-1 sm:flex">
+          <label className="flex items-center gap-2">
+            <span className="sr-only">Seek</span>
+            <input
+              type="range"
+              min={0}
+              max={track.durationMs}
+              step={100}
+              value={positionMs}
+              disabled={isUnavailable}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                seek(Number.parseInt(e.target.value, 10))
+              }
+              className="w-full cursor-pointer accent-section-accent focus-visible:outline-none"
+              aria-label="Seek position"
+              aria-valuetext={`${formatPosition(positionMs)} of ${formatPosition(track.durationMs)}`}
+            />
+          </label>
+          <div className="flex justify-between font-mono text-[11px] text-fg-faint tabular-nums">
+            <span>{formatPosition(positionMs)}</span>
+            <span>{formatPosition(track.durationMs)}</span>
+          </div>
+        </div>
+
+        {/* Progress dot on mobile */}
+        <div
+          aria-hidden
+          className="hidden h-1 w-16 overflow-hidden rounded-full bg-surface-sunken sm:hidden xs:block"
+        >
+          <div
+            className="h-full rounded-full transition-all duration-100"
+            style={{ width: `${progress * 100}%`, background: 'var(--section-accent)' }}
           />
-          <span
-            aria-live="polite"
-            className="shrink-0 whitespace-nowrap text-center font-mono tabular-nums"
-          >
-            {formatPosition(positionMs)} / {formatPosition(track.durationMs)}
-          </span>
-        </label>
-      </div>
+        </div>
 
-      <div className="flex flex-1 items-center justify-end gap-2">
         {isUnavailable && (
-          <span className="text-muted-foreground text-xs" role="status">
-            Preview unavailable
+          <span className="hidden shrink-0 text-xs text-fg-faint sm:block" role="status">
+            No preview
           </span>
         )}
-        <VolumeControl
-          volume={volume}
-          isMuted={isMuted}
-          onVolumeChange={setVolume}
-          onToggleMute={() => setMuted(!isMuted)}
-        />
-        <Button
-          variant="ghost"
-          size="sm"
-          className="shrink-0"
+
+        {/* Volume */}
+        <div className="hidden items-center gap-1.5 sm:flex">
+          <button
+            type="button"
+            onClick={() => setMuted(!isMuted)}
+            aria-pressed={isMuted}
+            aria-label={isMuted ? 'Unmute' : 'Mute'}
+            className="grid size-7 place-items-center rounded-(--radius-xs) text-fg-muted motion-interactive hover:text-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus"
+          >
+            <Icon as={isMuted ? VolumeX : Volume2} size="sm" />
+          </button>
+          <label className="flex w-16 items-center">
+            <span className="sr-only">Volume</span>
+            <input
+              type="range"
+              min={0}
+              max={1}
+              step={0.01}
+              value={isMuted ? 0 : volume}
+              onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                setVolume(Number.parseFloat(e.target.value))
+              }
+              className="w-full cursor-pointer accent-section-accent focus-visible:outline-none"
+              aria-label="Volume"
+            />
+          </label>
+        </div>
+
+        {/* Close */}
+        <button
+          type="button"
           onClick={reset}
           aria-label="Close player"
+          className="grid size-7 shrink-0 place-items-center rounded-(--radius-xs) text-fg-muted motion-interactive hover:text-fg-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus"
         >
           <Icon as={X} size="sm" />
-        </Button>
+        </button>
       </div>
     </div>
-  );
-}
-
-function VolumeControl({
-  volume,
-  isMuted,
-  onVolumeChange,
-  onToggleMute,
-}: {
-  volume: number;
-  isMuted: boolean;
-  onVolumeChange: (value: number) => void;
-  onToggleMute: () => void;
-}) {
-  const effectiveVolume = isMuted ? 0 : volume;
-
-  return (
-    <label className="flex w-24 items-center gap-2 text-xs">
-      <span className="sr-only">Volume</span>
-      <button
-        type="button"
-        onClick={onToggleMute}
-        className="rounded-(--radius-xs) motion-interactive hover:text-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
-        aria-pressed={isMuted}
-        aria-label={isMuted ? 'Unmute' : 'Mute'}
-      >
-        {isMuted ? 'Muted' : 'Vol'}
-      </button>
-      <input
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={effectiveVolume}
-        onChange={(event: ChangeEvent<HTMLInputElement>) =>
-          onVolumeChange(Number.parseFloat(event.target.value))
-        }
-        className="w-full accent-section-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-raised"
-        aria-label="Volume"
-        aria-valuetext={`${Math.round(effectiveVolume * 100)}%`}
-      />
-    </label>
   );
 }
 

@@ -53,7 +53,11 @@ export default async function AdminUsersPage({
       <AdminUsersSearch />
       <Card>
         <CardContent className="p-3 sm:p-4">
-          <AdminUsersTable currentUserId={user.id} initialUsers={response.data} />
+          <AdminUsersTable
+            key={`${params.q ?? ''}-${response.page}`}
+            currentUserId={user.id}
+            initialUsers={response.data}
+          />
         </CardContent>
       </Card>
       <nav aria-label="User pagination" className="flex items-center justify-between gap-4 text-sm">

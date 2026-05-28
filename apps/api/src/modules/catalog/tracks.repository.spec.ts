@@ -25,6 +25,7 @@ describe('TracksRepository', () => {
     const where = {
       albumId: 3,
       durationMs: { gte: 120000, lte: 240000 },
+      hiddenAt: null,
       name: { contains: 'midnight', mode: 'insensitive' },
       previewUrl: { not: null },
       trackArtists: { some: { artistId: 4 } },

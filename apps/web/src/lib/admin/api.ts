@@ -1,12 +1,24 @@
 import {
   COOKIE_NAMES,
   HEADERS,
+  type AdminAlbumListItem,
+  type AdminAlbumListResponse,
+  type AdminArtistListItem,
+  type AdminArtistListResponse,
+  type AdminTrackListItem,
+  type AdminTrackListResponse,
   type AdminUserListItem,
   type AdminUserListResponse,
   type AuditLogListResponse,
   type IngestRunsListResponse,
   type TriggerIngestRunRequest,
   type TriggerIngestRunResponse,
+  type UpdateAdminAlbumHiddenRequest,
+  type UpdateAdminAlbumRequest,
+  type UpdateAdminArtistHiddenRequest,
+  type UpdateAdminArtistRequest,
+  type UpdateAdminTrackHiddenRequest,
+  type UpdateAdminTrackRequest,
   type UpdateUserBanRequest,
   type UpdateUserRoleRequest,
 } from '@statify/shared';
@@ -66,6 +78,7 @@ interface AuditLogQueryInput {
   action?: string;
   actorUserId?: number;
   targetTable?: string;
+  targetId?: string;
 }
 
 export function fetchAuditLog(
@@ -73,6 +86,94 @@ export function fetchAuditLog(
   options: ServerFetchOptions = {},
 ): Promise<AuditLogListResponse> {
   return apiFetch<AuditLogListResponse>(`/api/v1/admin/audit-log${toQueryString(query)}`, options);
+}
+
+interface CatalogAdminListQueryInput {
+  page?: number;
+  limit?: number;
+  q?: string;
+  includeHidden?: boolean;
+}
+
+export function fetchAdminArtists(
+  query: CatalogAdminListQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<AdminArtistListResponse> {
+  return apiFetch<AdminArtistListResponse>(`/api/v1/admin/artists${toQueryString(query)}`, options);
+}
+
+export function updateAdminArtist(
+  artistId: number,
+  input: UpdateAdminArtistRequest,
+): Promise<AdminArtistListItem> {
+  return mutate<AdminArtistListItem>(`/api/v1/admin/artists/${artistId}`, {
+    method: 'PATCH',
+    body: input,
+  });
+}
+
+export function setAdminArtistHidden(
+  artistId: number,
+  input: UpdateAdminArtistHiddenRequest,
+): Promise<AdminArtistListItem> {
+  return mutate<AdminArtistListItem>(`/api/v1/admin/artists/${artistId}/hidden`, {
+    method: 'PATCH',
+    body: input,
+  });
+}
+
+export function fetchAdminAlbums(
+  query: CatalogAdminListQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<AdminAlbumListResponse> {
+  return apiFetch<AdminAlbumListResponse>(`/api/v1/admin/albums${toQueryString(query)}`, options);
+}
+
+export function updateAdminAlbum(
+  albumId: number,
+  input: UpdateAdminAlbumRequest,
+): Promise<AdminAlbumListItem> {
+  return mutate<AdminAlbumListItem>(`/api/v1/admin/albums/${albumId}`, {
+    method: 'PATCH',
+    body: input,
+  });
+}
+
+export function setAdminAlbumHidden(
+  albumId: number,
+  input: UpdateAdminAlbumHiddenRequest,
+): Promise<AdminAlbumListItem> {
+  return mutate<AdminAlbumListItem>(`/api/v1/admin/albums/${albumId}/hidden`, {
+    method: 'PATCH',
+    body: input,
+  });
+}
+
+export function fetchAdminTracks(
+  query: CatalogAdminListQueryInput = {},
+  options: ServerFetchOptions = {},
+): Promise<AdminTrackListResponse> {
+  return apiFetch<AdminTrackListResponse>(`/api/v1/admin/tracks${toQueryString(query)}`, options);
+}
+
+export function updateAdminTrack(
+  trackId: number,
+  input: UpdateAdminTrackRequest,
+): Promise<AdminTrackListItem> {
+  return mutate<AdminTrackListItem>(`/api/v1/admin/tracks/${trackId}`, {
+    method: 'PATCH',
+    body: input,
+  });
+}
+
+export function setAdminTrackHidden(
+  trackId: number,
+  input: UpdateAdminTrackHiddenRequest,
+): Promise<AdminTrackListItem> {
+  return mutate<AdminTrackListItem>(`/api/v1/admin/tracks/${trackId}/hidden`, {
+    method: 'PATCH',
+    body: input,
+  });
 }
 
 function mutate<T>(path: string, options: { method: string; body?: unknown }): Promise<T> {
