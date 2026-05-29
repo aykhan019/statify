@@ -6,10 +6,10 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const NAV_LINKS = [
   { href: '/#home', label: 'Home' },
+  { href: '/#about', label: 'About' },
   { href: '/#features', label: 'Features' },
   { href: '/#stack', label: 'Stack' },
   { href: '/#demo', label: 'Demo' },
-  { href: '/#about', label: 'About' },
 ];
 
 export default function MarketingLayout({ children }: { children: ReactNode }) {

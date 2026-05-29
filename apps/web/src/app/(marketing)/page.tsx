@@ -21,10 +21,10 @@ export const metadata: Metadata = {
  * `@/components/marketing/`. Order matches the layout's nav anchors:
  *
  *   /#home      → Hero
+ *   /#about     → About
  *   /#features  → Features
  *   /#stack     → Stack
  *   /#demo      → Demo
- *   /#about     → About
  *
  * `data-section-hue="indigo"` keeps focus rings + section accents
  * matching the rest of the app's auth/marketing identity.
@@ -34,10 +34,10 @@ export default function HomePage() {
     <div data-section-hue="indigo" className="bg-surface-page text-fg-default">
       <Hero />
       <StatsStrip />
+      <About />
       <Features />
       <Stack />
       <Demo />
-      <About />
       <CTA />
       <Footer />
     </div>
