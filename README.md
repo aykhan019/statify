@@ -22,17 +22,17 @@ The project is built around the **Spotify Million Playlist Dataset**, a normaliz
 
 ## Tech Stack
 
-| Area | Technology |
-|---|---|
-| Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS 4 |
-| Backend | Node.js, NestJS 10, TypeScript |
-| Database | PostgreSQL 16, Prisma 5 |
-| Auth | Argon2, JWT, httpOnly cookies |
-| Monorepo | pnpm workspaces |
-| Validation | Zod |
-| Testing | Vitest |
-| CI | GitHub Actions |
-| Deployment | Vercel for web, Render for API |
+| Area       | Technology                                       |
+| ---------- | ------------------------------------------------ |
+| Frontend   | Next.js 15, React 19, TypeScript, Tailwind CSS 4 |
+| Backend    | Node.js, NestJS 10, TypeScript                   |
+| Database   | PostgreSQL 16, Prisma 5                          |
+| Auth       | Argon2, JWT, httpOnly cookies                    |
+| Monorepo   | pnpm workspaces                                  |
+| Validation | Zod                                              |
+| Testing    | Vitest                                           |
+| CI         | GitHub Actions                                   |
+| Deployment | Vercel for web, Render for API                   |
 
 ---
 
@@ -139,30 +139,30 @@ pnpm dev
 
 Default local URLs:
 
-| Service | URL |
-|---|---|
-| Web app | http://localhost:3000 |
-| API | http://localhost:4000 |
+| Service          | URL                           |
+| ---------------- | ----------------------------- |
+| Web app          | http://localhost:3000         |
+| API              | http://localhost:4000         |
 | API health check | http://localhost:4000/healthz |
-| Adminer | http://localhost:8080 |
+| Adminer          | http://localhost:8080         |
 
 ---
 
 ## Useful Commands
 
-| Command | Purpose |
-|---|---|
-| `pnpm dev` | Run local development servers |
-| `pnpm build` | Build all workspace projects |
-| `pnpm typecheck` | Run TypeScript checks |
-| `pnpm lint` | Run ESLint |
-| `pnpm lint:fix` | Auto-fix lint issues where possible |
-| `pnpm format` | Format files with Prettier |
-| `pnpm format:check` | Check Prettier formatting |
-| `pnpm test` | Run tests |
-| `pnpm --filter @statify/db prisma:generate` | Generate Prisma client |
-| `pnpm --filter @statify/db prisma:migrate:dev` | Apply local migrations |
-| `pnpm --filter @statify/db prisma:migrate:deploy` | Apply production migrations |
+| Command                                           | Purpose                             |
+| ------------------------------------------------- | ----------------------------------- |
+| `pnpm dev`                                        | Run local development servers       |
+| `pnpm build`                                      | Build all workspace projects        |
+| `pnpm typecheck`                                  | Run TypeScript checks               |
+| `pnpm lint`                                       | Run ESLint                          |
+| `pnpm lint:fix`                                   | Auto-fix lint issues where possible |
+| `pnpm format`                                     | Format files with Prettier          |
+| `pnpm format:check`                               | Check Prettier formatting           |
+| `pnpm test`                                       | Run tests                           |
+| `pnpm --filter @statify/db prisma:generate`       | Generate Prisma client              |
+| `pnpm --filter @statify/db prisma:migrate:dev`    | Apply local migrations              |
+| `pnpm --filter @statify/db prisma:migrate:deploy` | Apply production migrations         |
 
 ---
 
@@ -246,11 +246,11 @@ The CI pipeline checks:
 
 The project is designed for split deployment:
 
-| Service | Platform |
-|---|---|
-| Web frontend | Vercel |
-| API backend | Render |
-| Database | PostgreSQL / Neon |
+| Service      | Platform          |
+| ------------ | ----------------- |
+| Web frontend | Vercel            |
+| API backend  | Render            |
+| Database     | PostgreSQL / Neon |
 
 Production environment variables must be configured separately in the deployment dashboards.
 
