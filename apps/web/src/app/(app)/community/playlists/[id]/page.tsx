@@ -3,6 +3,7 @@ import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { TrackRow } from '@/components/catalog';
 import { PlaylistHero } from '@/components/playlists/PlaylistHero';
+import { SectionContent } from '@/components/section';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { ApiClientError } from '@/lib/api-client';
 import {
@@ -45,7 +46,7 @@ export default async function CommunityPlaylistDetailPage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <SectionContent className="flex flex-col gap-6">
       <PlaylistHero
         coverImages={playlist.coverImages}
         name={playlist.name}
@@ -71,7 +72,7 @@ export default async function CommunityPlaylistDetailPage({
                   <span className="w-8 shrink-0 text-right font-mono text-xs text-fg-muted tabular-nums">
                     {entry.pos + 1}
                   </span>
-                  <div className="flex-1">
+                  <div className="min-w-0 flex-1">
                     <TrackRow track={entry.track} />
                   </div>
                 </li>
@@ -86,6 +87,6 @@ export default async function CommunityPlaylistDetailPage({
       >
         ← Back to community playlists
       </Link>
-    </div>
+    </SectionContent>
   );
 }

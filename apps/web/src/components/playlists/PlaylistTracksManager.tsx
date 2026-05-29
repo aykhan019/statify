@@ -214,7 +214,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
               onDragEnd={handleDragEnd}
               onDrop={handleDragEnd}
               className={cn(
-                'flex items-center gap-3 rounded-(--radius-md) border border-border-default bg-surface-raised p-3 motion-colors motion-list-item hover:bg-section-row-hover',
+                'flex flex-wrap items-center gap-3 rounded-(--radius-md) border border-border-default bg-surface-raised p-3 motion-colors motion-list-item hover:bg-section-row-hover',
                 draggedId === entry.track.id && 'opacity-50',
               )}
             >
@@ -236,7 +236,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                   {entry.track.album.name.length > 0 ? ` · ${entry.track.album.name}` : ''}
                 </p>
               </div>
-              <div className="flex items-center gap-1">
+              <div className="ml-auto flex shrink-0 items-center gap-1">
                 <PlayPreviewButton
                   track={{
                     trackId: entry.track.id,
@@ -273,7 +273,7 @@ export function PlaylistTracksManager({ playlistId, initialTracks }: PlaylistTra
                   aria-label={`Remove ${entry.track.name}`}
                 >
                   <Icon as={Trash2} size="sm" />
-                  Remove
+                  <span className="hidden sm:inline">Remove</span>
                 </Button>
               </div>
             </li>

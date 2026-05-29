@@ -71,7 +71,8 @@ export const AdminUserListItemSchema = z.object({
 });
 
 export const AdminUsersListQuerySchema = OffsetPaginationQuerySchema.extend({
-  q: z.string().trim().min(1).max(100).optional(),
+  // Generous cap so `field:value` searches (e.g. an image URL) still fit.
+  q: z.string().trim().min(1).max(2048).optional(),
 });
 
 export const AdminUserListResponseSchema = z.object({
@@ -99,8 +100,17 @@ export type UpdateUserBanRequest = z.infer<typeof UpdateUserBanRequestSchema>;
 // --- Admin catalog: shared shapes ---
 
 const CatalogAdminListQuerySchema = OffsetPaginationQuerySchema.extend({
-  q: z.string().trim().min(1).max(100).optional(),
-  includeHidden: z.coerce.boolean().default(true),
+  // Generous cap so `field:value` searches (e.g. an image URL) still fit.
+  q: z.string().trim().min(1).max(2048).optional(),
+  // NB: not `z.coerce.boolean()` — that runs `Boolean(value)`, so the string
+  // 'false' coerces to `true` and the "Hidden off" toggle would never filter.
+  includeHidden: z
+    .preprocess((value) => {
+      if (value === 'true') return true;
+      if (value === 'false') return false;
+      return value;
+    }, z.boolean())
+    .default(true),
 });
 
 const UpdateHiddenRequestSchema = z.object({

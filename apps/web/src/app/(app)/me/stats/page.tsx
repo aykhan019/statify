@@ -79,7 +79,6 @@ export default async function StatsOverviewPage() {
           <P2StatTile
             label="Total minutes · 30d"
             value={totalMinutes > 0 ? Math.round(totalMinutes).toLocaleString() : '—'}
-            delta={totalMinutes > 0 ? 18 : undefined}
             caption="Across ranked artists"
           />
           <P2StatTile

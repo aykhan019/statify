@@ -156,10 +156,16 @@ export default async function OverviewPage() {
   const peakDayOfWeek = topDayOfWeek(heatmapCells);
   const uniqueArtistCount = new Set(recent.map((entry) => entry.track.artists[0]?.id ?? -1)).size;
 
+  // "Last played" panel: newest-first (don't trust upstream ordering), then
+  // dedupe by track keeping the most recent play of each.
   const recentDeduped = (() => {
+    const ordered = recent
+      .map((entry) => ({ entry, at: new Date(entry.playedAt).getTime() }))
+      .sort((a, b) => b.at - a.at)
+      .map(({ entry }) => entry);
     const seen = new Set<number>();
     const out: typeof recent = [];
-    for (const entry of recent) {
+    for (const entry of ordered) {
       if (seen.has(entry.track.id)) continue;
       seen.add(entry.track.id);
       out.push(entry);
@@ -433,7 +439,7 @@ export default async function OverviewPage() {
                   Recently played
                 </p>
                 <h3 className="mt-1.5 text-xl font-extrabold tracking-tight text-fg-strong">
-                  The last hour
+                  Last played
                 </h3>
               </div>
               <OverviewGhost href="/me/history" label="History" />

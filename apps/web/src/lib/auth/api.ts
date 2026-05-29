@@ -5,6 +5,7 @@ import {
   type AuthResponse,
   type LoginRequest,
   type PasswordChangeRequest,
+  type ProfileUpdateRequest,
   type RegisterRequest,
 } from '@statify/shared';
 import { apiFetch } from '../api-client';
@@ -38,6 +39,14 @@ export function logoutUser(): Promise<void> {
 
 export function changePassword(input: PasswordChangeRequest): Promise<void> {
   return apiFetch<void>('/api/v1/auth/password', {
+    ...MUTATION_DEFAULTS,
+    headers: withCsrf(MUTATION_DEFAULTS.headers),
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateProfile(input: ProfileUpdateRequest): Promise<AuthResponse> {
+  return apiFetch<AuthResponse>('/api/v1/auth/profile', {
     ...MUTATION_DEFAULTS,
     headers: withCsrf(MUTATION_DEFAULTS.headers),
     body: JSON.stringify(input),

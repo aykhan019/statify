@@ -57,7 +57,7 @@ export default async function AdminAlbumsPage({
       />
       <AdminCatalogSearch
         basePath="/admin/albums"
-        placeholder="Search by ID, name, or artist"
+        placeholder="Search name, artist — or scope it: id:1, artist:shakira"
         fieldId="admin-albums-search"
         fieldLabel="Search albums"
       />

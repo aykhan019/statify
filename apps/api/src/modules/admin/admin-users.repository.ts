@@ -5,7 +5,12 @@ import type { AdminUsersListQuery } from '@statify/shared';
 import { BaseRepository } from '../../database/base.repository';
 import { PrismaService } from '../../database/prisma.service';
 import { getOffset } from '../catalog/catalog.pagination';
-import { toPositiveInt } from './admin-search.util';
+import {
+  buildScopedFilter,
+  idFilterValue,
+  parseSearchQuery,
+  toPositiveInt,
+} from './admin-search.util';
 
 export interface AdminUserListResult {
   data: User[];
@@ -100,15 +105,25 @@ export class AdminUsersRepository extends BaseRepository {
 function buildWhere(query: AdminUsersListQuery): Prisma.UserWhereInput {
   const where: Prisma.UserWhereInput = {};
   if (query.q !== undefined) {
-    const or: Prisma.UserWhereInput[] = [
-      { email: { contains: query.q, mode: 'insensitive' } },
-      { displayName: { contains: query.q, mode: 'insensitive' } },
-    ];
-    const asId = toPositiveInt(query.q);
-    if (asId !== null) {
-      or.push({ id: asId });
+    const scoped = buildScopedFilter<Prisma.UserWhereInput>(parseSearchQuery(query.q), {
+      id: (v) => ({ id: idFilterValue(v) }),
+      email: (v) => ({ email: { contains: v, mode: 'insensitive' } }),
+      name: (v) => ({ displayName: { contains: v, mode: 'insensitive' } }),
+      displayname: (v) => ({ displayName: { contains: v, mode: 'insensitive' } }),
+    });
+    if (scoped !== null) {
+      Object.assign(where, scoped);
+    } else {
+      const or: Prisma.UserWhereInput[] = [
+        { email: { contains: query.q, mode: 'insensitive' } },
+        { displayName: { contains: query.q, mode: 'insensitive' } },
+      ];
+      const asId = toPositiveInt(query.q);
+      if (asId !== null) {
+        or.push({ id: asId });
+      }
+      where.OR = or;
     }
-    where.OR = or;
   }
   return where;
 }

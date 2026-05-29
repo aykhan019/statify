@@ -1,7 +1,9 @@
 import { ArrowRight, Disc3, Library, ListMusic, Mic2, Music2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { SectionContent } from '@/components/section';
+import { coverSrc } from '@/components/ui/Cover';
 import { Icon } from '@/components/ui/Icon';
 import {
   P2GlassPanel,
@@ -11,6 +13,8 @@ import {
   type EntityTone,
 } from '@/components/p2';
 import { fetchTopArtists } from '@/lib/analytics/api';
+import { fetchCatalogStats } from '@/lib/catalog/api';
+import type { CatalogStatsResponse } from '@statify/shared';
 
 export const metadata = {
   title: 'Catalog | Statify',
@@ -18,46 +22,67 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
+const compactNumber = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
+
+function formatCount(value: number | undefined): string {
+  if (value === undefined) return '—';
+  return value < 1000 ? value.toLocaleString() : compactNumber.format(value);
+}
+
 const CATALOG_TILES = [
   {
     href: '/catalog/tracks',
     icon: Music2,
     label: 'Tracks',
-    value: '180M',
+    stat: 'tracks',
     sub: 'Indexed in the catalog',
   },
   {
     href: '/catalog/artists',
     icon: Mic2,
     label: 'Artists',
-    value: '460K',
+    stat: 'artists',
     sub: 'Normalized records',
   },
   {
     href: '/catalog/albums',
     icon: Disc3,
     label: 'Albums',
-    value: '1.1M',
+    stat: 'albums',
     sub: 'Linked to tracks',
   },
   {
     href: '/community/playlists',
     icon: ListMusic,
     label: 'Playlists',
-    value: '2.4M',
+    stat: 'playlists',
     sub: 'User and curated sets',
   },
-];
+] as const satisfies ReadonlyArray<{
+  href: string;
+  icon: typeof Music2;
+  label: string;
+  stat: keyof CatalogStatsResponse;
+  sub: string;
+}>;
 
 const TONES: readonly EntityTone[] = ['magenta', 'cyan', 'amber', 'violet', 'teal', 'green'];
 
 export default async function CatalogIndexPage() {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
-  const { entries: topArtists } = await fetchTopArtists(
-    { limit: 6 },
-    { cookieHeader, cache: 'no-store' },
-  );
+  const opts = { cookieHeader, cache: 'no-store' as const };
+
+  const [topArtistsResult, statsResult] = await Promise.allSettled([
+    fetchTopArtists({ limit: 6 }, opts),
+    fetchCatalogStats(opts),
+  ]);
+
+  const topArtists = topArtistsResult.status === 'fulfilled' ? topArtistsResult.value.entries : [];
+  const stats = statsResult.status === 'fulfilled' ? statsResult.value : null;
 
   return (
     <>
@@ -65,7 +90,7 @@ export default async function CatalogIndexPage() {
         eyebrow="/catalog"
         icon={Library}
         title="The dataset shelf."
-        description="Tracks, artists, albums, and playlists — all indexed and ready to browse."
+        description="Tracks, artists, albums, and playlists - all indexed and ready to browse."
         actions={<P2Pill tone="on-block">SQL-backed</P2Pill>}
       />
       <SectionContent className="space-y-6">
@@ -83,7 +108,7 @@ export default async function CatalogIndexPage() {
                 {tile.label}
               </p>
               <p className="text-2xl font-extrabold leading-none tracking-tight text-fg-strong">
-                {tile.value}
+                {formatCount(stats?.[tile.stat])}
               </p>
               <p className="font-mono text-[11px] text-fg-muted">{tile.sub}</p>
               <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-section-accent">
@@ -115,13 +140,25 @@ export default async function CatalogIndexPage() {
               {topArtists.slice(0, 6).map((artist, index) => (
                 <li key={artist.artistId} className="flex flex-col items-center gap-3 text-center">
                   <Link href={`/catalog/artists/${artist.artistId}`}>
-                    <P2GradientCover
-                      tone={TONES[index % TONES.length]!}
-                      name={artist.artistName}
-                      size={96}
-                      radius="lg"
-                      className="rounded-full"
-                    />
+                    {artist.artistImageUrl ? (
+                      <span className="relative inline-flex size-24 overflow-hidden rounded-full border border-white/12 shadow-[0_8px_18px_-10px_rgba(0,0,0,0.45)]">
+                        <Image
+                          src={coverSrc(artist.artistImageUrl, 192)}
+                          alt={artist.artistName}
+                          fill
+                          sizes="96px"
+                          className="object-cover"
+                        />
+                      </span>
+                    ) : (
+                      <P2GradientCover
+                        tone={TONES[index % TONES.length]!}
+                        name={artist.artistName}
+                        size={96}
+                        radius="lg"
+                        className="rounded-full"
+                      />
+                    )}
                   </Link>
                   <div>
                     <p className="truncate text-sm font-extrabold text-fg-strong">

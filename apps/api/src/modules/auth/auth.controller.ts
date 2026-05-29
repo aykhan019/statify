@@ -21,6 +21,8 @@ import {
   LoginRequestSchema,
   PasswordChangeRequest,
   PasswordChangeRequestSchema,
+  ProfileUpdateRequest,
+  ProfileUpdateRequestSchema,
   RegisterRequest,
   RegisterRequestSchema,
 } from '@statify/shared';
@@ -111,6 +113,20 @@ export class AuthController {
     const user = getAuthenticatedUser(request);
     await this.authService.changePassword(user.id, body);
     this.cookieService.clearAuthCookies(response);
+  }
+
+  @Post('profile')
+  @UseGuards(JwtAuthGuard, CsrfGuard)
+  async updateProfile(
+    @Body(new ZodValidationPipe(ProfileUpdateRequestSchema)) body: ProfileUpdateRequest,
+    @Req() request: Request & RequestWithUser,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthResponse> {
+    const user = getAuthenticatedUser(request);
+    const session = await this.authService.updateProfile(user.id, body, getRequestContext(request));
+    this.cookieService.setAuthCookies(response, session.tokens);
+
+    return { user: session.user };
   }
 
   @Delete('account')

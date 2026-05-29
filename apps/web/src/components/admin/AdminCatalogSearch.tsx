@@ -42,6 +42,7 @@ export function AdminCatalogSearch({
         <Input
           type="search"
           name="q"
+          maxLength={2048}
           placeholder={placeholder}
           value={value}
           onChange={(event) => setValue(event.target.value)}

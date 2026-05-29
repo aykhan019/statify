@@ -1,10 +1,10 @@
 import {
   BarChart3,
+  Clock3,
   Compass,
-  Disc3,
   Gem,
-  History,
   Home,
+  Library,
   ListMusic,
   Shield,
   User,
@@ -35,12 +35,12 @@ export interface BreadcrumbItem {
 const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: '/me', label: 'Overview', icon: Home, exact: true, topLevel: true },
   { href: '/me/stats', label: 'Stats', icon: BarChart3, topLevel: true },
-  { href: '/me/history', label: 'History', icon: History },
+  { href: '/me/history', label: 'History', icon: Clock3 },
   { href: '/me/playlists', label: 'Playlists', icon: ListMusic, topLevel: true },
-  { href: '/catalog', label: 'Catalog', icon: Disc3, topLevel: true },
+  { href: '/catalog', label: 'Catalog', icon: Library, topLevel: true },
   { href: '/discover', label: 'Discover', icon: Compass, exact: true, topLevel: true },
   { href: '/explore/hidden-gems', label: 'Hidden gems', icon: Gem, exact: true },
-  { href: '/community/playlists', label: 'Community', icon: Users },
+  { href: '/community', label: 'Community', icon: Users },
   { href: '/me/account', label: 'Account', icon: User, exact: true },
   { href: '/admin', label: 'Admin', icon: Shield, adminOnly: true },
 ];

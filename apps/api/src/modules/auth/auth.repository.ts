@@ -39,6 +39,13 @@ export class AuthRepository extends BaseRepository {
     });
   }
 
+  updateProfile(userId: number, data: { displayName: string; email: string }): Promise<User> {
+    return this.client.user.update({
+      where: { id: userId },
+      data: { displayName: data.displayName, email: data.email },
+    });
+  }
+
   updatePasswordHash(userId: number, passwordHash: string): Promise<void> {
     return this.prisma.transaction(async (client) => {
       await client.user.update({

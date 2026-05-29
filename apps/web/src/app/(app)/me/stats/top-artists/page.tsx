@@ -1,13 +1,11 @@
-import { Download, Mic2 } from 'lucide-react';
+import { Mic2 } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { SectionContent } from '@/components/section';
 import { EmptyState } from '@/components/states';
 import { buttonVariants } from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
 import {
   P2GlassPanel,
-  P2HeroButton,
   P2MetaPill,
   P2PageHero,
   P2Pill,
@@ -19,6 +17,7 @@ import {
   type PodiumEntry,
 } from '@/components/p2';
 import { Cover } from '@/components/ui/Cover';
+import { TopArtistsExportButton } from '@/components/stats/TopArtistsExportButton';
 import { fetchTopArtists } from '@/lib/analytics/api';
 
 export const metadata = {
@@ -140,14 +139,7 @@ export default async function TopArtistsPage() {
                   Top three
                 </h2>
               </div>
-              <P2HeroButton
-                href="#leaderboard"
-                variant="ghost"
-                className="border-border-strong bg-transparent text-fg-default hover:bg-section-row-hover"
-              >
-                <Icon as={Download} size="sm" />
-                Export CSV
-              </P2HeroButton>
+              <TopArtistsExportButton entries={entries} />
             </div>
             <div className="mx-auto max-w-[720px]">
               <P2Podium entries={podiumEntries} size="lg" />
