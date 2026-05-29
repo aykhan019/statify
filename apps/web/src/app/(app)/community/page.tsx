@@ -45,12 +45,7 @@ export default async function CommunityPage() {
         icon={Users}
         title="Where Statify listens together."
         description="Public playlists from other listeners, curated sets, and the artists everyone's playing — all in one place."
-        actions={
-          <>
-            <P2Pill tone="on-block">Public + curated</P2Pill>
-            <P2Pill tone="on-block">Updated live</P2Pill>
-          </>
-        }
+        actions={<P2Pill tone="on-block">Public + curated</P2Pill>}
       />
       <SectionContent className="space-y-10">
         {publicPlaylists !== null && publicPlaylists.data.length > 0 && (
