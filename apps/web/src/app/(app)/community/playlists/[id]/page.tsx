@@ -72,7 +72,7 @@ export default async function CommunityPlaylistDetailPage({
                   <span className="w-8 shrink-0 text-right font-mono text-xs text-fg-muted tabular-nums">
                     {entry.pos + 1}
                   </span>
-                  <div className="flex-1">
+                  <div className="min-w-0 flex-1">
                     <TrackRow track={entry.track} />
                   </div>
                 </li>

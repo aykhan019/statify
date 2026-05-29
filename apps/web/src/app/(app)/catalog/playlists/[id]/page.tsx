@@ -93,7 +93,7 @@ export default async function PlaylistDetailPage({
                 <span className="text-muted-foreground w-8 shrink-0 text-right text-xs">
                   {entry.pos + 1}
                 </span>
-                <div className="flex-1">
+                <div className="min-w-0 flex-1">
                   <TrackRow track={entry.track} />
                 </div>
               </li>
