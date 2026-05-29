@@ -27,6 +27,13 @@ describe('parseSearchQuery', () => {
   it('does not treat a leading-digit token as a qualifier', () => {
     expect(parseSearchQuery('123:abc')).toEqual({ field: null, value: '123:abc' });
   });
+
+  it('supports hyphenated fields and keeps colons inside the value', () => {
+    expect(parseSearchQuery('image-url: https://cdn/x.jpg')).toEqual({
+      field: 'image-url',
+      value: 'https://cdn/x.jpg',
+    });
+  });
 });
 
 describe('buildScopedFilter', () => {

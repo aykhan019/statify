@@ -120,6 +120,10 @@ export class AdminArtistsRepository extends BaseRepository {
   }
 }
 
+const imageUrlFilter = (v: string): Prisma.ArtistWhereInput => ({
+  imageUrl: { contains: v, mode: 'insensitive' },
+});
+
 function buildWhere(query: AdminArtistsListQuery): Prisma.ArtistWhereInput {
   const where: Prisma.ArtistWhereInput = {};
   if (!query.includeHidden) {
@@ -130,6 +134,10 @@ function buildWhere(query: AdminArtistsListQuery): Prisma.ArtistWhereInput {
       id: (v) => ({ id: idFilterValue(v) }),
       name: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
       artist: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
+      image: imageUrlFilter,
+      'image-url': imageUrlFilter,
+      imageurl: imageUrlFilter,
+      url: imageUrlFilter,
     });
     if (scoped !== null) {
       Object.assign(where, scoped);

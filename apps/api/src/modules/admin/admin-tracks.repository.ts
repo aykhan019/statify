@@ -115,6 +115,10 @@ export class AdminTracksRepository extends BaseRepository {
   }
 }
 
+const imageUrlFilter = (v: string): Prisma.TrackWhereInput => ({
+  imageUrl: { contains: v, mode: 'insensitive' },
+});
+
 function buildWhere(query: AdminTracksListQuery): Prisma.TrackWhereInput {
   const where: Prisma.TrackWhereInput = {};
   if (!query.includeHidden) {
@@ -128,6 +132,10 @@ function buildWhere(query: AdminTracksListQuery): Prisma.TrackWhereInput {
       track: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
       album: (v) => ({ album: { name: { contains: v, mode: 'insensitive' } } }),
       artist: (v) => ({ album: { primaryArtist: { name: { contains: v, mode: 'insensitive' } } } }),
+      image: imageUrlFilter,
+      'image-url': imageUrlFilter,
+      imageurl: imageUrlFilter,
+      url: imageUrlFilter,
     });
     if (scoped !== null) {
       Object.assign(where, scoped);

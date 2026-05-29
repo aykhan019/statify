@@ -109,6 +109,10 @@ export class AdminAlbumsRepository extends BaseRepository {
   }
 }
 
+const imageUrlFilter = (v: string): Prisma.AlbumWhereInput => ({
+  imageUrl: { contains: v, mode: 'insensitive' },
+});
+
 function buildWhere(query: AdminAlbumsListQuery): Prisma.AlbumWhereInput {
   const where: Prisma.AlbumWhereInput = {};
   if (!query.includeHidden) {
@@ -120,6 +124,10 @@ function buildWhere(query: AdminAlbumsListQuery): Prisma.AlbumWhereInput {
       name: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
       album: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
       artist: (v) => ({ primaryArtist: { name: { contains: v, mode: 'insensitive' } } }),
+      image: imageUrlFilter,
+      'image-url': imageUrlFilter,
+      imageurl: imageUrlFilter,
+      url: imageUrlFilter,
     });
     if (scoped !== null) {
       Object.assign(where, scoped);
