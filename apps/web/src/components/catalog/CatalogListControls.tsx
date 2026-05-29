@@ -12,11 +12,8 @@ const CONTROL_BASE =
 
 export function TrackCatalogControls({ values }: { values: TrackControlsState }) {
   return (
-    <form
-      className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
-      action="/catalog/tracks"
-    >
-      <div className="grid gap-3 md:grid-cols-3 xl:grid-cols-5">
+    <form className="border-border bg-surface rounded-lg border p-4" action="/catalog/tracks">
+      <div className="grid items-end gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Field label="Search">
           <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search tracks" />
         </Field>
@@ -53,19 +50,16 @@ export function TrackCatalogControls({ values }: { values: TrackControlsState })
             defaultValue={values.maxDurationSec ?? ''}
           />
         </Field>
+        <ControlActions resetHref="/catalog/tracks" />
       </div>
-      <ControlActions resetHref="/catalog/tracks" />
     </form>
   );
 }
 
 export function ArtistCatalogControls({ values }: { values: ArtistControlsState }) {
   return (
-    <form
-      className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
-      action="/catalog/artists"
-    >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <form className="border-border bg-surface rounded-lg border p-4" action="/catalog/artists">
+      <div className="grid items-end gap-3 sm:grid-cols-3">
         <Field label="Search">
           <Input
             name="q"
@@ -84,19 +78,16 @@ export function ArtistCatalogControls({ values }: { values: ArtistControlsState 
             <option value="createdAt">Oldest</option>
           </select>
         </Field>
+        <ControlActions resetHref="/catalog/artists" />
       </div>
-      <ControlActions resetHref="/catalog/artists" />
     </form>
   );
 }
 
 export function AlbumCatalogControls({ values }: { values: AlbumControlsState }) {
   return (
-    <form
-      className="border-border bg-surface flex flex-col gap-3 rounded-lg border p-4"
-      action="/catalog/albums"
-    >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <form className="border-border bg-surface rounded-lg border p-4" action="/catalog/albums">
+      <div className="grid items-end gap-3 sm:grid-cols-3">
         <Field label="Search">
           <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search albums" />
         </Field>
@@ -110,8 +101,8 @@ export function AlbumCatalogControls({ values }: { values: AlbumControlsState })
             <option value="createdAt">Oldest</option>
           </select>
         </Field>
+        <ControlActions resetHref="/catalog/albums" />
       </div>
-      <ControlActions resetHref="/catalog/albums" />
     </form>
   );
 }
@@ -127,13 +118,13 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function ControlActions({ resetHref }: { resetHref: string }) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
-      <Button type="submit" size="sm">
+    <div className="flex items-center gap-2">
+      <Button type="submit" className="flex-1">
         Apply
       </Button>
       <Link
         href={resetHref}
-        className="text-muted-foreground hover:text-foreground rounded-(--radius-sm) px-3 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
+        className="text-muted-foreground hover:text-foreground inline-flex h-10 items-center rounded-(--radius-sm) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
       >
         Reset
       </Link>
