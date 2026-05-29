@@ -40,7 +40,7 @@ const NAVIGATION_ITEMS: NavigationItem[] = [
   { href: '/catalog', label: 'Catalog', icon: Disc3, topLevel: true },
   { href: '/discover', label: 'Discover', icon: Compass, exact: true, topLevel: true },
   { href: '/explore/hidden-gems', label: 'Hidden gems', icon: Gem, exact: true },
-  { href: '/community/playlists', label: 'Community', icon: Users },
+  { href: '/community', label: 'Community', icon: Users },
   { href: '/me/account', label: 'Account', icon: User, exact: true },
   { href: '/admin', label: 'Admin', icon: Shield, adminOnly: true },
 ];
