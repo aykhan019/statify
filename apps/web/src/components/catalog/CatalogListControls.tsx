@@ -12,7 +12,10 @@ const CONTROL_BASE =
 
 export function TrackCatalogControls({ values }: { values: TrackControlsState }) {
   return (
-    <form className="border-border bg-surface rounded-lg border p-4" action="/catalog/tracks">
+    <form
+      className="border-border bg-surface w-full rounded-lg border p-4"
+      action="/catalog/tracks"
+    >
       <div className="grid items-end gap-3 md:grid-cols-3 xl:grid-cols-6">
         <Field label="Search">
           <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search tracks" />
@@ -59,7 +62,7 @@ export function TrackCatalogControls({ values }: { values: TrackControlsState })
 export function ArtistCatalogControls({ values }: { values: ArtistControlsState }) {
   return (
     <form className="border-border bg-surface rounded-lg border p-4" action="/catalog/artists">
-      <div className="grid items-end gap-3 sm:grid-cols-3">
+      <div className="grid items-end gap-3 md:grid-cols-3">
         <Field label="Search">
           <Input
             name="q"
@@ -87,7 +90,7 @@ export function ArtistCatalogControls({ values }: { values: ArtistControlsState 
 export function AlbumCatalogControls({ values }: { values: AlbumControlsState }) {
   return (
     <form className="border-border bg-surface rounded-lg border p-4" action="/catalog/albums">
-      <div className="grid items-end gap-3 sm:grid-cols-3">
+      <div className="grid items-end gap-3 md:grid-cols-3">
         <Field label="Search">
           <Input name="q" type="search" defaultValue={values.q ?? ''} placeholder="Search albums" />
         </Field>

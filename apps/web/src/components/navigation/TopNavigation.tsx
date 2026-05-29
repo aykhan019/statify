@@ -45,7 +45,7 @@ export function TopNavigation({ activePath, includeAdmin, user }: TopNavigationP
           gap="sm"
           align="center"
           justify="end"
-          className="min-w-0 shrink-0 gap-2 pr-4 sm:pr-5 md:pr-6 lg:pr-8 xl:pr-10"
+          className="ml-auto min-w-0 shrink-0 gap-2 pr-4 sm:pr-5 md:pr-6 lg:pr-8 xl:pr-10"
         >
           <ThemeToggle className="hidden sm:grid" />
           <UserMenu includeAdmin={includeAdmin} user={user} />
