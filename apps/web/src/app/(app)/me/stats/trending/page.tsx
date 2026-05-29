@@ -102,7 +102,7 @@ export default async function TrendingPage() {
                 climbing.slice(0, 8).map((entry) => (
                   <li
                     key={entry.artistId}
-                    className="motion-list-item grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 py-2.5 motion-colors hover:bg-section-row-hover"
+                    className="motion-list-item grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-3 py-2.5 motion-colors hover:bg-section-row-hover"
                   >
                     <Cover
                       src={entry.artistImageUrl}
@@ -146,7 +146,7 @@ export default async function TrendingPage() {
                 slipping.slice(0, 8).map((entry) => (
                   <li
                     key={entry.artistId}
-                    className="motion-list-item grid grid-cols-[44px_minmax(0,1fr)_auto] items-center gap-3 py-2.5 motion-colors hover:bg-section-row-hover"
+                    className="motion-list-item grid grid-cols-[56px_minmax(0,1fr)_auto] items-center gap-3 py-2.5 motion-colors hover:bg-section-row-hover"
                   >
                     <Cover
                       src={entry.artistImageUrl}
