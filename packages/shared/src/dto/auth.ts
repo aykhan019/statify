@@ -34,6 +34,12 @@ export const PasswordChangeRequestSchema = z
     path: ['newPassword'],
   });
 
+export const ProfileUpdateRequestSchema = z.object({
+  displayName: z.string().trim().min(1).max(100),
+  email: z.string().trim().toLowerCase().email(),
+  currentPassword: z.string().min(1).max(200),
+});
+
 export const AccountDeleteRequestSchema = z.object({
   currentPassword: z.string().min(1).max(200),
 });
@@ -44,4 +50,5 @@ export type RegisterRequest = z.infer<typeof RegisterRequestSchema>;
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 export type AuthResponse = z.infer<typeof AuthResponseSchema>;
 export type PasswordChangeRequest = z.infer<typeof PasswordChangeRequestSchema>;
+export type ProfileUpdateRequest = z.infer<typeof ProfileUpdateRequestSchema>;
 export type AccountDeleteRequest = z.infer<typeof AccountDeleteRequestSchema>;

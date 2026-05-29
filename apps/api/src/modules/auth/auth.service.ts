@@ -4,6 +4,7 @@ import {
   ErrorCode,
   type LoginRequest,
   type PasswordChangeRequest,
+  type ProfileUpdateRequest,
   type RegisterRequest,
 } from '@statify/shared';
 import { AuditLogService } from '../admin/audit-log.service';
@@ -170,6 +171,55 @@ export class AuthService {
     });
   }
 
+  async updateProfile(
+    userId: number,
+    input: ProfileUpdateRequest,
+    context: AuthRequestContext,
+  ): Promise<AuthSession> {
+    const user = await this.repository.findUserById(userId);
+    if (user === null) {
+      throw unauthenticatedError();
+    }
+
+    const isValid = await this.passwordService.verify(user.passwordHash, input.currentPassword);
+    if (!isValid) {
+      await this.auditLog.record({
+        actorUserId: userId,
+        action: 'auth.profile_update_failed',
+        targetTable: 'users',
+        targetId: String(userId),
+        metadata: { reason: 'wrong_current_password' },
+      });
+      throw invalidCredentialsError();
+    }
+
+    const emailChanged = input.email !== user.email;
+    if (emailChanged) {
+      const existing = await this.repository.findUserByEmail(input.email);
+      if (existing !== null && existing.id !== userId) {
+        throw emailTakenError();
+      }
+    }
+
+    const updated = await this.repository.updateProfile(userId, {
+      displayName: input.displayName,
+      email: input.email,
+    });
+
+    await this.auditLog.record({
+      actorUserId: userId,
+      action: 'auth.profile_update',
+      targetTable: 'users',
+      targetId: String(userId),
+      metadata: {
+        emailChanged: String(emailChanged),
+        displayNameChanged: String(input.displayName !== user.displayName),
+      },
+    });
+
+    return this.issueSession(updated, context);
+  }
+
   async deleteAccount(userId: number, currentPassword: string): Promise<void> {
     const user = await this.repository.findUserById(userId);
     if (user === null) {
@@ -239,6 +289,14 @@ function invalidCredentialsError(): AppError {
     code: ErrorCode.INVALID_CREDENTIALS,
     message: 'Invalid email or password',
     httpStatus: HttpStatus.UNAUTHORIZED,
+  });
+}
+
+function emailTakenError(): AppError {
+  return new AppError({
+    code: ErrorCode.EMAIL_TAKEN,
+    message: 'Email is already registered',
+    httpStatus: HttpStatus.CONFLICT,
   });
 }
 
