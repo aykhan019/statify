@@ -9,7 +9,7 @@ export const metadata = {
 
 export default function NewPlaylistPage() {
   return (
-    <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
+    <div className="mx-auto flex w-full max-w-xl flex-col gap-6 pt-6 sm:pt-8">
       <PageHeader
         headingLevel={2}
         title="New playlist"
