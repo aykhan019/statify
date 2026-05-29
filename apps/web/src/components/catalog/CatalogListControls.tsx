@@ -119,9 +119,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 function ControlActions({ resetHref }: { resetHref: string }) {
   return (
     <div className="flex items-center gap-2">
-      <Button type="submit" className="flex-1">
-        Apply
-      </Button>
+      <Button type="submit">Apply</Button>
       <Link
         href={resetHref}
         className="text-muted-foreground hover:text-foreground inline-flex h-10 items-center rounded-(--radius-sm) px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus focus-visible:ring-offset-2 focus-visible:ring-offset-surface-page"
