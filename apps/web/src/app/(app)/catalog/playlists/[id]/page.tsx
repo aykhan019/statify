@@ -5,6 +5,7 @@ import { TrackRow } from '@/components/catalog';
 import { formatDurationMs } from '@/components/catalog/format';
 import { PlaylistHero } from '@/components/playlists/PlaylistHero';
 import { SimilarPlaylistsList } from '@/components/playlists/SimilarPlaylistsList';
+import { SectionContent } from '@/components/section';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { fetchSimilarPlaylists } from '@/lib/analytics/api';
 import { ApiClientError } from '@/lib/api-client';
@@ -66,7 +67,7 @@ export default async function PlaylistDetailPage({
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <SectionContent className="flex flex-col gap-6">
       <PlaylistHero
         coverImages={playlist.coverImages}
         name={playlist.name}
@@ -126,6 +127,6 @@ export default async function PlaylistDetailPage({
           </nav>
         </CardContent>
       </Card>
-    </div>
+    </SectionContent>
   );
 }
