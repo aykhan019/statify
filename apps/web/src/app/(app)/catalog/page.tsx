@@ -11,6 +11,8 @@ import {
   type EntityTone,
 } from '@/components/p2';
 import { fetchTopArtists } from '@/lib/analytics/api';
+import { fetchCatalogStats } from '@/lib/catalog/api';
+import type { CatalogStatsResponse } from '@statify/shared';
 
 export const metadata = {
   title: 'Catalog | Statify',
@@ -18,46 +20,67 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic';
 
+const compactNumber = new Intl.NumberFormat('en', {
+  notation: 'compact',
+  maximumFractionDigits: 1,
+});
+
+function formatCount(value: number | undefined): string {
+  if (value === undefined) return '—';
+  return value < 1000 ? value.toLocaleString() : compactNumber.format(value);
+}
+
 const CATALOG_TILES = [
   {
     href: '/catalog/tracks',
     icon: Music2,
     label: 'Tracks',
-    value: '180M',
+    stat: 'tracks',
     sub: 'Indexed in the catalog',
   },
   {
     href: '/catalog/artists',
     icon: Mic2,
     label: 'Artists',
-    value: '460K',
+    stat: 'artists',
     sub: 'Normalized records',
   },
   {
     href: '/catalog/albums',
     icon: Disc3,
     label: 'Albums',
-    value: '1.1M',
+    stat: 'albums',
     sub: 'Linked to tracks',
   },
   {
     href: '/community/playlists',
     icon: ListMusic,
     label: 'Playlists',
-    value: '2.4M',
+    stat: 'playlists',
     sub: 'User and curated sets',
   },
-];
+] as const satisfies ReadonlyArray<{
+  href: string;
+  icon: typeof Music2;
+  label: string;
+  stat: keyof CatalogStatsResponse;
+  sub: string;
+}>;
 
 const TONES: readonly EntityTone[] = ['magenta', 'cyan', 'amber', 'violet', 'teal', 'green'];
 
 export default async function CatalogIndexPage() {
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
-  const { entries: topArtists } = await fetchTopArtists(
-    { limit: 6 },
-    { cookieHeader, cache: 'no-store' },
-  );
+  const opts = { cookieHeader, cache: 'no-store' as const };
+
+  const [topArtistsResult, statsResult] = await Promise.allSettled([
+    fetchTopArtists({ limit: 6 }, opts),
+    fetchCatalogStats(opts),
+  ]);
+
+  const topArtists = topArtistsResult.status === 'fulfilled' ? topArtistsResult.value.entries : [];
+  const stats = statsResult.status === 'fulfilled' ? statsResult.value : null;
 
   return (
     <>
@@ -65,7 +88,7 @@ export default async function CatalogIndexPage() {
         eyebrow="/catalog"
         icon={Library}
         title="The dataset shelf."
-        description="Tracks, artists, albums, and playlists — all indexed and ready to browse."
+        description="Tracks, artists, albums, and playlists - all indexed and ready to browse."
         actions={<P2Pill tone="on-block">SQL-backed</P2Pill>}
       />
       <SectionContent className="space-y-6">
@@ -83,7 +106,7 @@ export default async function CatalogIndexPage() {
                 {tile.label}
               </p>
               <p className="text-2xl font-extrabold leading-none tracking-tight text-fg-strong">
-                {tile.value}
+                {formatCount(stats?.[tile.stat])}
               </p>
               <p className="font-mono text-[11px] text-fg-muted">{tile.sub}</p>
               <span className="mt-auto inline-flex items-center gap-1 text-xs font-semibold text-section-accent">

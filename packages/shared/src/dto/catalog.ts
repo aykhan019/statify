@@ -176,6 +176,15 @@ export type CatalogSearchArtistResult = z.infer<typeof CatalogSearchArtistResult
 export type CatalogSearchAlbumResult = z.infer<typeof CatalogSearchAlbumResultSchema>;
 export type CatalogSearchResponse = z.infer<typeof CatalogSearchResponseSchema>;
 
+export const CatalogStatsResponseSchema = z.object({
+  tracks: z.number().int().nonnegative(),
+  artists: z.number().int().nonnegative(),
+  albums: z.number().int().nonnegative(),
+  playlists: z.number().int().nonnegative(),
+});
+
+export type CatalogStatsResponse = z.infer<typeof CatalogStatsResponseSchema>;
+
 function createOffsetPageSchema<T extends z.ZodTypeAny>(itemSchema: T) {
   return z.object({
     data: z.array(itemSchema),

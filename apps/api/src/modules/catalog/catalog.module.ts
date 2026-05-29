@@ -7,6 +7,9 @@ import { AlbumsService } from './albums.service';
 import { ArtistsController } from './artists.controller';
 import { ArtistsRepository } from './artists.repository';
 import { ArtistsService } from './artists.service';
+import { CatalogStatsController } from './catalog-stats.controller';
+import { CatalogStatsRepository } from './catalog-stats.repository';
+import { CatalogStatsService } from './catalog-stats.service';
 import { SearchController } from './search.controller';
 import { SearchRepository } from './search.repository';
 import { SearchService } from './search.service';
@@ -16,12 +19,20 @@ import { TracksService } from './tracks.service';
 
 @Module({
   imports: [AuthModule, ItunesModule],
-  controllers: [AlbumsController, ArtistsController, SearchController, TracksController],
+  controllers: [
+    AlbumsController,
+    ArtistsController,
+    CatalogStatsController,
+    SearchController,
+    TracksController,
+  ],
   providers: [
     AlbumsRepository,
     AlbumsService,
     ArtistsRepository,
     ArtistsService,
+    CatalogStatsRepository,
+    CatalogStatsService,
     SearchRepository,
     SearchService,
     TracksRepository,

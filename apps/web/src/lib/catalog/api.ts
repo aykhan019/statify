@@ -7,6 +7,7 @@ import type {
   ArtistsQuery,
   CatalogSearchQuery,
   CatalogSearchResponse,
+  CatalogStatsResponse,
   TrackDetail,
   TrackListResponse,
   TracksQuery,
@@ -61,6 +62,10 @@ export function fetchCatalogSearch(
   options: ServerFetchOptions = {},
 ): Promise<CatalogSearchResponse> {
   return apiFetch<CatalogSearchResponse>(`/api/v1/search${toQueryString(query)}`, options);
+}
+
+export function fetchCatalogStats(options: ServerFetchOptions = {}): Promise<CatalogStatsResponse> {
+  return apiFetch<CatalogStatsResponse>('/api/v1/catalog/stats', options);
 }
 
 function toQueryString(query: Record<string, unknown>): string {
