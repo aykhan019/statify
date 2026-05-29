@@ -118,7 +118,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 
 function ControlActions({ resetHref }: { resetHref: string }) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center justify-end gap-2">
       <Button type="submit">Apply</Button>
       <Link
         href={resetHref}
