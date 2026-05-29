@@ -102,7 +102,15 @@ export type UpdateUserBanRequest = z.infer<typeof UpdateUserBanRequestSchema>;
 const CatalogAdminListQuerySchema = OffsetPaginationQuerySchema.extend({
   // Generous cap so `field:value` searches (e.g. an image URL) still fit.
   q: z.string().trim().min(1).max(2048).optional(),
-  includeHidden: z.coerce.boolean().default(true),
+  // NB: not `z.coerce.boolean()` — that runs `Boolean(value)`, so the string
+  // 'false' coerces to `true` and the "Hidden off" toggle would never filter.
+  includeHidden: z
+    .preprocess((value) => {
+      if (value === 'true') return true;
+      if (value === 'false') return false;
+      return value;
+    }, z.boolean())
+    .default(true),
 });
 
 const UpdateHiddenRequestSchema = z.object({
