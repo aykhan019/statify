@@ -1,10 +1,10 @@
-import { Gem, Play, RefreshCw } from 'lucide-react';
+import { Gem, Play } from 'lucide-react';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { SectionContent } from '@/components/section';
 import { EmptyState } from '@/components/states';
 import { Icon } from '@/components/ui/Icon';
-import { P2GlassPanel, P2HeroButton, P2PageHero, P2Pill } from '@/components/p2';
+import { P2GlassPanel, P2PageHero, P2Pill } from '@/components/p2';
 import { Cover } from '@/components/ui/Cover';
 import { fetchHiddenGems } from '@/lib/analytics/api';
 import { formatTrackName } from '@/components/catalog';
@@ -34,15 +34,6 @@ export default async function HiddenGemsPage() {
         icon={Gem}
         title="Quiet tracks with strong signals."
         description={`Tracks appearing in at least ${DEFAULT_MIN_PLAYLISTS} playlists - popular with curators, quiet on plays.`}
-        actions={
-          <>
-            <P2HeroButton href="/explore/hidden-gems">
-              <Icon as={RefreshCw} size="sm" />
-              Refresh
-            </P2HeroButton>
-            <P2Pill tone="on-block">Popularity ≤ 22</P2Pill>
-          </>
-        }
       />
       <SectionContent className="space-y-6">
         {entries.length === 0 ? (
