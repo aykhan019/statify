@@ -4,7 +4,12 @@ import type { AdminArtistsListQuery } from '@statify/shared';
 import { BaseRepository } from '../../database/base.repository';
 import { PrismaService } from '../../database/prisma.service';
 import { getOffset } from '../catalog/catalog.pagination';
-import { toPositiveInt } from './admin-search.util';
+import {
+  buildScopedFilter,
+  idFilterValue,
+  parseSearchQuery,
+  toPositiveInt,
+} from './admin-search.util';
 
 const ARTIST_ADMIN_INCLUDE = {
   _count: {
@@ -121,12 +126,21 @@ function buildWhere(query: AdminArtistsListQuery): Prisma.ArtistWhereInput {
     where.hiddenAt = null;
   }
   if (query.q !== undefined) {
-    const or: Prisma.ArtistWhereInput[] = [{ name: { contains: query.q, mode: 'insensitive' } }];
-    const asId = toPositiveInt(query.q);
-    if (asId !== null) {
-      or.push({ id: asId });
+    const scoped = buildScopedFilter<Prisma.ArtistWhereInput>(parseSearchQuery(query.q), {
+      id: (v) => ({ id: idFilterValue(v) }),
+      name: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
+      artist: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
+    });
+    if (scoped !== null) {
+      Object.assign(where, scoped);
+    } else {
+      const or: Prisma.ArtistWhereInput[] = [{ name: { contains: query.q, mode: 'insensitive' } }];
+      const asId = toPositiveInt(query.q);
+      if (asId !== null) {
+        or.push({ id: asId });
+      }
+      where.OR = or;
     }
-    where.OR = or;
   }
   return where;
 }

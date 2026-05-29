@@ -32,7 +32,7 @@ export function AdminUsersSearch() {
         <Input
           type="search"
           name="q"
-          placeholder="Search by ID, email, or display name"
+          placeholder="Search email, name — or scope it: id:1, email:jane@"
           value={value}
           onChange={(event) => setValue(event.target.value)}
           startSlot={<Icon as={Search} size="sm" />}

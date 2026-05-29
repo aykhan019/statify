@@ -4,7 +4,12 @@ import type { AdminAlbumsListQuery } from '@statify/shared';
 import { BaseRepository } from '../../database/base.repository';
 import { PrismaService } from '../../database/prisma.service';
 import { getOffset } from '../catalog/catalog.pagination';
-import { toPositiveInt } from './admin-search.util';
+import {
+  buildScopedFilter,
+  idFilterValue,
+  parseSearchQuery,
+  toPositiveInt,
+} from './admin-search.util';
 
 const ALBUM_ADMIN_INCLUDE = {
   primaryArtist: true,
@@ -110,15 +115,25 @@ function buildWhere(query: AdminAlbumsListQuery): Prisma.AlbumWhereInput {
     where.hiddenAt = null;
   }
   if (query.q !== undefined) {
-    const or: Prisma.AlbumWhereInput[] = [
-      { name: { contains: query.q, mode: 'insensitive' } },
-      { primaryArtist: { name: { contains: query.q, mode: 'insensitive' } } },
-    ];
-    const asId = toPositiveInt(query.q);
-    if (asId !== null) {
-      or.push({ id: asId });
+    const scoped = buildScopedFilter<Prisma.AlbumWhereInput>(parseSearchQuery(query.q), {
+      id: (v) => ({ id: idFilterValue(v) }),
+      name: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
+      album: (v) => ({ name: { contains: v, mode: 'insensitive' } }),
+      artist: (v) => ({ primaryArtist: { name: { contains: v, mode: 'insensitive' } } }),
+    });
+    if (scoped !== null) {
+      Object.assign(where, scoped);
+    } else {
+      const or: Prisma.AlbumWhereInput[] = [
+        { name: { contains: query.q, mode: 'insensitive' } },
+        { primaryArtist: { name: { contains: query.q, mode: 'insensitive' } } },
+      ];
+      const asId = toPositiveInt(query.q);
+      if (asId !== null) {
+        or.push({ id: asId });
+      }
+      where.OR = or;
     }
-    where.OR = or;
   }
   return where;
 }
