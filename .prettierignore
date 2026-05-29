@@ -8,3 +8,6 @@ coverage
 pnpm-lock.yaml
 *.tsbuildinfo
 .husky/_
+
+# Report export / documentation
+final-report/**
