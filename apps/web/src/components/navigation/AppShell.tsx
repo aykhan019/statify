@@ -76,7 +76,11 @@ export function AppShell({ children, includeAdmin, stats24h, user }: AppShellPro
       </Surface>
       <PlayHistoryReporter />
       <div className="pointer-events-none fixed inset-x-0 bottom-4 z-20 flex justify-center">
-        <Container size="prose" gutter="page" className="pointer-events-auto">
+        <Container
+          size="prose"
+          gutter="page"
+          className="pointer-events-auto max-w-[min(100%,1040px)]"
+        >
           <AudioPlayer />
         </Container>
       </div>

@@ -3,6 +3,7 @@
 import { Pause, Play, Volume2, VolumeX, X } from 'lucide-react';
 import { useEffect, useRef, type ChangeEvent } from 'react';
 import { Cover } from '@/components/ui/Cover';
+import { Equalizer } from '@/components/ui/Equalizer';
 import { Icon } from '@/components/ui/Icon';
 import { formatTrackName } from '@/components/catalog';
 import { cn } from '@/lib/utils/cn';
@@ -100,13 +101,13 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
         }}
       />
 
-      <div className="flex items-center gap-3 px-4 py-3">
+      <div className="flex items-center gap-4 px-5 py-4">
         {/* Cover art */}
         <Cover
           src={track.imageUrl ?? null}
           name={formatTrackName(track.trackName)}
           entity="track"
-          size="xs"
+          size="sm"
           context="list-dense"
           inSection={false}
           className="shrink-0"
@@ -114,7 +115,18 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
 
         {/* Track info */}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-fg-strong leading-tight">
+          {isPlaying && (
+            <p className="flex items-center gap-1.5 font-mono text-[10px] font-bold uppercase tracking-[0.16em] text-section-accent leading-none">
+              <Equalizer size={12} />
+              Now playing
+            </p>
+          )}
+          <p
+            className={cn(
+              'truncate text-sm font-semibold text-fg-strong leading-tight',
+              isPlaying && 'mt-1.5',
+            )}
+          >
             {formatTrackName(track.trackName)}
           </p>
           <p className="truncate text-xs text-fg-muted leading-tight mt-0.5">{track.artistName}</p>
@@ -127,14 +139,14 @@ export function AudioPlayer({ className }: AudioPlayerProps) {
           disabled={isUnavailable}
           aria-label={isPlaying ? 'Pause preview' : 'Play preview'}
           className={cn(
-            'grid size-9 shrink-0 place-items-center rounded-full motion-interactive',
+            'grid size-11 shrink-0 place-items-center rounded-full motion-interactive',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring-focus',
             isUnavailable
               ? 'cursor-not-allowed opacity-40 bg-surface-sunken'
               : 'bg-section-accent text-section-accent-fg hover:opacity-90',
           )}
         >
-          <Icon as={isPlaying ? Pause : Play} size="sm" />
+          <Icon as={isPlaying ? Pause : Play} size="md" />
         </button>
 
         {/* Seek + time */}
