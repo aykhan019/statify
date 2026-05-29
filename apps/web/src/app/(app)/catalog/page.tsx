@@ -1,7 +1,9 @@
 import { ArrowRight, Disc3, Library, ListMusic, Mic2, Music2 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { cookies } from 'next/headers';
 import { SectionContent } from '@/components/section';
+import { coverSrc } from '@/components/ui/Cover';
 import { Icon } from '@/components/ui/Icon';
 import {
   P2GlassPanel,
@@ -138,13 +140,25 @@ export default async function CatalogIndexPage() {
               {topArtists.slice(0, 6).map((artist, index) => (
                 <li key={artist.artistId} className="flex flex-col items-center gap-3 text-center">
                   <Link href={`/catalog/artists/${artist.artistId}`}>
-                    <P2GradientCover
-                      tone={TONES[index % TONES.length]!}
-                      name={artist.artistName}
-                      size={96}
-                      radius="lg"
-                      className="rounded-full"
-                    />
+                    {artist.artistImageUrl ? (
+                      <span className="relative inline-flex size-24 overflow-hidden rounded-full border border-white/12 shadow-[0_8px_18px_-10px_rgba(0,0,0,0.45)]">
+                        <Image
+                          src={coverSrc(artist.artistImageUrl, 192)}
+                          alt={artist.artistName}
+                          fill
+                          sizes="96px"
+                          className="object-cover"
+                        />
+                      </span>
+                    ) : (
+                      <P2GradientCover
+                        tone={TONES[index % TONES.length]!}
+                        name={artist.artistName}
+                        size={96}
+                        radius="lg"
+                        className="rounded-full"
+                      />
+                    )}
                   </Link>
                   <div>
                     <p className="truncate text-sm font-extrabold text-fg-strong">
